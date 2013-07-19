@@ -32,6 +32,7 @@ composer.phar
 /behat.yml
 */yui/build/*/*-coverage.js
 /lib/yuilib/*/build/*/*-coverage.js
+<<<<<<< HEAD
 # lib/yuilib/version/module/module-coverage.js
 /lib/yuilib/*/*/*-coverage.js
 atlassian-ide-plugin.xml
