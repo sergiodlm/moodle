@@ -546,12 +546,33 @@ $functions = array(
         'description' => 'Unassing groups from groupings',
         'type' => 'write',
     ),
+
     'core_group_update_groupings' => array(
         'classname' => 'core_group_external',
         'methodname' => 'update_groupings',
         'classpath' => 'group/externallib.php',
         'description' => 'Updates existing groupings',
         'type' => 'write',
+    ),
+
+    'core_course_create_modules' => array(
+        'classname'   => 'core_course_external',
+        'methodname'  => 'create_modules',
+        'classpath'   => 'course/externallib.php',
+        'description' => 'Creates modules in a course',
+        'type'        => 'write',
+        'capabilities'=> '',
+    ),
+
+    // === message related functions ===
+
+    'moodle_message_send_instantmessages' => array(
+        'classname'   => 'core_message_external',
+        'methodname'  => 'send_instant_messages',
+        'classpath'   => 'message/externallib.php',
+        'description' => 'DEPRECATED: this deprecated function will be removed in a future version. This function has be renamed as core_message_send_instant_messages()',
+        'type'        => 'write',
+        'capabilities'=> 'moodle/site:sendmessage',
     ),
     'core_message_block_contacts' => array(
         'classname' => 'core_message_external',

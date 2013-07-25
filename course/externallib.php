@@ -1987,6 +1987,108 @@ class core_course_external extends external_api {
     }
 
     /**
+     * Describes the parameters for cerate_modules.
+     *
+     * @return external_external_function_parameters
+     * @since Moodle 2.5
+     */
+    public static function create_modules_parameters() {
+        return new external_function_parameters(
+            array(
+                'courseid' => new external_value(PARAM_INT, 'ID of the course'),
+                'modules' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'modulename' => new external_value(PARAM_TEXT, 'Name of the module'),
+                            'section' => new external_value(PARAM_INT, 'Sectionnumber'),
+                            'name' => new external_value(PARAM_TEXT, "Title of the module", VALUE_OPTIONAL),
+                            'visible' => new external_value(PARAM_INT, '1: available to student, 0:not available', VALUE_OPTIONAL),
+                            'description' => new external_value(PARAM_TEXT, 'the new module description', VALUE_OPTIONAL),
+                            'descriptionformat' => new external_format_value(PARAM_INT, 'description', VALUE_DEFAULT)
+                        )
+                    )
+                )
+            )
+        );
+    }
+
+    /**
+     * Creates modules
+     *
+     * @param array $cmids the course module ids
+     * @since Moodle 2.5
+     */
+    public static function create_modules($courseid, $modules) {
+        global $CFG, $DB;
+
+        require_once($CFG->dirroot . "/course/lib.php");
+        require_once($CFG->dirroot . "/course/modlib.php");
+
+        $moduleinfo = new stdClass();
+        $course = $DB->get_record('course', array('id'=>$courseid), '*', MUST_EXIST);
+
+        // Clean the parameters.
+        $params = self::validate_parameters(self::create_modules_parameters(), array('courseid' => $courseid,'modules' => $modules));
+
+        $context = context_course::instance($course->id);
+        require_capability('moodle/course:manageactivities', $context);
+
+        foreach ($params['modules'] as $mod) {
+            $module = (object) $mod;
+            $moduleobject = $DB->get_record('modules', array('name'=>$module->modulename), '*', MUST_EXIST);
+
+            if(trim($module->modulename) == ''){
+                throw new invalid_parameter_exception('Invalid module name');
+            }
+
+            if (!course_allowed_module($course, $module->modulename)){
+                throw new invalid_parameter_exception('Module "'.$module->modulename.'" is disabled');
+            }
+
+            if(is_null($module->visible)){
+                $module->visible = 1;
+            }
+
+            if(is_null($module->description)){
+                $module->description = '';
+            }
+
+            if(!is_null($module->name) && trim($module->name) != ''){
+                $moduleinfo->name = $module->name;
+            }
+
+            $moduleinfo->modulename = $module->modulename;
+
+            $moduleinfo->visible = $module->visible;
+            $moduleinfo->course = $courseid;
+            $moduleinfo->section = $module->section;
+            $moduleinfo->introeditor = array('text' => $module->description, 'format' => $module->descriptionformat, 'itemid' => 0);
+            $moduleinfo->quizpassword = '';
+            $retVal = create_module($moduleinfo);
+
+            $result[] = array('id'=>$retVal->id);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Describes the create_modules return value.
+     *
+     * @return external_single_structure
+     * @since Moodle 2.5
+     */
+    public static function create_modules_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'id' => new external_value(PARAM_INT, 'new module id')
+                )
+            )
+        );
+    }
+
+    /**
      * Describes the parameters for delete_modules.
      *
      * @return external_external_function_parameters
