@@ -1993,6 +1993,7 @@ class core_course_external extends external_api {
      * @since Moodle 2.6
      */
     public static function create_modules_parameters() {
+        $courseconfig = get_config('moodlecourse'); //needed for many default values
         return new external_function_parameters(
             array(
                 'courseid' => new external_value(PARAM_INT, 'ID of the course'),
@@ -2004,7 +2005,11 @@ class core_course_external extends external_api {
                             'name' => new external_value(PARAM_TEXT, "Title of the module", VALUE_OPTIONAL),
                             'visible' => new external_value(PARAM_INT, '1: available to student, 0:not available', VALUE_OPTIONAL),
                             'description' => new external_value(PARAM_TEXT, 'the new module description', VALUE_OPTIONAL),
-                            'descriptionformat' => new external_format_value(PARAM_INT, 'description', VALUE_DEFAULT)
+                            'descriptionformat' => new external_format_value(PARAM_INT, 'description', VALUE_DEFAULT),
+                            'groupmode' => new external_value(PARAM_INT, 'no group, separate, visible', VALUE_DEFAULT, $courseconfig->groupmode),
+                            'groupmodeforce' => new external_value(PARAM_INT, '1: yes, 0: no', VALUE_DEFAULT, $courseconfig->groupmodeforce),
+                            'defaultgroupingid' => new external_value(PARAM_INT, 'default grouping id',
+                                VALUE_DEFAULT, 0),
                         )
                     )
                 )
@@ -2064,6 +2069,9 @@ class core_course_external extends external_api {
             $moduleinfo->section = $module->section;
             $moduleinfo->introeditor = array('text' => $module->description, 'format' => $module->descriptionformat, 'itemid' => 0);
             $moduleinfo->quizpassword = '';
+            $moduleinfo->groupmode = $module->groupmode;
+            $moduleinfo->groupemodeforce = $module->groupmodeforce;
+            $moduleinfo->defaultgroupingid = $module->defaultgroupingid;
             $retVal = create_module($moduleinfo);
 
             $result[] = array('id'=>$retVal->id);
