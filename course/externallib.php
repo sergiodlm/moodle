@@ -2008,7 +2008,7 @@ class core_course_external extends external_api {
                             'descriptionformat' => new external_format_value(PARAM_INT, 'description', VALUE_DEFAULT),
                             'groupmode' => new external_value(PARAM_INT, 'no group, separate, visible', VALUE_DEFAULT, $courseconfig->groupmode),
                             'groupmodeforce' => new external_value(PARAM_INT, '1: yes, 0: no', VALUE_DEFAULT, $courseconfig->groupmodeforce),
-                            'defaultgroupingid' => new external_value(PARAM_INT, 'default grouping id',
+                            'groupingid' => new external_value(PARAM_INT, 'grouping id',
                                 VALUE_DEFAULT, 0),
                         )
                     )
@@ -2071,7 +2071,7 @@ class core_course_external extends external_api {
             $moduleinfo->quizpassword = '';
             $moduleinfo->groupmode = $module->groupmode;
             $moduleinfo->groupemodeforce = $module->groupmodeforce;
-            $moduleinfo->defaultgroupingid = $module->defaultgroupingid;
+            $moduleinfo->groupingid = $module->groupingid;
             $retVal = create_module($moduleinfo);
 
             $result[] = array('id'=>$retVal->id);
