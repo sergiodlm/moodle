@@ -2068,7 +2068,7 @@ class core_course_external extends external_api {
             $moduleinfo->course = $courseid;
             $moduleinfo->section = $module->section;
             $moduleinfo->introeditor = array('text' => $module->description, 'format' => $module->descriptionformat, 'itemid' => 0);
-            /*$moduleinfo->quizpassword = '';*/
+            $moduleinfo->quizpassword = '';
             $moduleinfo->groupmode = $module->groupmode;
             $moduleinfo->groupmembersonly = $module->groupmembersonly;
             $moduleinfo->groupingid = $module->groupingid;
