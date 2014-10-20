@@ -35,6 +35,17 @@
 
 $functions = array(
 
+    // Backup restore related functions.
+
+    'core_backup_restore_activity' => array(
+        'classname'    => 'core_backup_external',
+        'methodname'   => 'restore_activities',
+        'description'  => 'Restore an activity from a backup file.',
+        'classpath'    => 'backup/externallib.php',
+        'type'         => 'write',
+        'capabilities' => 'moodle/restore:restoreactivity'
+    ),
+
     // Cohort related functions.
 
     'core_cohort_create_cohorts' => array(
@@ -1123,7 +1134,6 @@ $functions = array(
         'type'        => 'read',
         'ajax'        => true
     ),
-
 );
 
 $services = array(
