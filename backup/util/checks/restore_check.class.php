@@ -177,6 +177,10 @@ abstract class restore_check {
             if ($datesetting) {
                 $datesetting->set_status(base_setting::LOCKED_BY_PERMISSION);
             }
+            $datesetting = $restore_controller->get_plan()->get_setting('course_enddate');
+            if ($datesetting) {
+                $datesetting->set_status(base_setting::LOCKED_BY_PERMISSION);
+            }
         }
 
         return true;
