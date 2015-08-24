@@ -83,6 +83,7 @@ echo $OUTPUT->doctype() ?>
 
     <footer id="page-footer" class="<?php echo $hideclass; ?>">
         <div id="course-footer"><?php echo $OUTPUT->course_footer(); ?></div>
+        <div id="addablock"><?php echo block_add_block_ui();?></div>
         <p class="helplink"><?php echo $OUTPUT->page_doc_link(); ?></p>
         <?php
         echo $OUTPUT->login_info();

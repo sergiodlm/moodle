@@ -121,6 +121,7 @@ echo $OUTPUT->doctype() ?>
 
 <!-- START OF FOOTER -->
     <div id="page-footer">
+        <div id="addablock"><?php echo block_add_block_ui();?></div>
         <p class="helplink">
         <?php echo page_doc_link(get_string('moodledocslink')) ?>
         </p>

@@ -114,6 +114,7 @@ echo $OUTPUT->doctype() ?>
     <?php } ?>
     <?php if ($hasfooter) { ?>
     <div id="page-footer" class="clearfix">
+        <div id="addablock"><?php echo block_add_block_ui();?></div>
         <p class="helplink"><?php echo page_doc_link(get_string('moodledocslink')) ?></p>
         <?php
         echo $OUTPUT->login_info();
