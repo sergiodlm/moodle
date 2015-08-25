@@ -1049,6 +1049,7 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2015092900.00);
     }
 
+
     if ($oldversion < 2015100600.00) {
 
         // Define index notification (not unique) to be added to message_read.
@@ -1462,6 +1463,29 @@ function xmldb_main_upgrade($oldversion) {
         }
         // Main savepoint reached.
         upgrade_main_savepoint(true, 2016030400.01);
+    }
+
+    if ($oldversion < 2016041900.00) {
+
+        $table = new xmldb_table('groups');
+
+        // Define field itemid to be added to groups table.
+        $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'component');
+
+        // Conditionally launch add field itemid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field component to be added to groups table.
+        $field = new xmldb_field('component', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null, 'hidepicture');
+
+        // Conditionally launch add field component.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2016041900.00);
     }
 
     return true;
