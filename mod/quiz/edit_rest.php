@@ -43,7 +43,7 @@ $summary    = optional_param('summary', '', PARAM_RAW);
 $sequence   = optional_param('sequence', '', PARAM_SEQUENCE);
 $visible    = optional_param('visible', 0, PARAM_INT);
 $pageaction = optional_param('action', '', PARAM_ALPHA); // Used to simulate a DELETE command.
-$maxmark    = optional_param('maxmark', '', PARAM_FLOAT);
+$maxmark    = optional_param('maxmark', '', PARAM_RAW_TRIMMED);
 $newheading = optional_param('newheading', '', PARAM_TEXT);
 $shuffle    = optional_param('newshuffle', 0, PARAM_INT);
 $page       = optional_param('page', '', PARAM_INT);
@@ -121,6 +121,7 @@ switch($requestmethod) {
                     case 'updatemaxmark':
                         require_capability('mod/quiz:manage', $modcontext);
                         $slot = $structure->get_slot_by_id($id);
+                        $maxmark = clean_param(str_replace(',', '.', $maxmark), PARAM_FLOAT);
                         if ($structure->update_slot_maxmark($slot, $maxmark)) {
                             // Grade has really changed.
                             quiz_delete_previews($quiz);
