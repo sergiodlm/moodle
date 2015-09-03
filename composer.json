@@ -3,5 +3,9 @@
         "phpunit/phpunit": "4.7.*",
         "phpunit/dbUnit": "1.4.*",
         "moodlehq/behat-extension": "1.30.0"
+    },
+    "require": {
+        "setasign/fpdf": "1.7",
+        "setasign/fpdi": "1.5.4"
     }
 }

@@ -2328,6 +2328,57 @@ function send_stored_file($stored_file, $lifetime=null, $filter=0, $forcedownloa
         header('Access-Control-Allow-Origin: *');
     }
 
+    $filename = $stored_file->get_filename();
+    if (strpos($filename, '.pdf') !== false) {
+        // we have a pdf file
+        global $CFG, $USER;
+        require_once($CFG->dirroot.'/lib/pdfrotate.php');
+        $pdf = new PDF_Rotate();
+        $file = $CFG->dataroot.'/filedir/'. substr($stored_file->get_contenthash(), 0, 2)
+                                          .'/'. substr($stored_file->get_contenthash(), 2, 2)
+                                          .'/'. $stored_file->get_contenthash();
+
+        $pagecount = $pdf->setSourceFile($file);
+
+        for ($pagenumber = 1; $pagenumber <= $pagecount; $pagenumber++) {
+            // import a page
+            $templateid = $pdf->importPage($pagenumber);
+            // get the size of the imported page
+            $size = $pdf->getTemplateSize($templateid);
+
+            // create a page (landscape or portrait depending on the imported page size)
+            if ($size['w'] > $size['h']) {
+                $pdf->AddPage('L', array($size['w'], $size['h']));
+            } else {
+                $pdf->AddPage('P', array($size['w'], $size['h']));
+            }
+
+            // use the imported page
+            $pdf->useTemplate($templateid);
+
+            $pdf->SetFont('Helvetica');
+            $pdf->SetXY(5, 5);
+            $pdf->Rotate(270, 7, 7);
+            $info = fullname($USER) . ' / ' . $USER->email;
+            if (!empty($USER->phone1)) {
+                $info .= ' / ' . $USER->phone1;
+            }
+            if (!empty($USER->phone2)) {
+                $info .= ' / ' . $USER->phone2;
+            }
+            if (!empty($USER->msn)) {
+                $info .= ' / ' . $USER->msn;
+            }
+            $pdf->Write(10, $info);
+        }
+
+        if ($directory = make_temp_directory('pdfmark')) {
+            $newpath = $directory.'/'.$USER->id.$filename;
+            $pdf->Output($newpath, 'F');
+            $stored_file = $newpath;
+        }
+    }
+
     if (empty($filter)) {
         // send the contents
         readfile_accel($stored_file, $mimetype, !$dontdie);
