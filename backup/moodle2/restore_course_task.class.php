@@ -156,13 +156,20 @@ class restore_course_task extends restore_task {
      */
     protected function define_settings() {
 
+        $context = context_course::instance($this->get_courseid());
         //$name, $vtype, $value = null, $visibility = self::VISIBLE, $status = self::NOT_LOCKED
         $fullname = new restore_course_generic_text_setting('course_fullname', base_setting::IS_TEXT, $this->get_info()->original_course_fullname);
         $fullname->get_ui()->set_label(get_string('setting_course_fullname', 'backup'));
+        if (!has_capability('moodle/course:changefullname', $context, $this->task->get_userid())) {
+            $fullname->set_status(backup_setting::LOCKED_BY_PERMISSION);
+        }
         $this->add_setting($fullname);
 
         $shortname = new restore_course_generic_text_setting('course_shortname', base_setting::IS_TEXT, $this->get_info()->original_course_shortname);
         $shortname->get_ui()->set_label(get_string('setting_course_shortname', 'backup'));
+        if (!has_capability('moodle/course:changeshortname', $context, $this->task->get_userid())) {
+            $shortname->set_status(backup_setting::LOCKED_BY_PERMISSION);
+        }
         $this->add_setting($shortname);
 
         $startdate = new restore_course_generic_text_setting('course_startdate', base_setting::IS_INTEGER, $this->get_info()->original_course_startdate);
@@ -193,12 +200,14 @@ class restore_course_task extends restore_task {
         $overwrite = new restore_course_overwrite_conf_setting('overwrite_conf', base_setting::IS_BOOLEAN, false);
         $overwrite->set_ui(new backup_setting_ui_select($overwrite, $overwrite->get_name(), array(1=>get_string('yes'), 0=>get_string('no'))));
         $overwrite->get_ui()->set_label(get_string('setting_overwriteconf', 'backup'));
+
         if ($this->get_target() == backup::TARGET_NEW_COURSE) {
             $overwrite->set_value(true);
             $overwrite->set_status(backup_setting::LOCKED_BY_CONFIG);
             $overwrite->set_visibility(backup_setting::HIDDEN);
+        } else if (!has_capability('moodle/course:update', $context, $this->task->get_userid())) {
+            $overwrite->set_status(backup_setting::LOCKED_BY_PERMISSION);
         }
         $this->add_setting($overwrite);
-
     }
 }
