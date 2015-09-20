@@ -4,8 +4,510 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e57a3c4f1934098d77de54215b059ba1",
-    "packages": [],
+    "hash": "b2d60175df1061fbee97e7973652a5ae",
+    "packages": [
+        {
+            "name": "bmbrands/theme_bootstrap",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bmbrands/theme_bootstrap.git",
+                "reference": "be60cf98149365a9e34724f5c8d53cb6a07bc4cd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bmbrands/theme_bootstrap/zipball/be60cf98149365a9e34724f5c8d53cb6a07bc4cd",
+                "reference": "be60cf98149365a9e34724f5c8d53cb6a07bc4cd",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-theme",
+            "extra": {
+                "installer-name": "bootstrap"
+            },
+            "support": {
+                "source": "https://github.com/bmbrands/theme_bootstrap/tree/master",
+                "issues": "https://github.com/bmbrands/theme_bootstrap/issues"
+            },
+            "time": "2015-09-03 13:46:41"
+        },
+        {
+            "name": "bostelm/moodle-mod_scheduler",
+            "version": "dev-composer",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danielneis/moodle-mod_scheduler.git",
+                "reference": "52548e8375289bd954d0d39966ed4b4ad7f5919d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danielneis/moodle-mod_scheduler/zipball/52548e8375289bd954d0d39966ed4b4ad7f5919d",
+                "reference": "52548e8375289bd954d0d39966ed4b4ad7f5919d",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-mod",
+            "extra": {
+                "installer-name": "scheduler"
+            },
+            "support": {
+                "source": "https://github.com/danielneis/moodle-mod_scheduler/tree/composer"
+            },
+            "time": "2015-01-27 23:44:05"
+        },
+        {
+            "name": "composer/installers",
+            "version": "v1.0.21",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/installers.git",
+                "reference": "d64e23fce42a4063d63262b19b8e7c0f3b5e4c45"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/installers/zipball/d64e23fce42a4063d63262b19b8e7c0f3b5e4c45",
+                "reference": "d64e23fce42a4063d63262b19b8e7c0f3b5e4c45",
+                "shasum": ""
+            },
+            "replace": {
+                "roundcube/plugin-installer": "*",
+                "shama/baton": "*"
+            },
+            "require-dev": {
+                "composer/composer": "1.0.*@dev",
+                "phpunit/phpunit": "4.1.*"
+            },
+            "type": "composer-installer",
+            "extra": {
+                "class": "Composer\\Installers\\Installer",
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Composer\\Installers\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kyle Robinson Young",
+                    "email": "kyle@dontkry.com",
+                    "homepage": "https://github.com/shama"
+                }
+            ],
+            "description": "A multi-framework Composer library installer",
+            "homepage": "http://composer.github.com/installers/",
+            "keywords": [
+                "Craft",
+                "Dolibarr",
+                "Hurad",
+                "MODX Evo",
+                "OXID",
+                "SMF",
+                "Thelia",
+                "WolfCMS",
+                "agl",
+                "aimeos",
+                "annotatecms",
+                "bitrix",
+                "cakephp",
+                "chef",
+                "codeigniter",
+                "concrete5",
+                "croogo",
+                "dokuwiki",
+                "drupal",
+                "elgg",
+                "fuelphp",
+                "grav",
+                "installer",
+                "joomla",
+                "kohana",
+                "laravel",
+                "lithium",
+                "magento",
+                "mako",
+                "mediawiki",
+                "modulework",
+                "moodle",
+                "phpbb",
+                "piwik",
+                "ppi",
+                "puppet",
+                "roundcube",
+                "shopware",
+                "silverstripe",
+                "symfony",
+                "typo3",
+                "wordpress",
+                "zend",
+                "zikula"
+            ],
+            "time": "2015-02-18 17:17:01"
+        },
+        {
+            "name": "danielneis/moodle-availability_maxviews",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danielneis/moodle-availability_maxviews.git",
+                "reference": "57f705a41b0eef71addaee02176ec55d8d8fb0d1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danielneis/moodle-availability_maxviews/zipball/57f705a41b0eef71addaee02176ec55d8d8fb0d1",
+                "reference": "57f705a41b0eef71addaee02176ec55d8d8fb0d1",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-availability",
+            "extra": {
+                "installer-name": "maxviews"
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPLv3"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel Neis Araujo",
+                    "email": "danielneis@gmail.com"
+                }
+            ],
+            "description": "An availability condition for Moodle that limits the number of views of an activity by users",
+            "time": "2015-08-05 20:32:18"
+        },
+        {
+            "name": "danielneis/moodle-availability_paypal",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danielneis/moodle-availability_paypal.git",
+                "reference": "caf49eaa45594c0223b291a5429e7fc49441e5eb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danielneis/moodle-availability_paypal/zipball/caf49eaa45594c0223b291a5429e7fc49441e5eb",
+                "reference": "caf49eaa45594c0223b291a5429e7fc49441e5eb",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-availability",
+            "extra": {
+                "installer-name": "paypal"
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPLv3"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel Neis Araujo",
+                    "email": "danielneis@gmail.com"
+                }
+            ],
+            "description": "An Availability Condition for Moodle to require a PayPal payment to access activities and resources.",
+            "time": "2015-08-18 17:34:04"
+        },
+        {
+            "name": "danielneis/moodle-mod_webrtcexperiments",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danielneis/moodle-mod_webrtcexperiments.git",
+                "reference": "9e55e28e0e01731734a3d5635c04703175baf78d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danielneis/moodle-mod_webrtcexperiments/zipball/9e55e28e0e01731734a3d5635c04703175baf78d",
+                "reference": "9e55e28e0e01731734a3d5635c04703175baf78d",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-mod",
+            "extra": {
+                "installer-name": "webrtcexperiments"
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPLv3"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel Neis Araujo",
+                    "email": "danielneis@gmail.com"
+                }
+            ],
+            "description": "This is a Moodle plugin for users interact with audio and video using WebRTC",
+            "time": "2015-04-09 15:33:59"
+        },
+        {
+            "name": "danmarsden/moodle-mod_attendance",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danmarsden/moodle-mod_attendance.git",
+                "reference": "f00097d43a8d06700d71f06101614f329871745d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danmarsden/moodle-mod_attendance/zipball/f00097d43a8d06700d71f06101614f329871745d",
+                "reference": "f00097d43a8d06700d71f06101614f329871745d",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-mod",
+            "extra": {
+                "installer-name": "attendance"
+            },
+            "support": {
+                "source": "https://github.com/danmarsden/moodle-mod_attendance/tree/master",
+                "issues": "https://github.com/danmarsden/moodle-mod_attendance/issues"
+            },
+            "time": "2015-09-14 00:50:38"
+        },
+        {
+            "name": "danpoltawski/moodle-repository_github",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danpoltawski/moodle-repository_github.git",
+                "reference": "ff02033d320a5bb817a38e81a91bafc1e8ffafb1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danpoltawski/moodle-repository_github/zipball/ff02033d320a5bb817a38e81a91bafc1e8ffafb1",
+                "reference": "ff02033d320a5bb817a38e81a91bafc1e8ffafb1",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-repository",
+            "extra": {
+                "installer-name": "github"
+            },
+            "support": {
+                "source": "https://github.com/danpoltawski/moodle-repository_github/tree/master",
+                "issues": "https://github.com/danpoltawski/moodle-repository_github/issues"
+            },
+            "time": "2015-06-04 15:50:34"
+        },
+        {
+            "name": "davidherney/moodle-format_onetopic",
+            "version": "dev-composer",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danielneis/moodle-format_onetopic.git",
+                "reference": "e3e0abe6d3376ff693acfbcec0704d8b4c39d3d7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danielneis/moodle-format_onetopic/zipball/e3e0abe6d3376ff693acfbcec0704d8b4c39d3d7",
+                "reference": "e3e0abe6d3376ff693acfbcec0704d8b4c39d3d7",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-format",
+            "extra": {
+                "installer-name": "onetopic"
+            },
+            "support": {
+                "source": "https://github.com/danielneis/moodle-format_onetopic/tree/composer"
+            },
+            "time": "2015-05-12 19:20:03"
+        },
+        {
+            "name": "deraadt/moodle-block_progress",
+            "version": "dev-composer",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danielneis/Moodle-block_progress.git",
+                "reference": "49b7f9d25f3241320f33884007c6ffbfd55daf5c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danielneis/Moodle-block_progress/zipball/49b7f9d25f3241320f33884007c6ffbfd55daf5c",
+                "reference": "49b7f9d25f3241320f33884007c6ffbfd55daf5c",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-block",
+            "extra": {
+                "installer-name": "progress"
+            },
+            "support": {
+                "source": "https://github.com/danielneis/Moodle-block_progress/tree/composer"
+            },
+            "time": "2015-09-20 17:46:22"
+        },
+        {
+            "name": "fmcorz/moodle-block_xp",
+            "version": "dev-fix-composer",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danielneis/moodle-block_xp.git",
+                "reference": "914218807cc2d159cb6b912bdfad430457fa5ac5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danielneis/moodle-block_xp/zipball/914218807cc2d159cb6b912bdfad430457fa5ac5",
+                "reference": "914218807cc2d159cb6b912bdfad430457fa5ac5",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "*"
+            },
+            "type": "moodle-block",
+            "extra": {
+                "installer-name": "xp"
+            },
+            "license": [
+                "GPL-3.0+"
+            ],
+            "description": "Moodle plugin to gamify students' learning experience.",
+            "homepage": "https://github.com/FMCorz/moodle-block_xp",
+            "support": {
+                "issues": "https://github.com/FMCorz/moodle-block_xp/issues",
+                "source": "https://github.com/FMCorz/moodle-block_xp"
+            },
+            "time": "2015-09-20 17:55:27"
+        },
+        {
+            "name": "gjb2048/moodle-format_grid",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gjb2048/moodle-format_grid.git",
+                "reference": "f5bab0361d4e0f8574e1dde27cb5ffaff2a57b71"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gjb2048/moodle-format_grid/zipball/f5bab0361d4e0f8574e1dde27cb5ffaff2a57b71",
+                "reference": "f5bab0361d4e0f8574e1dde27cb5ffaff2a57b71",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-format",
+            "extra": {
+                "installer-name": "grid"
+            },
+            "support": {
+                "source": "https://github.com/gjb2048/moodle-format_grid/tree/V2.9.1.5",
+                "issues": "https://github.com/gjb2048/moodle-format_grid/issues"
+            },
+            "time": "2015-09-09 15:52:28"
+        },
+        {
+            "name": "gjb2048/moodle-theme_essential",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gjb2048/moodle-theme_essential.git",
+                "reference": "98f32dad95069a3db092249b3a70ab9f9fc6b833"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gjb2048/moodle-theme_essential/zipball/98f32dad95069a3db092249b3a70ab9f9fc6b833",
+                "reference": "98f32dad95069a3db092249b3a70ab9f9fc6b833",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-theme",
+            "extra": {
+                "installer-name": "essential"
+            },
+            "support": {
+                "source": "https://github.com/gjb2048/moodle-theme_essential/tree/V2.9.0.9",
+                "issues": "https://github.com/gjb2048/moodle-theme_essential/issues"
+            },
+            "time": "2015-09-20 16:07:39"
+        },
+        {
+            "name": "jleyva/moodle-block_configurablereports",
+            "version": "dev-composer",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danielneis/moodle-block_configurablereports.git",
+                "reference": "90a303e0c6077f42c89b330e8b5c580d5e0bf4d9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danielneis/moodle-block_configurablereports/zipball/90a303e0c6077f42c89b330e8b5c580d5e0bf4d9",
+                "reference": "90a303e0c6077f42c89b330e8b5c580d5e0bf4d9",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "*"
+            },
+            "type": "moodle-block",
+            "extra": {
+                "installer-name": "configurable_reports"
+            },
+            "license": [
+                "GPL-3.0+"
+            ],
+            "description": "This block is a Moodle custom reports builder. You can create custom reports without SQL knowledge. It's a tool suitable for admins or teachers.",
+            "homepage": "https://moodle.org/plugins/view.php?plugin=block_configurable_reports",
+            "support": {
+                "issues": "http://tracker.moodle.org/browse/CONTRIB/component/10753",
+                "source": "https://github.com/jleyva/moodle-block_configurablereports/"
+            },
+            "time": "2015-09-20 18:05:49"
+        },
+        {
+            "name": "justinhunt/moodle-repository_poodll",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/justinhunt/moodle-repository_poodll.git",
+                "reference": "1ddb7d59cd0f2b3394cd37592ab35aff1b622982"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/justinhunt/moodle-repository_poodll/zipball/1ddb7d59cd0f2b3394cd37592ab35aff1b622982",
+                "reference": "1ddb7d59cd0f2b3394cd37592ab35aff1b622982",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "moodle-repository",
+            "extra": {
+                "installer-name": "poodll"
+            },
+            "support": {
+                "source": "https://github.com/justinhunt/moodle-repository_poodll/tree/master",
+                "issues": "https://github.com/justinhunt/moodle-repository_poodll/issues"
+            },
+            "time": "2015-07-03 06:20:09"
+        }
+    ],
     "packages-dev": [
         {
             "name": "behat/behat",
@@ -405,16 +907,16 @@
         },
         {
             "name": "doctrine/annotations",
-            "version": "v1.2.4",
+            "version": "v1.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
-                "reference": "b5202eb9e83f8db52e0e58867e0a46e63be8332e"
+                "reference": "f25c8aab83e0c3e976fd7d19875f198ccf2f7535"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/b5202eb9e83f8db52e0e58867e0a46e63be8332e",
-                "reference": "b5202eb9e83f8db52e0e58867e0a46e63be8332e",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/f25c8aab83e0c3e976fd7d19875f198ccf2f7535",
+                "reference": "f25c8aab83e0c3e976fd7d19875f198ccf2f7535",
                 "shasum": ""
             },
             "require": {
@@ -469,20 +971,20 @@
                 "docblock",
                 "parser"
             ],
-            "time": "2014-12-23 22:40:37"
+            "time": "2015-08-31 12:32:49"
         },
         {
             "name": "doctrine/cache",
-            "version": "v1.4.1",
+            "version": "v1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/cache.git",
-                "reference": "c9eadeb743ac6199f7eec423cb9426bc518b7b03"
+                "reference": "8c434000f420ade76a07c64cbe08ca47e5c101ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/cache/zipball/c9eadeb743ac6199f7eec423cb9426bc518b7b03",
-                "reference": "c9eadeb743ac6199f7eec423cb9426bc518b7b03",
+                "url": "https://api.github.com/repos/doctrine/cache/zipball/8c434000f420ade76a07c64cbe08ca47e5c101ca",
+                "reference": "8c434000f420ade76a07c64cbe08ca47e5c101ca",
                 "shasum": ""
             },
             "require": {
@@ -539,7 +1041,7 @@
                 "cache",
                 "caching"
             ],
-            "time": "2015-04-15 00:11:59"
+            "time": "2015-08-31 12:36:41"
         },
         {
             "name": "doctrine/collections",
@@ -609,16 +1111,16 @@
         },
         {
             "name": "doctrine/common",
-            "version": "v2.5.0",
+            "version": "v2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/common.git",
-                "reference": "cd8daf2501e10c63dced7b8b9b905844316ae9d3"
+                "reference": "0009b8f0d4a917aabc971fb089eba80e872f83f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/common/zipball/cd8daf2501e10c63dced7b8b9b905844316ae9d3",
-                "reference": "cd8daf2501e10c63dced7b8b9b905844316ae9d3",
+                "url": "https://api.github.com/repos/doctrine/common/zipball/0009b8f0d4a917aabc971fb089eba80e872f83f9",
+                "reference": "0009b8f0d4a917aabc971fb089eba80e872f83f9",
                 "shasum": ""
             },
             "require": {
@@ -678,7 +1180,7 @@
                 "persistence",
                 "spl"
             ],
-            "time": "2015-04-02 19:55:44"
+            "time": "2015-08-31 13:00:22"
         },
         {
             "name": "doctrine/inflector",
@@ -1055,7 +1557,7 @@
                 "Moodle"
             ],
             "support": {
-                "source": "https://github.com/moodlehq/moodle-behat-extension/tree/v1.29.5"
+                "source": "https://github.com/moodlehq/moodle-behat-extension/tree/v1.30.0"
             },
             "time": "2015-05-15 02:00:06"
         },
@@ -1180,16 +1682,16 @@
         },
         {
             "name": "phpunit/php-file-iterator",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-file-iterator.git",
-                "reference": "a923bb15680d0089e2316f7a4af8f437046e96bb"
+                "reference": "6150bf2c35d3fc379e50c7602b75caceaa39dbf0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/a923bb15680d0089e2316f7a4af8f437046e96bb",
-                "reference": "a923bb15680d0089e2316f7a4af8f437046e96bb",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/6150bf2c35d3fc379e50c7602b75caceaa39dbf0",
+                "reference": "6150bf2c35d3fc379e50c7602b75caceaa39dbf0",
                 "shasum": ""
             },
             "require": {
@@ -1223,20 +1725,20 @@
                 "filesystem",
                 "iterator"
             ],
-            "time": "2015-04-02 05:19:05"
+            "time": "2015-06-21 13:08:43"
         },
         {
             "name": "phpunit/php-text-template",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-text-template.git",
-                "reference": "206dfefc0ffe9cebf65c413e3d0e809c82fbf00a"
+                "reference": "31f8b717e51d9a2afca6c9f046f5d69fc27c8686"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-text-template/zipball/206dfefc0ffe9cebf65c413e3d0e809c82fbf00a",
-                "reference": "206dfefc0ffe9cebf65c413e3d0e809c82fbf00a",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-text-template/zipball/31f8b717e51d9a2afca6c9f046f5d69fc27c8686",
+                "reference": "31f8b717e51d9a2afca6c9f046f5d69fc27c8686",
                 "shasum": ""
             },
             "require": {
@@ -1245,20 +1747,17 @@
             "type": "library",
             "autoload": {
                 "classmap": [
-                    "Text/"
+                    "src/"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                ""
-            ],
             "license": [
                 "BSD-3-Clause"
             ],
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sb@sebastian-bergmann.de",
+                    "email": "sebastian@phpunit.de",
                     "role": "lead"
                 }
             ],
@@ -1267,20 +1766,20 @@
             "keywords": [
                 "template"
             ],
-            "time": "2014-01-30 17:20:04"
+            "time": "2015-06-21 13:50:34"
         },
         {
             "name": "phpunit/php-timer",
-            "version": "1.0.5",
+            "version": "1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-timer.git",
-                "reference": "19689d4354b295ee3d8c54b4f42c3efb69cbc17c"
+                "reference": "3e82f4e9fc92665fafd9157568e4dcb01d014e5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/19689d4354b295ee3d8c54b4f42c3efb69cbc17c",
-                "reference": "19689d4354b295ee3d8c54b4f42c3efb69cbc17c",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/3e82f4e9fc92665fafd9157568e4dcb01d014e5b",
+                "reference": "3e82f4e9fc92665fafd9157568e4dcb01d014e5b",
                 "shasum": ""
             },
             "require": {
@@ -1289,13 +1788,10 @@
             "type": "library",
             "autoload": {
                 "classmap": [
-                    "PHP/"
+                    "src/"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                ""
-            ],
             "license": [
                 "BSD-3-Clause"
             ],
@@ -1311,7 +1807,7 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2013-08-02 07:42:54"
+            "time": "2015-06-21 08:01:12"
         },
         {
             "name": "phpunit/php-token-stream",
@@ -1687,25 +2183,29 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.18.1",
+            "version": "v1.22.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "9f70492f44398e276d1b81c1b43adfe6751c7b7f"
+                "reference": "b7fc2469fa009897871fb95b68237286fc54a5ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/9f70492f44398e276d1b81c1b43adfe6751c7b7f",
-                "reference": "9f70492f44398e276d1b81c1b43adfe6751c7b7f",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/b7fc2469fa009897871fb95b68237286fc54a5ad",
+                "reference": "b7fc2469fa009897871fb95b68237286fc54a5ad",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2.7"
             },
+            "require-dev": {
+                "symfony/debug": "~2.7",
+                "symfony/phpunit-bridge": "~2.7"
+            },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.18-dev"
+                    "dev-master": "1.22-dev"
                 }
             },
             "autoload": {
@@ -1740,12 +2240,27 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-04-19 08:30:27"
+            "time": "2015-09-15 06:50:16"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "bmbrands/theme_bootstrap": 20,
+        "bostelm/moodle-mod_scheduler": 20,
+        "danielneis/moodle-mod_webrtcexperiments": 20,
+        "danielneis/moodle-availability_maxviews": 20,
+        "danielneis/moodle-availability_paypal": 20,
+        "danmarsden/moodle-mod_attendance": 20,
+        "danpoltawski/moodle-repository_github": 20,
+        "davidherney/moodle-format_onetopic": 20,
+        "deraadt/moodle-block_progress": 20,
+        "fmcorz/moodle-block_xp": 20,
+        "gjb2048/moodle-format_grid": 20,
+        "gjb2048/moodle-theme_essential": 20,
+        "jleyva/moodle-block_configurablereports": 20,
+        "justinhunt/moodle-repository_poodll": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

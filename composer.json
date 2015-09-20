@@ -3,8 +3,35 @@
         {
             "type": "vcs",
             "url": "https://github.com/moodlehq/moodle-behat-extension"
-        }
+        },
+        { "type": "vcs", "url": "https://github.com/bmbrands/theme_bootstrap" },
+        { "type": "vcs", "url": "https://github.com/danielneis/moodle-block_configurablereports" },
+        { "type": "vcs", "url": "https://github.com/danielneis/moodle-block_progress" },
+        { "type": "vcs", "url": "https://github.com/danielneis/moodle-block_xp" },
+        { "type": "vcs", "url": "https://github.com/danielneis/moodle-format_onetopic" },
+        { "type": "vcs", "url": "https://github.com/danielneis/moodle-mod_scheduler" },
+        { "type": "vcs", "url": "https://github.com/danmarsden/moodle-mod_attendance" },
+        { "type": "vcs", "url": "https://github.com/danpoltawski/moodle-repository_github" },
+        { "type": "vcs", "url": "https://github.com/gjb2048/moodle-format_grid" },
+        { "type": "vcs", "url": "https://github.com/gjb2048/moodle-theme_essential" },
+        { "type": "vcs", "url": "https://github.com/justinhunt/moodle-repository_poodll" }
     ],
+    "require": {
+        "bmbrands/theme_bootstrap": "dev-master",
+        "bostelm/moodle-mod_scheduler": "dev-composer",
+        "danielneis/moodle-mod_webrtcexperiments": "dev-master",
+        "danielneis/moodle-availability_maxviews": "dev-master",
+        "danielneis/moodle-availability_paypal": "dev-master",
+        "danmarsden/moodle-mod_attendance": "dev-master",
+        "danpoltawski/moodle-repository_github": "dev-master",
+        "davidherney/moodle-format_onetopic": "dev-composer",
+        "deraadt/moodle-block_progress": "dev-composer",
+        "fmcorz/moodle-block_xp": "dev-fix-composer",
+        "gjb2048/moodle-format_grid": "dev-master",
+        "gjb2048/moodle-theme_essential": "dev-master",
+        "jleyva/moodle-block_configurablereports": "dev-composer",
+        "justinhunt/moodle-repository_poodll": "dev-master"
+    },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
         "phpunit/dbUnit": "1.2.*",
