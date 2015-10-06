@@ -130,18 +130,6 @@ function message_print_contact_selector($countunreadtotal, $viewing, $user1, $us
         }
     }
 
-    // Only show the search button if we're viewing our own contacts.
-    if ($viewing == MESSAGE_VIEW_CONTACTS && $user2 == null) {
-        echo html_writer::start_tag('form', array('action' => 'index.php','method' => 'GET'));
-        echo html_writer::start_tag('fieldset');
-        $managebuttonclass = 'visible';
-        $strmanagecontacts = get_string('search','message');
-        echo html_writer::empty_tag('input', array('type' => 'hidden','name' => 'viewing','value' => MESSAGE_VIEW_SEARCH));
-        echo html_writer::empty_tag('input', array('type' => 'submit','value' => $strmanagecontacts,'class' => $managebuttonclass));
-        echo html_writer::end_tag('fieldset');
-        echo html_writer::end_tag('form');
-    }
-
     echo html_writer::end_tag('div');
 }
 
