@@ -3,8 +3,22 @@
         {
             "type": "vcs",
             "url": "https://github.com/moodlehq/moodle-behat-extension"
-        }
+        },
+        { "type": "vcs", "url": "git@github.com:danielneis/moodle-block_helpdesk.git" },
+        { "type": "vcs", "url": "git@github.com:danielneis/moodle-enrol_boleto.git" },
+        { "type": "vcs", "url": "git@github.com:danielneis/moodle-enrol_pagseguro.git" },
+        { "type": "vcs", "url": "git@github.com:danielneis/moodle-enrol_apply.git" },
+        { "type": "vcs", "url": "git@github.com:danielneis/moodle-format_socialwall.git" },
+        { "type": "vcs", "url": "git@gitlab.novoaeon.com.br:root/moodle-local_agenda.git" },
+        { "type": "vcs", "url": "https://github.com/danielneis/boletophp.git" }
     ],
+    "require": {
+        "vlacs/moodle-block_helpdesk": "dev-guesttickets",
+        "danielneis/moodle-enrol_pagseguro": "dev-update-3.0",
+        "emeneo/moodle-enrol_apply": "dev-composer",
+        "synergylearning/moodle-format_socialwall": "dev-composer",
+        "danielneis/moodle-local_agenda": "dev-master"
+    },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
         "phpunit/dbUnit": "1.2.*",
