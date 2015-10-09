@@ -1023,7 +1023,13 @@ if (isset($CFG->maintenance_later) and $CFG->maintenance_later <= time()) {
 // note: we can not block non utf-8 installations here, because empty mysql database
 // might be converted to utf-8 in admin/index.php during installation
 
-
+global $CFG;
+require_once($CFG->dirroot.'/vendor/autoload.php');
+if (isset($CFG->monolog)) {
+    $log = new Monolog\Logger('moodle');
+    Monolog\ErrorHandler::register($log);
+    $log->pushHandler(new Monolog\Handler\StreamHandler($CFG->dirroot.'/moodle.log', Monolog\Logger::DEBUG));
+}
 
 // this is a funny trick to make Eclipse believe that $OUTPUT and other globals
 // contains an instance of core_renderer, etc. which in turn fixes autocompletion ;-)
