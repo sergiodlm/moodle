@@ -950,7 +950,9 @@ class assign {
         $update->course = $formdata->course;
         $update->intro = $formdata->intro;
         $update->introformat = $formdata->introformat;
-        $update->alwaysshowdescription = !empty($formdata->alwaysshowdescription);
+        if (isset($formdata->alwaysshowdescription)) {
+            $update->alwaysshowdescription = !empty($formdata->alwaysshowdescription);
+        }
         $update->submissiondrafts = $formdata->submissiondrafts;
         $update->requiresubmissionstatement = $formdata->requiresubmissionstatement;
         $update->sendnotifications = $formdata->sendnotifications;

@@ -98,7 +98,6 @@ class mod_assign_mod_form extends moodleform_mod {
         $name = get_string('alwaysshowdescription', 'assign');
         $mform->addElement('checkbox', 'alwaysshowdescription', $name);
         $mform->addHelpButton('alwaysshowdescription', 'alwaysshowdescription', 'assign');
-        $mform->disabledIf('alwaysshowdescription', 'allowsubmissionsfromdate[enabled]', 'notchecked');
 
         $assignment->add_all_plugin_settings($mform);
 
