@@ -1146,6 +1146,7 @@ $string['userlist'] = 'Browse list of users';
 $string['userdefaultpreferences'] = 'User default preferences';
 $string['userpreference'] = 'User preference';
 $string['userpolicies'] = 'User policies';
+$string['userreportoptions'] = 'Options for reports and menus';
 $string['users'] = 'Users';
 $string['userquota'] = 'User quota';
 $string['usesitenameforsitepages'] = 'Use site name for site pages';

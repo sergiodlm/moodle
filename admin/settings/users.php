@@ -59,6 +59,13 @@ if ($hassiteconfig
         $choices['1'] = new lang_string('trackforumsyes');
         $temp->add(new admin_setting_configselect('defaultpreference_trackforums', new lang_string('trackforums'),
             '', 0, $choices));
+
+        $choices = array();
+        $choices['0'] = new lang_string('sortuserbylastname');
+        $choices['1'] = new lang_string('sortuserbyfirstname');
+        $temp->add(new admin_setting_configselect('defaultpreference_sortuser', new lang_string('sortuser'),
+            '', 0, $choices));
+
     }
     $ADMIN->add('accounts', $temp);
 
