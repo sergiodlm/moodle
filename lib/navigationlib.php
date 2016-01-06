@@ -2599,33 +2599,38 @@ class global_navigation extends navigation_node {
             return true;
         }
 
+        $sitecontext = context_system::instance();
+
         // Hidden node that we use to determine if the front page navigation is loaded.
         // This required as there are not other guaranteed nodes that may be loaded.
         $coursenode->add('frontpageloaded', null, self::TYPE_CUSTOM, null, 'frontpageloaded')->display = false;
 
-        //Participants
-        if (has_capability('moodle/site:viewparticipants',  context_system::instance())) {
+        // Participants.
+        // If this is the site course, they need to have moodle/site:viewparticipants at the site level.
+        // If no, then they need to have moodle/course:viewparticipants at the course level.
+        if ((($course->id == SITEID) && has_capability('moodle/site:viewparticipants', $sitecontext)) ||
+                has_capability('moodle/course:viewparticipants', context_course::instance($course->id))) {
             $coursenode->add(get_string('participants'), new moodle_url('/user/index.php?id='.$course->id), self::TYPE_CUSTOM, get_string('participants'), 'participants');
         }
 
-        // Blogs
+        // Blogs.
         if (!empty($CFG->enableblogs)
           and ($CFG->bloglevel == BLOG_GLOBAL_LEVEL or ($CFG->bloglevel == BLOG_SITE_LEVEL and (isloggedin() and !isguestuser())))
-          and has_capability('moodle/blog:view', context_system::instance())) {
+          and has_capability('moodle/blog:view', $sitecontext)) {
             $blogsurls = new moodle_url('/blog/index.php');
             $coursenode->add(get_string('blogssite', 'blog'), $blogsurls->out(), self::TYPE_SYSTEM, null, 'siteblog');
         }
 
         $filterselect = 0;
 
-        //Badges
-        if (!empty($CFG->enablebadges) && has_capability('moodle/badges:viewbadges', $this->page->context)) {
+        // Badges.
+        if (!empty($CFG->enablebadges) && has_capability('moodle/badges:viewbadges', $sitecontext)) {
             $url = new moodle_url($CFG->wwwroot . '/badges/view.php', array('type' => 1));
             $coursenode->add(get_string('sitebadges', 'badges'), $url, navigation_node::TYPE_CUSTOM);
         }
 
-        // Notes
-        if (!empty($CFG->enablenotes) && (has_capability('moodle/notes:manage', $this->page->context) || has_capability('moodle/notes:view', $this->page->context))) {
+        // Notes.
+        if (!empty($CFG->enablenotes) && has_any_capability(array('moodle/notes:manage', 'moodle/notes:view'), $sitecontext)) {
             $coursenode->add(get_string('notes', 'notes'), new moodle_url('/notes/index.php',
                 array('filtertype' => 'course', 'filterselect' => $filterselect)), self::TYPE_SETTING, null, 'notes');
         }
@@ -3959,6 +3964,7 @@ class settings_navigation extends navigation_node {
         }
 
         $modulenode = $this->add(get_string('pluginadministration', $this->page->activityname), null, self::TYPE_SETTING, null, 'modulesettings');
+        $modulenode->nodetype = navigation_node::NODETYPE_BRANCH;
         $modulenode->force_open();
 
         // Settings for the module
@@ -4014,14 +4020,12 @@ class settings_navigation extends navigation_node {
         }
 
         $function = $this->page->activityname.'_extend_settings_navigation';
-        if (!function_exists($function)) {
-            return $modulenode;
+        if (function_exists($function)) {
+            $function($this, $modulenode);
         }
 
-        $function($this, $modulenode);
-
-        // Remove the module node if there are no children
-        if (empty($modulenode->children)) {
+        // Remove the module node if there are no children.
+        if ($modulenode->children->count() <= 0) {
             $modulenode->remove();
         }
 
@@ -4553,6 +4557,7 @@ class settings_navigation extends navigation_node {
         }
 
         $categorynode = $this->add($catcontext->get_context_name(), null, null, null, 'categorysettings');
+        $categorynode->nodetype = navigation_node::NODETYPE_BRANCH;
         $categorynode->force_open();
 
         if (can_edit_in_category($catcontext->instanceid)) {

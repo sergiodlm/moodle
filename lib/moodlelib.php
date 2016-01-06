@@ -3813,8 +3813,10 @@ function update_user_record_by_id($id) {
         $customfields = $userauth->get_custom_user_profile_fields();
 
         foreach ($newinfo as $key => $value) {
-            $key = strtolower($key);
             $iscustom = in_array($key, $customfields);
+            if (!$iscustom) {
+                $key = strtolower($key);
+            }
             if ((!property_exists($oldinfo, $key) && !$iscustom) or $key === 'username' or $key === 'id'
                     or $key === 'auth' or $key === 'mnethostid' or $key === 'deleted') {
                 // Unknown or must not be changed.
@@ -4939,7 +4941,6 @@ function remove_course_contents($courseid, $showfeedback = true, array $options 
     $oldcourse->summary          = '';
     $oldcourse->cacherev         = 0;
     $oldcourse->legacyfiles      = 0;
-    $oldcourse->enablecompletion = 0;
     if (!empty($options['keep_groups_and_groupings'])) {
         $oldcourse->defaultgroupingid = 0;
     }
@@ -5067,6 +5068,11 @@ function reset_course_userdata($data) {
                          SET timestart = timestart + ?
                        WHERE courseid=? AND instance=0";
         $DB->execute($updatesql, array($data->timeshift, $data->courseid));
+
+        // Update any date activity restrictions.
+        if ($CFG->enableavailability) {
+            \availability_date\condition::update_all_dates($data->courseid, $data->timeshift);
+        }
 
         $status[] = array('component' => $componentstr, 'item' => get_string('datechanged'), 'error' => false);
     }
@@ -7594,6 +7600,18 @@ function shorten_text($text, $ideal=30, $exact = false, $ending='...') {
                             'tag'  => core_text::strtolower($tagmatchings[1]),
                             'pos'  => core_text::strlen($truncate),
                         );
+                } else if (preg_match('/^<!--\[if\s.*?\]>$/s', $linematchings[1], $tagmatchings)) {
+                    $tagdetails[] = (object) array(
+                            'open' => true,
+                            'tag'  => core_text::strtolower('if'),
+                            'pos'  => core_text::strlen($truncate),
+                    );
+                } else if (preg_match('/^<!--<!\[endif\]-->$/s', $linematchings[1], $tagmatchings)) {
+                    $tagdetails[] = (object) array(
+                            'open' => false,
+                            'tag'  => core_text::strtolower('if'),
+                            'pos'  => core_text::strlen($truncate),
+                    );
                 }
             }
             // Add html-tag to $truncate'd text.
@@ -7679,7 +7697,11 @@ function shorten_text($text, $ideal=30, $exact = false, $ending='...') {
 
     // Close all unclosed html-tags.
     foreach ($opentags as $tag) {
-        $truncate .= '</' . $tag . '>';
+        if ($tag === 'if') {
+            $truncate .= '<!--<![endif]-->';
+        } else {
+            $truncate .= '</' . $tag . '>';
+        }
     }
 
     return $truncate;

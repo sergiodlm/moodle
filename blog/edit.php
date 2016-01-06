@@ -26,6 +26,7 @@
 require_once(dirname(dirname(__FILE__)).'/config.php');
 require_once('lib.php');
 require_once('locallib.php');
+require_once($CFG->dirroot .'/comment/lib.php');
 
 $action   = required_param('action', PARAM_ALPHA);
 $id       = optional_param('entryid', 0, PARAM_INT);
@@ -115,6 +116,9 @@ $output = $PAGE->get_renderer('blog');
 $strblogs = get_string('blogs', 'blog');
 
 if ($action === 'delete') {
+    // Init comment JS strings.
+    comment::init();
+
     if (empty($entry->id)) {
         print_error('wrongentryid', 'blog');
     }
@@ -134,14 +138,15 @@ if ($action === 'delete') {
         $PAGE->set_heading($SITE->fullname);
         echo $OUTPUT->header();
 
+        echo $OUTPUT->confirm(get_string('blogdeleteconfirm', 'blog'),
+                              new moodle_url('edit.php', $optionsyes),
+                              new moodle_url('index.php', $optionsno));
+
+        echo '<br />';
         // Output the entry.
         $entry->prepare_render();
         echo $output->render($entry);
 
-        echo '<br />';
-        echo $OUTPUT->confirm(get_string('blogdeleteconfirm', 'blog'),
-                              new moodle_url('edit.php', $optionsyes),
-                              new moodle_url('index.php', $optionsno));
         echo $OUTPUT->footer();
         die;
     }

@@ -829,13 +829,13 @@ class core_renderer extends renderer_base {
             // Special case for site home page - please do not remove
             return '<div class="sitelink">' .
                    '<a title="Moodle" href="http://moodle.org/">' .
-                   '<img src="' . $this->pix_url('moodlelogo') . '" alt="moodlelogo" /></a></div>';
+                   '<img src="' . $this->pix_url('moodlelogo') . '" alt="'.get_string('moodlelogo').'" /></a></div>';
 
         } else if (!empty($CFG->target_release) && $CFG->target_release != $CFG->release) {
             // Special case for during install/upgrade.
             return '<div class="sitelink">'.
                    '<a title="Moodle" href="http://docs.moodle.org/en/Administrator_documentation" onclick="this.target=\'_blank\'">' .
-                   '<img src="' . $this->pix_url('moodlelogo') . '" alt="moodlelogo" /></a></div>';
+                   '<img src="' . $this->pix_url('moodlelogo') . '" alt="'.get_string('moodlelogo').'" /></a></div>';
 
         } else if ($this->page->course->id == $SITE->id || strpos($this->page->pagetype, 'course-view') === 0) {
             return '<div class="homelink"><a href="' . $CFG->wwwroot . '/">' .
@@ -2823,7 +2823,7 @@ EOD;
      * @return string HTML fragment.
      */
     public function notify_message($message) {
-        $n = new notification($message, notification::NOTIFY_MESSAGE);
+        $n = new \core\output\notification($message, \core\output\notification::NOTIFY_MESSAGE);
         return $this->render($n);
     }
 
@@ -3660,32 +3660,34 @@ EOD;
             return $str;
         }
 
-        // Print subtree
-        $str .= html_writer::start_tag('ul', array('class' => 'tabrow'. $tabobject->level));
-        $cnt = 0;
-        foreach ($tabobject->subtree as $tab) {
-            $liclass = '';
-            if (!$cnt) {
-                $liclass .= ' first';
-            }
-            if ($cnt == count($tabobject->subtree) - 1) {
-                $liclass .= ' last';
-            }
-            if ((empty($tab->subtree)) && (!empty($tab->selected))) {
-                $liclass .= ' onerow';
-            }
+        // Print subtree.
+        if ($tabobject->level == 0 || $tabobject->selected || $tabobject->activated) {
+            $str .= html_writer::start_tag('ul', array('class' => 'tabrow'. $tabobject->level));
+            $cnt = 0;
+            foreach ($tabobject->subtree as $tab) {
+                $liclass = '';
+                if (!$cnt) {
+                    $liclass .= ' first';
+                }
+                if ($cnt == count($tabobject->subtree) - 1) {
+                    $liclass .= ' last';
+                }
+                if ((empty($tab->subtree)) && (!empty($tab->selected))) {
+                    $liclass .= ' onerow';
+                }
 
-            if ($tab->selected) {
-                $liclass .= ' here selected';
-            } else if ($tab->activated) {
-                $liclass .= ' here active';
-            }
+                if ($tab->selected) {
+                    $liclass .= ' here selected';
+                } else if ($tab->activated) {
+                    $liclass .= ' here active';
+                }
 
-            // This will recursively call function render_tabobject() for each item in subtree
-            $str .= html_writer::tag('li', $this->render($tab), array('class' => trim($liclass)));
-            $cnt++;
+                // This will recursively call function render_tabobject() for each item in subtree.
+                $str .= html_writer::tag('li', $this->render($tab), array('class' => trim($liclass)));
+                $cnt++;
+            }
+            $str .= html_writer::end_tag('ul');
         }
-        $str .= html_writer::end_tag('ul');
 
         return $str;
     }
@@ -3978,6 +3980,7 @@ EOD;
                         'page' => $this->page
                     )
                 );
+                $this->page->requires->string_for_js('changesmadereallygoaway', 'moodle');
             }
         }
 
