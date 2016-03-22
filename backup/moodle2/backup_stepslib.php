@@ -1138,7 +1138,7 @@ class backup_groups_structure_step extends backup_structure_step {
 
         $group = new backup_nested_element('group', array('id'), array(
             'name', 'idnumber', 'description', 'descriptionformat', 'enrolmentkey',
-            'picture', 'hidepicture', 'timecreated', 'timemodified'));
+            'picture', 'hidepicture', 'timecreated', 'timemodified', 'component', 'itemid'));
 
         $members = new backup_nested_element('group_members');
 

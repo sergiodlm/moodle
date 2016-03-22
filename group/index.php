@@ -175,6 +175,7 @@ echo '<select name="groups[]" multiple="multiple" id="groups" size="15" class="s
 $groups = groups_get_all_groups($courseid);
 $selectedname = '&nbsp;';
 $preventgroupremoval = array();
+$preventgroupedit = array();
 
 if ($groups) {
     // Print out the HTML
@@ -194,6 +195,15 @@ if ($groups) {
         }
 
         echo "<option value=\"{$group->id}\"$select title=\"$groupname\">$groupname</option>\n";
+        if ($group->component) {
+            $preventgroupremoval[$group->id] = true;
+            $preventgroupedit[$group->id] = true;
+
+            echo html_writer::tag('option',
+                                  get_string('addedby', 'group', get_string('pluginname', $group->component)),
+                                  array('disabled' => 'disabled', 'class' => 'userselector-infobelow'));
+        }
+
     }
 } else {
     // Print an empty option to avoid the XHTML error of having an empty select element
@@ -260,7 +270,7 @@ echo '</div>'."\n";
 echo '</form>'."\n";
 
 $PAGE->requires->js_init_call('M.core_group.init_index', array($CFG->wwwroot, $courseid));
-$PAGE->requires->js_init_call('M.core_group.groupslist', array($preventgroupremoval));
+$PAGE->requires->js_init_call('M.core_group.groupslist', array($preventgroupremoval, $preventgroupedit));
 
 echo $OUTPUT->footer();
 

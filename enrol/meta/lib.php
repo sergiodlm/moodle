@@ -151,10 +151,12 @@ class enrol_meta_plugin extends enrol_plugin {
                 require_capability('moodle/course:managegroups', $context);
                 $groupid = enrol_meta_create_new_group($course->id, $courseid);
                 $fields['customint2'] = $groupid;
+
             }
 
             $fields['customint1'] = $courseid;
             $result = parent::add_instance($course, $fields);
+            enrol_meta_update_group_itemid($fields['customint2'], $result);
         }
 
         enrol_meta_sync($course->id);
@@ -468,4 +470,26 @@ class enrol_meta_plugin extends enrol_plugin {
         return;
     }
 
+}
+
+/**
+ * Prevent removal of enrol roles.
+ * @param int $itemid
+ * @param int $groupid
+ * @param int $userid
+ * @return bool
+ */
+function enrol_meta_allow_group_member_remove($itemid, $groupid, $userid) {
+    return false;
+}
+
+/**
+ * Prevent removal of groups.
+ * @param int $itemid  The id of the enrol instance.
+ * @param int $groupid The id of the group the is checked for deletion.
+ * @param int $userid  The id of the user trying to delete the gorup.
+ * @return bool
+ */
+function enrol_meta_allow_group_delete($itemid, $groupid, $userid) {
+    return false;
 }
