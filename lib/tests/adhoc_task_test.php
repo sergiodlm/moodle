@@ -66,5 +66,18 @@ class core_adhoc_task_testcase extends advanced_testcase {
         // Should not get any task.
         $task = \core\task\manager::get_next_adhoc_task($now);
         $this->assertNull($task);
+
+        // Create an adhoc task in future.
+        $task = new \core\task\adhoc_test_task();
+        $task->set_next_run_time($now + 1000);
+
+        // Queue it.
+        $task = \core\task\manager::queue_adhoc_task($task);
+
+        $now = time();
+        // Get it from the scheduler.
+        $task = \core\task\manager::get_next_adhoc_task($now);
+        $this->assertNotNull($task);
+        $task->execute();
     }
 }
