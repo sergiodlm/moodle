@@ -79,7 +79,7 @@ class core_adhoc_task_testcase extends advanced_testcase {
         $this->assertNull($task);
 
         // Get it from the scheduler, but on scheduled time.
-        $task = \core\task\manager::get_next_adhoc_task($now + 1000);
+        $task = \core\task\manager::get_next_adhoc_task($now + 1020);
         $this->assertNotNull($task);
         $task->execute();
     }
