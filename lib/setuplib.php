@@ -399,6 +399,9 @@ function default_exception_handler($ex) {
             }
         }
     }
+    if (isset($CFG->errbit)) {
+          Errbit\Errbit::instance()->notify($ex);
+    }
 
     exit(1); // General error code
 }

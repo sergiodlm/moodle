@@ -8403,6 +8403,11 @@ function address_in_subnet($addr, $subnetstr) {
  *                      This ensures any messages have time to display before redirect
  */
 function mtrace($string, $eol="\n", $sleep=0) {
+    global $CFG;
+
+    if (isset($CFG->errbit)) {
+        // TODO: convert string to exception before calling notify Errbit\Errbit::instance()->notify($string);
+    }
 
     if (defined('STDOUT') && !PHPUNIT_TEST && !defined('BEHAT_TEST')) {
         fwrite(STDOUT, $string.$eol);
