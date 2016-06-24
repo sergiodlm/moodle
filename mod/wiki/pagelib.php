@@ -76,7 +76,7 @@ abstract class page_wiki {
      */
     protected $tabs = array('view' => 'view', 'edit' => 'edit', 'comments' => 'comments',
                             'history' => 'history', 'map' => 'map', 'files' => 'files',
-                            'admin' => 'admin');
+                            'create' => 'createpage', 'admin' => 'admin');
     /**
      * @var array tabs options
      */
@@ -172,6 +172,10 @@ abstract class page_wiki {
 
         if (!has_capability('mod/wiki:editpage', $PAGE->context)){
             unset($this->tabs['edit']);
+        }
+
+        if (!has_capability('mod/wiki:createpage', $PAGE->context)) {
+            unset($this->tabs['create']);
         }
 
         if ($groupmode and $groupmode == VISIBLEGROUPS) {

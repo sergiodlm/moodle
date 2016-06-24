@@ -279,7 +279,7 @@ class mod_wiki_renderer extends plugin_renderer_base {
             if ($tab == 'admin' && !has_capability('mod/wiki:managewiki', $context)) {
                 continue;
             }
-            $link = new moodle_url('/mod/wiki/'. $tab. '.php', array('pageid' => $pageid));
+            $link = new moodle_url('/mod/wiki/'. $tab. '.php', array('pageid' => $pageid, 'swid' => $this->page->cm->instance));
             if ($linked == $tab) {
                 $tabs[] = new tabobject($tab, $link, get_string($tab, 'wiki'), '', true);
             } else {
