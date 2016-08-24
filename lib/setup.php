@@ -1038,6 +1038,18 @@ if (isset($CFG->maintenance_later) and $CFG->maintenance_later <= time()) {
     }
 }
 
+    use Monolog\Logger;
+if (isset($CFG->sentrydsn)) {
+    require_once $CFG->dirroot.'/vendor/getsentry/sentry-php/vendor/autoload.php';
+    Raven_Autoloader::register();
+    $client = new Raven_Client($CFG->sentrydsn);
+
+    $handler = new Monolog\Handler\RavenHandler($client);
+    $handler->setFormatter(new Monolog\Formatter\LineFormatter("%message% %context% %extra%\n"));
+
+    $monolog = new Logger('moodlelogger');
+    $monolog->pushHandler($handler);
+}
 // note: we can not block non utf-8 installations here, because empty mysql database
 // might be converted to utf-8 in admin/index.php during installation
 

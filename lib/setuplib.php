@@ -371,6 +371,11 @@ function default_exception_handler($ex) {
 
     $info = get_exception_info($ex);
 
+    if (isset($CFG->sentrydsn)) {
+        global $monolog;
+        $monolog->error($ex, array('username' => $USER->username));
+    }
+
     if (debugging('', DEBUG_MINIMAL)) {
         $logerrmsg = "Default exception handler: ".$info->message.' Debug: '.$info->debuginfo."\n".format_backtrace($info->backtrace, true);
         error_log($logerrmsg);
