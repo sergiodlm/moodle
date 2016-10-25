@@ -566,14 +566,6 @@ $functions = array(
 
     // === message related functions ===
 
-    'moodle_message_send_instantmessages' => array(
-        'classname'   => 'core_message_external',
-        'methodname'  => 'send_instant_messages',
-        'classpath'   => 'message/externallib.php',
-        'description' => 'DEPRECATED: this deprecated function will be removed in a future version. This function has be renamed as core_message_send_instant_messages()',
-        'type'        => 'write',
-        'capabilities'=> 'moodle/site:sendmessage',
-    ),
     'core_message_block_contacts' => array(
         'classname' => 'core_message_external',
         'methodname' => 'block_contacts',
