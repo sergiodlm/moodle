@@ -2042,11 +2042,11 @@ class core_course_external extends external_api {
             $module = (object) $mod;
             $moduleobject = $DB->get_record('modules', array('name'=>$module->modulename), '*', MUST_EXIST);
 
-            if(trim($module->modulename) == ''){
+            if (trim($module->modulename) == '') {
                 throw new invalid_parameter_exception('Invalid module name');
             }
 
-            if (!course_allowed_module($course, $module->modulename)){
+            if (!course_allowed_module($course, $module->modulename)) {
                 throw new invalid_parameter_exception('Module "'.$module->modulename.'" is disabled');
             }
 

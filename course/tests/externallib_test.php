@@ -1689,4 +1689,20 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         }
 
     }
+
+    /**
+     * Test create_modules
+     */
+    public function teste_create_modules() {
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+        $modules = array(array('modulename' => 'forum', 'section' => 1, 'name' => 'This is test forum'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $createdmods[0]['id']);
+    }
 }
