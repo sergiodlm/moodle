@@ -1692,21 +1692,432 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
 
     /**
      * Test create_modules
+     * @group create_modules
      */
-    public function teste_create_modules() {
+    public function test_create_modules_assign() {
+        global $DB;
 
         $this->resetAfterTest(true);
 
         $course = self::getDataGenerator()->create_course();
 
         $modcourse = context_course::instance($course->id);
-        $this->assignUserCapability('moodle/course:manageactivities', $modcourse->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
 
-        $modules = array(array('modulename' => 'forum', 'section' => 1, 'name' => 'This is test forum'));
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'assign', 'section' => 1,
+                               'name' => 'This is a test'));
         $createdmods = core_course_external::create_modules($course->id, $modules);
 
         $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
 
-        $this->assertEquals(1, $createdmods[0]['id']);
+        $this->assertEquals(1, $DB->count_records('assign'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_chat() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'chat', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('chat'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_choice() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'choice', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('choice'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_data() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+        $modules = array(array('modulename' => 'data', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('data'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_feedback() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'feedback', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('feedback'));
+    }
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_folder() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'folder', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('folder'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_forum() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'forum', 'section' => 1,
+                               'name' => 'This is a test', 'type' => 'single'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('forum'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_glossary() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'glossary', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('glossary'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_label() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'label', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('label'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_lesson() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'lesson', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('lesson'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_page() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'page', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('page'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_quiz() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'quiz', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('quiz'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_resource() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'resource', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('resource'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_url() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'url', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('url'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_wiki() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        // Test with wiki.
+        $modules = array(array('modulename' => 'wiki', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('wiki'));
+    }
+
+    /**
+     * Test create_modules
+     * @group create_modules
+     */
+    public function test_create_modules_workshop() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $teacher = $this->getDataGenerator()->create_user();
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+
+        self::getDataGenerator()->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $modules = array(array('modulename' => 'workshop', 'section' => 1,
+                               'name' => 'This is a test'));
+        $createdmods = core_course_external::create_modules($course->id, $modules);
+
+        $createdmods = external_api::clean_returnvalue(core_course_external::create_modules_returns(), $createdmods);
+
+        $this->assertEquals(1, $DB->count_records('workshop'));
     }
 }

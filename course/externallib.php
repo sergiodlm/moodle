@@ -2008,8 +2008,9 @@ class core_course_external extends external_api {
                             'descriptionformat' => new external_format_value(PARAM_INT, 'description', VALUE_DEFAULT),
                             'groupmode' => new external_value(PARAM_INT, 'no group, separate, visible', VALUE_DEFAULT, $courseconfig->groupmode),
                             'groupmembersonly' => new external_value(PARAM_INT, '1: yes, 0: no', VALUE_DEFAULT, 0),
-                            'groupingid' => new external_value(PARAM_INT, 'grouping id',
-                                VALUE_DEFAULT, 0),
+                            'groupingid' => new external_value(PARAM_INT, 'grouping id', VALUE_DEFAULT, 0),
+                            'cmidnumber' => new external_value(PARAM_TEXT, 'The IDNUMBER for grade item', VALUE_OPTIONAL),
+                            'type' => new external_value(PARAM_TEXT, 'In case o Forum module, the type', VALUE_OPTIONAL),
                         )
                     )
                 )
@@ -2050,11 +2051,11 @@ class core_course_external extends external_api {
                 throw new invalid_parameter_exception('Module "'.$module->modulename.'" is disabled');
             }
 
-            if(is_null($module->visible)){
+            if(!isset($module->visible) || is_null($module->visible)){
                 $module->visible = 1;
             }
 
-            if(is_null($module->description)){
+            if(!isset($module->description) || is_null($module->description)){
                 $module->description = '';
             }
 
@@ -2072,6 +2073,14 @@ class core_course_external extends external_api {
             $moduleinfo->groupmode = $module->groupmode;
             $moduleinfo->groupmembersonly = $module->groupmembersonly;
             $moduleinfo->groupingid = $module->groupingid;
+            if (isset($module->type)) {
+                $moduleinfo->type = $module->type;
+            }
+            if (isset($module->cmidnumber)) {
+                $moduleinfo->cmidnumber = $module->cmidnumber;
+            } else {
+                $moduleinfo->cmidnumber = '';
+            }
             $retVal = create_module($moduleinfo);
 
             $result[] = array('id'=>$retVal->id);
