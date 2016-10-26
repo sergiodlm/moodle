@@ -1698,6 +1698,10 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $this->resetAfterTest(true);
 
         $course = self::getDataGenerator()->create_course();
+
+        $modcourse = context_course::instance($course->id);
+        $this->assignUserCapability('moodle/course:manageactivities', $modcourse->id);
+
         $modules = array(array('modulename' => 'forum', 'section' => 1, 'name' => 'This is test forum'));
         $createdmods = core_course_external::create_modules($course->id, $modules);
 
