@@ -244,8 +244,21 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
                         if ($showallcourses) {
                             $params['showallcourses'] = 1;
                         }
+
+                        $currentcategory = coursecat::get($mycourse->category, IGNORE_MISSING);
+                        $categorypath = '';
+                        if ($currentcategory !== null) {
+                            foreach ($currentcategory->get_parents() as $categoryid) {
+                                $category = coursecat::get($categoryid, IGNORE_MISSING);
+                                if ($category !== null) {
+                                    $categorypath .= $category->get_formatted_name().' / ';
+                                }
+                            }
+                            $categorypath .= $currentcategory->get_formatted_name() . ' / ';
+                        }
+
                         $url = new moodle_url('/user/view.php', $params);
-                        $courselisting .= html_writer::tag('li', html_writer::link($url, $ccontext->get_context_name(false),
+                        $courselisting .= html_writer::tag('li',  $categorypath . html_writer::link($url, $ccontext->get_context_name(false),
                                 $linkattributes));
                     } else {
                         $courselisting .= html_writer::tag('li', $ccontext->get_context_name(false));
