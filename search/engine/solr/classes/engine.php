@@ -321,6 +321,13 @@ class engine extends \core_search\engine {
             $query->addFilterQuery('type:'.\core_search\manager::TYPE_TEXT);
         }
 
+        // Using the "More like this" feature
+        if ($data->mlt) {
+            $query->setMlt(true);
+            $query->setMltCount(5);
+            $query->addMltField('content');
+        }
+
         return $query;
     }
 
