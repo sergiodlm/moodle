@@ -225,10 +225,32 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
 
     if (!isset($hiddenfields['mycourses'])) {
         $showallcourses = optional_param('showallcourses', 0, PARAM_INT);
-        if ($mycourses = enrol_get_all_users_courses($user->id, true, null, 'visible DESC, sortorder ASC')) {
+        if ($mycoursesflat = enrol_get_all_users_courses($user->id, true, null, 'visible DESC, sortorder ASC')) {
             $shown = 0;
+            $mycategories = [];
+            var_dump($mycoursesflat);
+            foreach ($mycoursesflat as $mycourse) {
+                if (isset($categories[$mycourse->ctxpath])) {
+                    $mycategories[$mycourse->ctxpath][] =  $mycourse;
+                } else {
+                    $mycategories[$mycourse->ctxpath] =  array($mycourse);
+                }
+            }
             $courselisting = html_writer::start_tag('ul');
-            foreach ($mycourses as $mycourse) {
+            foreach ($mycategories as $mycategory => $mycourses) {
+
+                $ctxpath = explode('/', $mycategory);
+                array_shift($ctxpath);
+                array_shift($ctxpath);
+                array_pop($ctxpath);
+                foreach ($ctxpath as $catctxid) {
+                    $cacontext = context::instance_by_id($catctxid);
+                    $courselisting .= html_writer::start_tag('div', array('style' => 'margin-left: 0.5em'));
+                    $courselisting .= $cacontext->get_context_name(false);
+                }
+                $courselisting .= html_writer::start_tag('div', array('style' => 'margin-left: 0.5em'));
+                foreach ($mycourses as $mycourse) {
+
                 if ($mycourse->category) {
                     context_helper::preload_from_record($mycourse);
                     $ccontext = context_course::instance($mycourse->id);
@@ -264,6 +286,11 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
                             array('title' => get_string('viewmore'))), array('class' => 'viewmore'));
                     break;
                 }
+                }
+                foreach ($ctxpath as $catctxid) {
+                    $courselisting .= html_writer::end_tag('div');
+                }
+                $courselisting .= html_writer::end_tag('div');
             }
             $courselisting .= html_writer::end_tag('ul');
             if (!empty($mycourses)) {
