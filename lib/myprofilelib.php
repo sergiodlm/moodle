@@ -224,54 +224,16 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
     }
 
     if (!isset($hiddenfields['mycourses'])) {
-        $showallcourses = optional_param('showallcourses', 0, PARAM_INT);
-        if ($mycourses = enrol_get_all_users_courses($user->id, true, null, 'visible DESC, sortorder ASC')) {
-            $shown = 0;
-            $courselisting = html_writer::start_tag('ul');
-            foreach ($mycourses as $mycourse) {
-                if ($mycourse->category) {
-                    context_helper::preload_from_record($mycourse);
-                    $ccontext = context_course::instance($mycourse->id);
-                    if (!isset($course) || $mycourse->id != $course->id) {
-                        $linkattributes = null;
-                        if ($mycourse->visible == 0) {
-                            if (!has_capability('moodle/course:viewhiddencourses', $ccontext)) {
-                                continue;
-                            }
-                            $linkattributes['class'] = 'dimmed';
-                        }
-                        $params = array('id' => $user->id, 'course' => $mycourse->id);
-                        if ($showallcourses) {
-                            $params['showallcourses'] = 1;
-                        }
-                        $url = new moodle_url('/user/view.php', $params);
-                        $courselisting .= html_writer::tag('li', html_writer::link($url, $ccontext->get_context_name(false),
-                                $linkattributes));
-                    } else {
-                        $courselisting .= html_writer::tag('li', $ccontext->get_context_name(false));
-                    }
-                }
-                $shown++;
-                if (!$showallcourses && $shown == $CFG->navcourselimit) {
-                    $url = null;
-                    if (isset($course)) {
-                        $url = new moodle_url('/user/view.php',
-                                array('id' => $user->id, 'course' => $course->id, 'showallcourses' => 1));
-                    } else {
-                        $url = new moodle_url('/user/profile.php', array('id' => $user->id, 'showallcourses' => 1));
-                    }
-                    $courselisting .= html_writer::tag('li', html_writer::link($url, get_string('viewmore'),
-                            array('title' => get_string('viewmore'))), array('class' => 'viewmore'));
-                    break;
-                }
-            }
-            $courselisting .= html_writer::end_tag('ul');
-            if (!empty($mycourses)) {
-                // Add this node only if there are courses to display.
-                $node = new core_user\output\myprofile\node('coursedetails', 'courseprofiles',
-                    get_string('courseprofiles'), null, null, rtrim($courselisting, ', '));
-                $tree->add_node($node);
-            }
+        $courserenderer = $PAGE->get_renderer('core', 'course');
+
+        $mycourses = enrol_get_all_users_courses($user->id, true, null, 'visible DESC, sortorder ASC');
+        $courselisting = $courserenderer->courses_list($mycourses, true);
+
+        if (!empty($mycourses)) {
+            // Add this node only if there are courses to display.
+            $node = new core_user\output\myprofile\node('coursedetails', 'courseprofiles',
+                get_string('courseprofiles'), null, null, rtrim($courselisting, ', '));
+            $tree->add_node($node);
         }
     }
 
