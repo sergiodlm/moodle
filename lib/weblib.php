@@ -1811,7 +1811,8 @@ function purify_html($text, $options = array()) {
             'teamspeak' => true,
             'gopher' => true,
             'mms' => true,
-            'mailto' => true
+            'mailto' => true,
+            'mdl' => true
         ));
         $config->set('Attr.AllowedFrameTargets', array('_blank'));
 

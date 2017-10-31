@@ -119,3 +119,18 @@ class HTMLPurifier_URIScheme_teamspeak extends HTMLPurifier_URIScheme {
     }
 
 }
+
+/**
+ * Validates MDL defined by Moodle
+ */
+class HTMLPurifier_URIScheme_mdl extends HTMLPurifier_URIScheme {
+
+    public $browsable = true;
+    public $hierarchical = true;
+
+    public function doValidate(&$uri, $config, $context) {
+        $uri->userinfo = null;
+        return true;
+    }
+
+}

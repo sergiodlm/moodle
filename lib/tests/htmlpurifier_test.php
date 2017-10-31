@@ -311,6 +311,9 @@ class core_htmlpurifier_testcase extends basic_testcase {
         $text = '<a href="mms://www.example.com/movie.mms">link</a>';
         $this->assertSame($text, purify_html($text));
 
+        $text = '<a href="mdl://www.example.com/">link</a>';
+        $this->assertSame($text, purify_html($text));
+
         // Now some borked or dangerous schemes.
         $text = '<a href="javascript://www.example.com">link</a>';
         $this->assertSame('<a>link</a>', purify_html($text));
