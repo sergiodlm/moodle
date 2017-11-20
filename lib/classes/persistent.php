@@ -799,10 +799,11 @@ abstract class persistent {
      * @param string $order Sort order.
      * @param int $skip Limitstart.
      * @param int $limit Number of rows to return.
+     * @param string $fields List of fields to retrieve.
      *
      * @return \core\persistent[]
      */
-    public static function get_records($filters = array(), $sort = '', $order = 'ASC', $skip = 0, $limit = 0) {
+    public static function get_records($filters = array(), $sort = '', $order = 'ASC', $skip = 0, $limit = 0, $fields = '*') {
         global $DB;
 
         $orderby = '';
@@ -810,7 +811,7 @@ abstract class persistent {
             $orderby = $sort . ' ' . $order;
         }
 
-        $records = $DB->get_records(static::TABLE, $filters, $orderby, '*', $skip, $limit);
+        $records = $DB->get_records(static::TABLE, $filters, $orderby, $fields, $skip, $limit);
         $instances = array();
 
         foreach ($records as $record) {
