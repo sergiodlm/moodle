@@ -600,8 +600,9 @@ function has_all_capabilities(array $capabilities, context $context, $user = nul
 function guess_if_creator_will_have_course_capability($capability, context $context, $user = null) {
     global $CFG;
 
-    if ($context->contextlevel != CONTEXT_COURSE and $context->contextlevel != CONTEXT_COURSECAT) {
-        throw new coding_exception('Only course or course category context expected');
+    if ($context->contextlevel != CONTEXT_COURSE and $context->contextlevel != CONTEXT_COURSECAT
+            and $context->contextlevel != CONTEXT_SYSTEM) {
+        throw new coding_exception('Only course or course category or system context expected');
     }
 
     if (has_capability($capability, $context, $user)) {

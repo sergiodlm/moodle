@@ -5113,6 +5113,12 @@ class settings_navigation extends navigation_node {
             $categorynode->add($editstring, $url, self::TYPE_SETTING, null, null, new pix_icon('i/edit', ''));
         }
 
+        if (can_edit_in_category($catcontext->instanceid)) {
+            $url = new moodle_url('/course/management.php', array('categoryid' => $catcontext->instanceid));
+            $editstring = get_string('managecategorythis');
+            $categorynode->add($editstring, $url, self::TYPE_SETTING, null, null, new pix_icon('i/edit', ''));
+        }
+
         if (has_capability('moodle/category:manage', $catcontext)) {
             $editurl = new moodle_url('/course/editcategory.php', array('id' => $catcontext->instanceid));
             $categorynode->add(get_string('editcategorythis'), $editurl, self::TYPE_SETTING, null, 'edit', new pix_icon('i/edit', ''));

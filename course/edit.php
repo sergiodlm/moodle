@@ -103,8 +103,13 @@ if ($id) {
     $PAGE->set_context($catcontext);
 
 } else {
+    // Creating new course coming from admin/search.php.
+    $course = null;
+    $category = null;
     require_login();
-    print_error('needcoursecategroyid');
+    $systemcontext = context_system::instance();
+    require_capability('moodle/course:create', $systemcontext);
+    $PAGE->set_context($systemcontext);
 }
 
 // Prepare course and the editor.
@@ -130,7 +135,11 @@ if (!empty($course)) {
 
 } else {
     // Editor should respect category context if course context is not set.
-    $editoroptions['context'] = $catcontext;
+    if ($category) {
+        $editoroptions['context'] = $catcontext;
+    } else {
+        $editoroptions['context'] = $systemcontext;
+    }
     $editoroptions['subdirs'] = 0;
     $course = file_prepare_standard_editor($course, 'summary', $editoroptions, null, 'course', 'summary', null);
     if ($overviewfilesoptions) {

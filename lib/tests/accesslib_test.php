@@ -2093,7 +2093,9 @@ class core_accesslib_testcase extends advanced_testcase {
 
         $creator = $this->getDataGenerator()->create_user();
         $manager = $this->getDataGenerator()->create_user();
+        $sysmanager = $this->getDataGenerator()->create_user();
         role_assign($managerrole->id, $manager->id, $categorycontext);
+        role_assign($managerrole->id, $manager->id, $syscontext);
 
         $this->assertFalse(has_capability('moodle/course:view', $categorycontext, $creator));
         $this->assertFalse(has_capability('moodle/role:assign', $categorycontext, $creator));
@@ -2105,28 +2107,35 @@ class core_accesslib_testcase extends advanced_testcase {
         $this->assertTrue(has_capability('moodle/role:assign', $categorycontext, $manager));
         $this->assertTrue(has_capability('moodle/course:visibility', $categorycontext, $manager));
         $this->assertTrue(has_capability('moodle/course:visibility', $coursecontext, $manager));
+        $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $syscontext, $manager->id));
         $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $categorycontext, $manager->id));
         $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $coursecontext, $manager->id));
 
         $this->assertEquals(0, $USER->id);
         $this->assertFalse(has_capability('moodle/course:view', $categorycontext));
         $this->assertFalse(has_capability('moodle/role:assign', $categorycontext));
+        $this->assertFalse(has_capability('moodle/course:visibility', $syscontext));
         $this->assertFalse(has_capability('moodle/course:visibility', $categorycontext));
         $this->assertFalse(has_capability('moodle/course:visibility', $coursecontext));
+        $this->assertFalse(guess_if_creator_will_have_course_capability('moodle/course:visibility', $syscontext));
         $this->assertFalse(guess_if_creator_will_have_course_capability('moodle/course:visibility', $categorycontext));
         $this->assertFalse(guess_if_creator_will_have_course_capability('moodle/course:visibility', $coursecontext));
 
         $this->setUser($manager);
         $this->assertTrue(has_capability('moodle/role:assign', $categorycontext));
+        $this->assertTrue(has_capability('moodle/course:visibility', $syscontext));
         $this->assertTrue(has_capability('moodle/course:visibility', $categorycontext));
         $this->assertTrue(has_capability('moodle/course:visibility', $coursecontext));
+        $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $syscontext));
         $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $categorycontext));
         $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $coursecontext));
 
         $this->setAdminUser();
         $this->assertTrue(has_capability('moodle/role:assign', $categorycontext));
+        $this->assertTrue(has_capability('moodle/course:visibility', $syscontext));
         $this->assertTrue(has_capability('moodle/course:visibility', $categorycontext));
         $this->assertTrue(has_capability('moodle/course:visibility', $coursecontext));
+        $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $syscontext));
         $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $categorycontext));
         $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $coursecontext));
         $this->setUser(0);
@@ -2156,43 +2165,46 @@ class core_accesslib_testcase extends advanced_testcase {
 
         set_config('creatornewroleid', $teacherrole->id);
 
+        role_change_permission($managerrole->id, $syscontext, 'moodle/course:visibility', CAP_PREVENT);
         role_change_permission($managerrole->id, $categorycontext, 'moodle/course:visibility', CAP_PREVENT);
+        role_assign($creatorrole->id, $manager->id, $syscontext);
         role_assign($creatorrole->id, $manager->id, $categorycontext);
 
+        $this->assertTrue(has_capability('moodle/course:view', $syscontext, $manager));
         $this->assertTrue(has_capability('moodle/course:view', $categorycontext, $manager));
         $this->assertTrue(has_capability('moodle/course:view', $coursecontext, $manager));
+        $this->assertTrue(has_capability('moodle/role:assign', $syscontext, $manager));
         $this->assertTrue(has_capability('moodle/role:assign', $categorycontext, $manager));
         $this->assertTrue(has_capability('moodle/role:assign', $coursecontext, $manager));
+        $this->assertFalse(has_capability('moodle/course:visibility', $syscontext, $manager));
         $this->assertFalse(has_capability('moodle/course:visibility', $categorycontext, $manager));
         $this->assertFalse(has_capability('moodle/course:visibility', $coursecontext, $manager));
+        $this->assertFalse(guess_if_creator_will_have_course_capability('moodle/course:visibility', $syscontext, $manager));
         $this->assertFalse(guess_if_creator_will_have_course_capability('moodle/course:visibility', $categorycontext, $manager));
         $this->assertFalse(guess_if_creator_will_have_course_capability('moodle/course:visibility', $coursecontext, $manager));
 
+        role_change_permission($managerrole->id, $syscontext, 'moodle/course:view', CAP_PREVENT);
         role_change_permission($managerrole->id, $categorycontext, 'moodle/course:view', CAP_PREVENT);
+        $this->assertTrue(has_capability('moodle/role:assign', $syscontext, $manager));
         $this->assertTrue(has_capability('moodle/role:assign', $categorycontext, $manager));
+        $this->assertFalse(has_capability('moodle/course:visibility', $syscontext, $manager));
         $this->assertFalse(has_capability('moodle/course:visibility', $categorycontext, $manager));
         $this->assertFalse(has_capability('moodle/course:visibility', $coursecontext, $manager));
+        $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $syscontext, $manager));
         $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $categorycontext, $manager));
         $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $coursecontext, $manager));
 
         $this->getDataGenerator()->enrol_user($manager->id, $course->id, 0);
 
+        $this->assertTrue(has_capability('moodle/role:assign', $syscontext, $manager));
         $this->assertTrue(has_capability('moodle/role:assign', $categorycontext, $manager));
         $this->assertTrue(has_capability('moodle/role:assign', $coursecontext, $manager));
         $this->assertTrue(is_enrolled($coursecontext, $manager));
         $this->assertFalse(has_capability('moodle/course:visibility', $categorycontext, $manager));
         $this->assertFalse(has_capability('moodle/course:visibility', $coursecontext, $manager));
+        $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $syscontext, $manager));
         $this->assertTrue(guess_if_creator_will_have_course_capability('moodle/course:visibility', $categorycontext, $manager));
         $this->assertFalse(guess_if_creator_will_have_course_capability('moodle/course:visibility', $coursecontext, $manager));
-
-        // Test problems.
-
-        try {
-            guess_if_creator_will_have_course_capability('moodle/course:visibility', $syscontext, $creator);
-            $this->fail('Exception expected when non course/category context passed to guess_if_creator_will_have_course_capability()');
-        } catch (moodle_exception $e) {
-            $this->assertInstanceOf('coding_exception', $e);
-        }
     }
 
     /**

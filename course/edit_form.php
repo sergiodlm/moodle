@@ -29,14 +29,19 @@ class course_edit_form extends moodleform {
         $returnurl = $this->_customdata['returnurl'];
 
         $systemcontext   = context_system::instance();
-        $categorycontext = context_coursecat::instance($category->id);
 
         if (!empty($course->id)) {
+            $categorycontext = null;
             $coursecontext = context_course::instance($course->id);
             $context = $coursecontext;
-        } else {
+        } else if (!empty($category)) {
+            $categorycontext = context_coursecat::instance($category->id);
             $coursecontext = null;
             $context = $categorycontext;
+        } else {
+            $categorycontext = null;
+            $coursecontext = null;
+            $context = $systemcontext;
         }
 
         $courseconfig = get_config('moodlecourse');
@@ -75,15 +80,19 @@ class course_edit_form extends moodleform {
 
         // Verify permissions to change course category or keep current.
         if (empty($course->id)) {
-            if (has_capability('moodle/course:create', $categorycontext)) {
+            if (has_capability('moodle/course:create', $context)) {
                 $displaylist = core_course_category::make_categories_list('moodle/course:create');
                 $mform->addElement('select', 'category', get_string('coursecategory'), $displaylist);
                 $mform->addHelpButton('category', 'coursecategory');
-                $mform->setDefault('category', $category->id);
+                if ($category) {
+                    $mform->setDefault('category', $category->id);
+                }
             } else {
                 $mform->addElement('hidden', 'category', null);
                 $mform->setType('category', PARAM_INT);
-                $mform->setConstant('category', $category->id);
+                if ($category) {
+                    $mform->setConstant('category', $category->id);
+                }
             }
         } else {
             if (has_capability('moodle/course:changecategory', $coursecontext)) {
@@ -115,7 +124,7 @@ class course_edit_form extends moodleform {
                 $mform->setConstant('visible', $course->visible);
             }
         } else {
-            if (!guess_if_creator_will_have_course_capability('moodle/course:visibility', $categorycontext)) {
+            if (!guess_if_creator_will_have_course_capability('moodle/course:visibility', $context)) {
                 $mform->hardFreeze('visible');
                 $mform->setConstant('visible', $courseconfig->visible);
             }
@@ -205,7 +214,7 @@ class course_edit_form extends moodleform {
         $languages=array();
         $languages[''] = get_string('forceno');
         $languages += get_string_manager()->get_list_of_translations();
-        if ((empty($course->id) && guess_if_creator_will_have_course_capability('moodle/course:setforcedlanguage', $categorycontext))
+        if ((empty($course->id) && guess_if_creator_will_have_course_capability('moodle/course:setforcedlanguage', $context))
                 || (!empty($course->id) && has_capability('moodle/course:setforcedlanguage', $coursecontext))) {
             $mform->addElement('select', 'lang', get_string('forcelanguage'), $languages);
             $mform->setDefault('lang', $courseconfig->lang);
@@ -296,7 +305,7 @@ class course_edit_form extends moodleform {
         $options[0] = get_string('none');
         $mform->addElement('select', 'defaultgroupingid', get_string('defaultgrouping', 'group'), $options);
 
-        if ((empty($course->id) && guess_if_creator_will_have_course_capability('moodle/course:renameroles', $categorycontext))
+        if ((empty($course->id) && guess_if_creator_will_have_course_capability('moodle/course:renameroles', $context))
                 || (!empty($course->id) && has_capability('moodle/course:renameroles', $coursecontext))) {
             // Customizable role names in this course.
             $mform->addElement('header', 'rolerenaming', get_string('rolerenaming'));
@@ -313,7 +322,7 @@ class course_edit_form extends moodleform {
         }
 
         if (core_tag_tag::is_enabled('core', 'course') &&
-                ((empty($course->id) && guess_if_creator_will_have_course_capability('moodle/course:tag', $categorycontext))
+                ((empty($course->id) && guess_if_creator_will_have_course_capability('moodle/course:tag', $context))
                 || (!empty($course->id) && has_capability('moodle/course:tag', $coursecontext)))) {
             $mform->addElement('header', 'tagshdr', get_string('tags', 'tag'));
             $mform->addElement('tags', 'tags', get_string('tags'),
