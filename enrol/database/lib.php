@@ -682,7 +682,7 @@ class enrol_database_plugin extends enrol_plugin {
                         if (empty($currentgroups[$userid][$groupid])) {
                             groups_add_member($groupid, $userid, 'enrol_database');
                             $currentgroups[$userid][$groupid] = $groupid;
-                            $trace->output("adding to group: $userid ==> $groupid", 1);
+                            $trace->output("adding to group: {$userid} ==> {$groupid}", 1);
                         }
                     }
                 }
@@ -691,8 +691,8 @@ class enrol_database_plugin extends enrol_plugin {
                     // Remove user from any groups they shouldn't be in anymore.
                     foreach ($usergroups as $groupid) {
                         if (empty($requestedgroups[$userid][$groupid])) {
-                            groups_remove_member($groupid, $userid, 'enrol_database');
-                            $trace->output("removing from group: $userid ==> $groupid", 1);
+                            groups_remove_member($groupid, $userid);
+                            $trace->output("removing from group: {$userid} ==> {$groupid}", 1);
                         }
                     }
                 }
