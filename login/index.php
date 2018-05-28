@@ -172,7 +172,12 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
             $PAGE->set_heading($site->fullname);
             echo $OUTPUT->header();
             echo $OUTPUT->heading(get_string("mustconfirm"));
-            echo $OUTPUT->box(get_string("emailconfirmsent", "", $user->email), "generalbox boxaligncenter");
+            if (send_confirmation_email($user)) {
+                $boxstring = get_string("emailconfirmsent", "", $user->email);
+            } else {
+                $boxstring = get_string("emailconfirmnotsent", "", $user->email);
+            }
+            echo $OUTPUT->box($boxstring, "generalbox boxaligncenter");
             echo $OUTPUT->footer();
             die;
         }

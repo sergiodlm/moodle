@@ -106,7 +106,7 @@ function core_login_process_password_reset($username, $email) {
     $pwresetstatus = PWRESET_STATUS_NOEMAILSENT;
     if ($user) {
         if (empty($user->confirmed)) {
-            if (send_confirmation_email($user, $confirmationurl)) {
+            if (send_confirmation_email($user)) {
                 $pwresetstatus = PWRESET_STATUS_CONFIRMEMAILSENT;
             } else {
                 print_error('cannotmailconfirm');
