@@ -56,7 +56,7 @@ define('UU_PWRESET_ALL', 2);
  */
 class uu_progress_tracker {
     private $_row;
-    public $columns = array('status', 'line', 'id', 'username', 'firstname', 'lastname', 'email', 'password', 'auth', 'enrolments', 'suspended', 'deleted');
+    public $columns = array('status', 'line', 'id', 'username', 'firstname', 'lastname', 'email', 'password', 'auth', 'enrolments', 'suspended', 'deleted', 'theme');
 
     /**
      * Print table header.
