@@ -72,6 +72,8 @@ $struserauthunsupported     = get_string('userauthunsupported', 'error');
 $stremailduplicate          = get_string('useremailduplicate', 'error');
 
 $strinvalidpasswordpolicy   = get_string('invalidpasswordpolicy', 'error');
+$strinvalidtheme            = get_string('invalidtheme', 'error');
+
 $errorstr                   = get_string('error');
 
 $stryes                     = get_string('yes');
@@ -97,6 +99,7 @@ $STD_FIELDS = array('id', 'username', 'email',
         'deleted',     // 1 means delete user
         'mnethostid',  // Can not be used for adding, updating or deleting of users - only for enrolments, groups, cohorts and suspending.
         'interests',
+        'theme', // Define a theme for user when 'allowuserthemes' is enabled.
     );
 // Include all name fields.
 $STD_FIELDS = array_merge($STD_FIELDS, get_all_user_name_fields());
@@ -355,6 +358,14 @@ if ($formdata = $mform2->is_cancelled()) {
         } else {
             $upt->track('username', s($user->username), 'normal', false);
         }
+
+	// Validate theme.
+	if (isset($user->theme)) {
+	    if (!in_array($user->theme, explode(',', $CFG->themelist))) {
+		$user->theme = '';
+		$upt->track('theme', s($strinvalidtheme), 'error');
+	    }
+	}
 
         // add default values for remaining fields
         $formdefaults = array();

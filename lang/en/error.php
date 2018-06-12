@@ -358,6 +358,7 @@ $string['invalidsesskey'] = 'Your session has most likely timed out. Please log 
 $string['invalidshortname'] = 'That\'s an invalid short course name';
 $string['invalidstatedetected'] = 'Something has gone wrong: {$a}. This should never normally happen.';
 $string['invalidsourcefield'] = 'Draft file\'s source field is invalid';
+$string['invalidtheme'] = 'Invalid Theme';
 $string['invalidurl'] = 'Invalid URL';
 $string['invaliduser'] = 'Invalid user';
 $string['invaliduserid'] = 'Invalid user id';
