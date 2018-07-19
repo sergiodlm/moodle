@@ -320,11 +320,11 @@ class course_edit_form extends moodleform {
                     array('itemtype' => 'course', 'component' => 'core'));
         }
 
-// customisable profile fields
+// customisable course profile fields
 //--------------------------------------------------------------------------------
-        profile_definition($mform);
+        course_profile_definition($mform);
 //--------------------------------------------------------------------------------
-        profile_load_data($course);
+        course_profile_load_data($course);
 //--------------------------------------------------------------------------------
 
         // When two elements we need a group.

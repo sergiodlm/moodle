@@ -189,6 +189,9 @@ if ($editform->is_cancelled()) {
         $courseurl = new moodle_url('/course/view.php', array('id' => $course->id));
     }
 
+    // save custom profile fields data
+    course_profile_save_data($data, false);
+
     if (isset($data->saveanddisplay)) {
         // Redirect user to newly created/updated course.
         redirect($courseurl);
