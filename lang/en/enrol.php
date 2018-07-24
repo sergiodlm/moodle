@@ -70,6 +70,7 @@ $string['enrolusers'] = 'Enrol users';
 $string['enrolxusers'] = 'Enrol {$a} users';
 $string['enroltimecreated'] = 'Enrolment created';
 $string['enroltimeend'] = 'Enrolment ends';
+$string['enroltimemodified'] = 'Enrolment modified';
 $string['enroltimeendinvalid'] = 'Enrolment end date must be after the enrolment start date';
 $string['enroltimestart'] = 'Enrolment starts';
 $string['errajaxfailedenrol'] = 'Failed to enrol user';
