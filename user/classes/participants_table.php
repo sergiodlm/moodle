@@ -361,7 +361,7 @@ class participants_table extends \table_sql {
      * @return string
      */
     public function col_status($data) {
-        global $CFG, $OUTPUT, $PAGE;
+        global $CFG, $OUTPUT, $PAGE, $DB;
 
         $enrolstatusoutput = '';
         $canreviewenrol = has_capability('moodle/course:enrolreview', $this->context);
@@ -400,7 +400,8 @@ class participants_table extends \table_sql {
                         break;
                 }
 
-                $statusfield = new status_field($instancename, $coursename, $fullname, $status, $timestart, $timeend, $timemodified, $actions);
+                $modifierfullname = fullname($DB->get_record('user', array('id' => $ue->modifierid)));
+                $statusfield = new status_field($instancename, $coursename, $fullname, $status, $timestart, $timeend, $timemodified, $modifierfullname, $actions);
                 $statusfielddata = $statusfield->set_status($statusval)->export_for_template($OUTPUT);
                 $enrolstatusoutput .= $OUTPUT->render_from_template('core_user/status_field', $statusfielddata);
             }

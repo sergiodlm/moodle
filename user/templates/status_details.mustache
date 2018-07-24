@@ -28,6 +28,7 @@
     * timestart string - Optional. The enrolment time start.
     * timeend string - Optional. The enrolment time end.
     * timemodified string - Optional. The enrolment modified time.
+    * modifierfullname string - The full name of the user who last modified this enrolment.
 
     Example context (json):
     {
@@ -38,7 +39,8 @@
         "statusclass": "label label-success",
         "timestart": "1 January 2017",
         "timeend": "31 January 2018",
-        "timeend": "15 January 2018"
+        "timeend": "15 January 2018",
+        "modifierfullname": "Professor Peter",
     }
 }}
 <table class="table user-enrol-details">
@@ -106,4 +108,14 @@
         </td>
     </tr>
     {{/timemodified}}
+    {{#modifierfullname}}
+    <tr>
+        <th>
+            {{#str}}modifierfullname, enrol{{/str}}
+        </th>
+        <td class="modifier-fullname">
+            {{modifierfullname}}
+        </td>
+    </tr>
+    {{/modifierfullname}}
 </table>
