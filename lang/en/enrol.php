@@ -101,6 +101,7 @@ $string['invalidrequest'] = 'Invalid request';
 $string['manageenrols'] = 'Manage enrol plugins';
 $string['manageinstance'] = 'Manage';
 $string['migratetomanual'] = 'Migrate to manual enrolments';
+$string['modifierfullname'] = 'Modified by';
 $string['nochange'] = 'No change';
 $string['noexistingparticipants'] = 'No existing participants';
 $string['nogroup'] = 'No group';

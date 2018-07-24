@@ -30,6 +30,7 @@
     * timestart string - Optional. The enrolment time start.
     * timeend string - Optional. The enrolment time end.
     * timemodified string - Optional. The enrolment time modified.
+    * modifierfullname string - The full name of the user who last modified this enrolment.
     * enrolactions array - Optional. Array of enrol actions consisting of:
       * url string - The URL of the enrol action link.
       * attributes array - The array of attributes for the enrol action link.
@@ -45,6 +46,7 @@
         "timestart": "1 January 2017",
         "timeend": "31 January 2018",
         "timemodified": "15 January 2018",
+        "fullname": "Professor Peter",
         "enrolactions": [
             {
                 "url": "#",
@@ -60,7 +62,7 @@
     }
 }}
 <div data-fullname="{{fullname}}" data-coursename="{{coursename}}" data-enrolinstancename="{{enrolinstancename}}"
-     data-status="{{status}}" data-timestart="{{timestart}}" data-timeend="{{timeend}}" data-timemodified="{{timemodified}}">
+     data-status="{{status}}" data-timestart="{{timestart}}" data-timeend="{{timeend}}" data-timemodified="{{timemodified}}" data-modifierfullname="{{modifierfullname}}">
     <span class="label {{#active}}label-success{{/active}}{{#suspended}}label-warning{{/suspended}}{{#notcurrent}}label-default{{/notcurrent}}">{{status}}</span>
     <a data-action="showdetails" href="#" role="button" tabindex="0">{{!
         }}{{#pix}}docs, core, {{enrolinstancename}}{{/pix}}{{!
