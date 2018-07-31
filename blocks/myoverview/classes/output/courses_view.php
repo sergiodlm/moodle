@@ -82,7 +82,9 @@ class courses_view implements renderable, templatable {
             ]);
             $exportedcourse = $exporter->export($output);
             if ($enrolmentend = enrol_get_enrolment_end($courseid, $USER->id)) {
-                $exportedcourse->availableuntil = userdate($enrolmentend);
+                $exportedcourse->availableuntil = userdate($enrolmentend, get_string('strftimedatetimeshort', 'langconfig'));
+                $exportedcourse->daysleft = floor(($enrolmentend - time()) / 86400);
+                $exportedcourse->showdaysleft = ((int)get_config('block_myoverview', 'daysleft') > $exportedcourse->daysleft);
             }
             // Convert summary to plain text.
             $exportedcourse->summary = content_to_text($exportedcourse->summary, $exportedcourse->summaryformat);
