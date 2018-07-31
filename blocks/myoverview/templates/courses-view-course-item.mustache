@@ -23,6 +23,8 @@
     {
         "fullnamedisplay": "course 3",
         "viewurl": "https://www.google.com",
+        "availablesince": "1 April 2018",
+        "availableuntil": "1 July 2018",
         "summary": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout."
     }
 }}
@@ -40,6 +42,25 @@
             <div class="media-body">
                 <h4 class="h5"><a href="{{viewurl}}" class="{{^visible}}dimmed{{/visible}}">{{{fullnamedisplay}}}</a></h4>
             </div>
+        </div>
+
+        <div class="row">
+            {{#availablesince}}
+                <div class="mr-2">
+                  {{#str}}enroltimestart, enrol{{/str}}
+                </div>
+                <div class="mr-2">
+                    {{availablesince}}
+                </div>
+            {{/availablesince}}
+            {{#availableuntil}}
+            <div class="mr-2">
+              {{#str}}enroltimeend, enrol{{/str}}
+            </div>
+            <div class="mr-2">
+                {{availableuntil}}
+            </div>
+            {{/availableuntil}}
         </div>
 
         <p class="text-muted">
