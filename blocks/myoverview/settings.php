@@ -36,4 +36,8 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configselect('block_myoverview/defaulttab',
         get_string('defaulttab', 'block_myoverview'),
         get_string('defaulttab_desc', 'block_myoverview'), 'timeline', $options));
+
+    $settings->add(new admin_setting_configtext('block_myoverview/daysleft',
+        get_string('daysleft', 'block_myoverview'),
+        get_string('daysleft_desc', 'block_myoverview'), 0, PARAM_INT, 0));
 }

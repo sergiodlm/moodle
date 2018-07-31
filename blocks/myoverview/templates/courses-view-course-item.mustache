@@ -59,6 +59,9 @@
             </div>
             <div class="mr-2">
                 {{availableuntil}}
+                {{#showdaysleft}}
+                    <span class="daysleft">{{#str}}xdaysleft, block_myoverview, {{daysleft}}{{/str}}</span>
+                {{/showdaysleft}}
             </div>
             {{/availableuntil}}
         </div>
