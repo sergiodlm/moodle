@@ -63,7 +63,7 @@ class courses_view implements renderable, templatable {
      * @return array
      */
     public function export_for_template(renderer_base $output) {
-        global $CFG;
+        global $CFG, $USER;
         require_once($CFG->dirroot.'/course/lib.php');
         require_once($CFG->dirroot.'/lib/coursecatlib.php');
 
@@ -81,6 +81,9 @@ class courses_view implements renderable, templatable {
                 'context' => $context
             ]);
             $exportedcourse = $exporter->export($output);
+            if ($enrolmentend = enrol_get_enrolment_end($courseid, $USER->id)) {
+                $exportedcourse->availableuntil = userdate($enrolmentend);
+            }
             // Convert summary to plain text.
             $exportedcourse->summary = content_to_text($exportedcourse->summary, $exportedcourse->summaryformat);
 
