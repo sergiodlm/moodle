@@ -89,6 +89,16 @@ class courses_view implements renderable, templatable {
             if ($enrolmentstart = $this->get_enrolment_start($courseid, $USER->id)) {
                 $exportedcourse->availablesince = userdate($enrolmentstart, get_string('strftimedatetimeshort', 'langconfig'));
             }
+            // and here is a hack only for Grupo GEN
+            global $DB;
+            $sql = "SELECT COUNT(*)
+                      FROM {format_grupogen_co_module} cm
+                 LEFT JOIN {format_grupogen_user_course} ucm
+                        ON (cm.course = ucm.course and cm.section = ucm.section and cm.module = ucm.module and ucm.userid = :userid)
+                     WHERE cm.course = :courseid
+                       AND (ucm.lastaccess < cm.lastupdate or ucm.lastaccess is null);";
+            $exportedcourse->newscount = $DB->count_records_sql($sql, array('userid'=>$USER->id,'courseid'=>$course->id));
+
             // Convert summary to plain text.
             $exportedcourse->summary = content_to_text($exportedcourse->summary, $exportedcourse->summaryformat);
 
