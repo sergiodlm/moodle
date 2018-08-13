@@ -86,6 +86,9 @@ class courses_view implements renderable, templatable {
                 $exportedcourse->daysleft = floor(($enrolmentend - time()) / 86400);
                 $exportedcourse->showdaysleft = ((int)get_config('block_myoverview', 'daysleft') > $exportedcourse->daysleft);
             }
+            if ($enrolmentstart = $this->get_enrolment_start($courseid, $USER->id)) {
+                $exportedcourse->availablesince = userdate($enrolmentstart, get_string('strftimedatetimeshort', 'langconfig'));
+            }
             // Convert summary to plain text.
             $exportedcourse->summary = content_to_text($exportedcourse->summary, $exportedcourse->summaryformat);
 
@@ -191,5 +194,25 @@ class courses_view implements renderable, templatable {
 
         $color = $basecolors[$courseid % 10];
         return $color;
+    }
+
+    protected function get_enrolment_start($courseid, $userid) {
+        global $DB;
+
+        $sql = "SELECT MAX(ue.id) as ueid
+                  FROM {user_enrolments} ue
+                  JOIN {enrol} e ON (e.id = ue.enrolid AND e.courseid = :courseid)
+                  JOIN {user} u ON u.id = ue.userid
+                 WHERE ue.userid = :userid AND ue.status = :active AND e.status = :enabled AND u.deleted = 0
+                   AND ue.timestart < :now";
+
+        $params = array('enabled'=>ENROL_INSTANCE_ENABLED, 'active'=>ENROL_USER_ACTIVE, 'userid'=>$userid, 'courseid'=>$courseid,
+                        'now' => time());
+
+        if ($enrolment = $DB->get_record_sql($sql, $params)) {
+            return $DB->get_field('user_enrolments', 'timestart', array('id' => $enrolment->ueid));
+        } else {
+            return false;
+        }
     }
 }
