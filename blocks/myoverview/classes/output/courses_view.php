@@ -82,12 +82,12 @@ class courses_view implements renderable, templatable {
             ]);
             $exportedcourse = $exporter->export($output);
             if ($enrolmentend = enrol_get_enrolment_end($courseid, $USER->id)) {
-                $exportedcourse->availableuntil = userdate($enrolmentend, get_string('strftimedatetimeshort', 'langconfig'));
+                $exportedcourse->availableuntil = userdate($enrolmentend, '%d/%m/%Y');
                 $exportedcourse->daysleft = floor(($enrolmentend - time()) / 86400);
                 $exportedcourse->showdaysleft = ((int)get_config('block_myoverview', 'daysleft') > $exportedcourse->daysleft);
             }
             if ($enrolmentstart = $this->get_enrolment_start($courseid, $USER->id)) {
-                $exportedcourse->availablesince = userdate($enrolmentstart, get_string('strftimedatetimeshort', 'langconfig'));
+                $exportedcourse->availablesince = userdate($enrolmentstart, '%d/%m/%Y');
             }
             // and here is a hack only for Grupo GEN
             global $DB;
