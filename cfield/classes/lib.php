@@ -212,8 +212,8 @@ class lib {
 
             if (!empty($data->id)) {
                 // Update.
-
-
+                $category = category::load($id);
+                $category->set_name($data->name);
             } else {
                 // New.
                 $categorydata = new \stdClass();
@@ -221,9 +221,8 @@ class lib {
                 $categorydata->component = $options['component'];
                 $categorydata->area = $options['area'];
                 $categorydata->itemid = $options['itemid'];
+                $category = new category($categorydata);
             }
-
-            $category = new \core_cfield\category($categorydata);
 
             switch($options['area']) {
                 case 'course':

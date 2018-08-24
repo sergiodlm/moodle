@@ -377,6 +377,14 @@ class category {
         return $this->fields;
     }
 
-
+    /**
+     * @param mixed $name
+     * @return category
+     */
+    public
+    function set_name($name) {
+        $this->name = $name;
+        return $this;
+    }
 
 }
