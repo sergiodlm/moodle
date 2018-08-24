@@ -386,5 +386,4 @@ class category {
         $this->name = $name;
         return $this;
     }
-
 }

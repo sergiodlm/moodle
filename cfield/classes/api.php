@@ -25,7 +25,7 @@ namespace core_cfield;
 class api {
 
     //Returns array of categories, each of them contains a list of fields definitions
-    public static function get_fields_definitions($component, $area, $itemid) {
+    public static function get_fields_definitions($component, $area = null, $itemid = null) {
         global $DB;
 
         $options = [

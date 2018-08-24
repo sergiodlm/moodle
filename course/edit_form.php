@@ -320,6 +320,8 @@ class course_edit_form extends moodleform {
                     array('itemtype' => 'course', 'component' => 'core'));
         }
 
+        course_add_custom_fields($mform);
+
         // When two elements we need a group.
         $buttonarray = array();
         $classarray = array('class' => 'form-submit');

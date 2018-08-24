@@ -42,4 +42,17 @@ class field extends \core_cfield\field{
         $mform->addRule('shortname', get_string('shortname'), 'required');
     }
 
+    /**
+     * Add fields for editing a text profile field.
+     * @param moodleform $mform
+     */
+    public function edit_field_add($mform) {
+        $size = 40;//$this->field->param1;
+        $maxlength = 40;//$this->field->param2;
+        $fieldtype = 'text'; //($this->field->param3 == 1 ? 'password' : 'text');
+
+        // Create the form field.
+        $mform->addElement($fieldtype, $this->shortname, format_string($this->name), 'maxlength="'.$maxlength.'" size="'.$size.'" ');
+        $mform->setType($this->shortname, PARAM_TEXT);
+    }
 }
