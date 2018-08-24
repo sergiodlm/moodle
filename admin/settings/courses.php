@@ -38,6 +38,12 @@ if ($hassiteconfig or has_any_capability($capabilities, $systemcontext)) {
         )
     );
     $ADMIN->add('courses',
+            new admin_externalpage('course_cfields', new lang_string('course_cfields', 'admin'),
+                    $CFG->wwwroot . '/course/cfields.php',
+                    array('moodle/category:manage')
+            )
+    );
+    $ADMIN->add('courses',
         new admin_externalpage('addcategory', new lang_string('addcategory', 'admin'),
             new moodle_url('/course/editcategory.php', array('parent' => 0)),
             array('moodle/category:manage')

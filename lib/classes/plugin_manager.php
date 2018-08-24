@@ -1739,6 +1739,10 @@ class core_plugin_manager {
                 'gregorian'
             ),
 
+            'cfield' => array(
+                'text'
+            ),
+
             'coursereport' => array(
                 // Deprecated!
             ),

@@ -1,0 +1,67 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   core_cfield
+ * @copyright 2018, Toni Barbera <toni@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace core_cfield;
+
+use Horde\Socket\Client\Exception;
+
+defined('MOODLE_INTERNAL') || die;
+
+class field_factory {
+
+    const CFIELD_TABLE = 'cfield_field';
+
+    public static function load($id) {
+        global $DB;
+
+        $field = $DB->get_record(self::CFIELD_TABLE, ['id' => $id]);
+
+        switch ($field->type) {
+            case \cfield_text\field::TYPE:
+                return new \cfield_text\field($field);
+                break;
+            case \cfield_select\field::TYPE:
+                return new \cfield_select\field($field);
+                break;
+            default:
+                throw new Exception('Error: Type field not recognized.');
+        }
+    }
+
+    public static function bulk_delete(array $ids) {
+        global $DB;
+
+        if (!empty($ids)) {
+            $where = 'id<0';
+            foreach ($ids as $id) {
+                $where .= " OR id=$id";
+            }
+
+            if ($DB->delete_records_select(self::CFIELD_TABLE, $where)) {
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+}

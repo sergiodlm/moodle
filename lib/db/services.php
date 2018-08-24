@@ -2140,7 +2140,32 @@ $functions = array(
         'description' => 'Returns the filters available in the given contexts.',
         'type'        => 'read',
         'services'    => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
-    )
+    ),
+
+    'core_cfield_delete_entry' => array(
+        'classname'   => 'core_cfield_external',
+        'methodname'  => 'delete_entry',
+        'classpath'   => 'cfield/externallib.php',
+        'description' => 'Deletes an entry',
+        'type'        => 'write',
+        'ajax'        => 'true'
+    ),
+    'core_cfield_reload_template' => array(
+        'classname'   => 'core_cfield_external',
+        'methodname'  => 'reload_template',
+        'classpath'   => 'cfield/externallib.php',
+        'description' => 'Reloads template',
+        'type'        => 'read',
+        'ajax'        => 'true'
+    ),
+    'core_cfield_delete_category' => array(
+            'classname'   => 'core_cfield_external',
+            'methodname'  => 'delete_category',
+            'classpath'   => 'cfield/externallib.php',
+            'description' => 'Deletes a category',
+            'type'        => 'write',
+            'ajax'        => 'true'
+    ),
 );
 
 $services = array(
