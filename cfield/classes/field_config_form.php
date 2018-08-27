@@ -65,4 +65,22 @@ class field_config_form extends \moodleform {
             $this->add_action_buttons(true, get_string('add', 'core_cfield'));
         }
     }
+
+
+    public function validation($data, $files = array()) {
+        global $DB;
+
+        $errors = array();
+
+        if (!empty($this->_customdata['id'])) {
+            if ( $DB->record_exists_select('cfield_field', 'shortname = ? AND id <> ? AND categoryid = ?', array($data['shortname'], $data['id'], $data['categoryid']) )) {
+                $errors['shortname'] = get_string('formfieldcheckshortname', 'core_cfield');
+            }
+        } else {
+            if ( $DB->record_exists_select('cfield_field', 'shortname = ? AND categoryid = ?', array($data['shortname'], $data['categoryid']) )) {
+                $errors['shortname'] = get_string('formfieldcheckshortname', 'core_cfield');
+            }
+        }
+        return $errors;
+    }
 }

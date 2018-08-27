@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'access', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'core_cfield', language 'en'
  *
  * @package   core
  * @copyright 2018 Toni Barbera  {@link http://moodle.com}
@@ -37,3 +37,6 @@ $string['confirmdelete'] = 'Are you sure?';
 $string['createnewcfield'] = 'Create a new custom field:';
 $string['createnewccategory'] = 'Create a new Category';
 $string['confirmdeletecategory'] = 'Are you sure? (All fields inside this category will be ERASED!)';
+$string['formcategorycheckname'] = 'Category name already exists';
+$string['formfieldcheckname'] = 'Name already exists';
+$string['formfieldcheckshortname'] = 'Short Name already exists';

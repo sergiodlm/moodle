@@ -28,10 +28,16 @@ global $CFG;
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/formslib.php');
 
+/**
+ * Class category_config_form.
+ *
+ * @package core_cfield
+ */
 class category_config_form extends \moodleform {
 
     /**
-     * Defines the form.
+     * Definition of Category form.
+     * @throws \coding_exception
      */
     public function definition() {
         $mform = $this->_form;
@@ -50,13 +56,36 @@ class category_config_form extends \moodleform {
 
             $mform->addElement('hidden', 'id', $this->_customdata['id']);
             $mform->setType('id', PARAM_INT);
-            //$mform->addElement('hidden', 'itemid', $this->_customdata['id']);
-            //$mform->setType('itemid', PARAM_INT);
-
 
             $this->add_action_buttons(true, get_string('modify', 'core_cfield'));
         } else {
             $this->add_action_buttons(true, get_string('add', 'core_cfield'));
         }
+    }
+
+
+    /**
+     * Perform validation on categories.
+     * @param array $data
+     * @param array $files
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function validation($data, $files = array()) {
+        global $DB;
+
+        $errors = array();
+
+        if (!empty($this->_customdata['id'])) {
+            if ( $DB->record_exists_select('cfield_category', 'name = ? AND id <> ?', array($data['name'], $data['id']) )) {
+                $errors['name'] = get_string('formcategorycheckname', 'core_cfield');
+            }
+        } else {
+            if ( $DB->record_exists_select('cfield_category', 'name = ?', array($data['name']) )) {
+                $errors['name'] = get_string('formcategorycheckname', 'core_cfield');
+            }
+        }
+        return $errors;
     }
 }
