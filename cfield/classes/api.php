@@ -16,61 +16,26 @@
 
 /**
  * @package   core_cfield
- * @copyright 2018, David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace core_cfield;
 
+defined('MOODLE_INTERNAL') || die;
+
 class api {
 
-    //Returns array of categories, each of them contains a list of fields definitions
+    // Returns array of categories, each of them contains a list of fields definitions.
     public static function get_fields_definitions($component, $area = null, $itemid = null) {
-        global $DB;
-
-        $options = [
+         return category::load_array([
                 'component' => $component,
                 'area' => $area,
                 'itemid' => $itemid
-        ];
-
-        return category::load_array( $options );
+        ]);
     }
-
-    //public static function insert_field($data) {
-    //    global $DB;
-    //
-    //    $insertid = $DB->insert_record('cfield_field', (object) [
-    //            'shortname' => $data->shortname,
-    //            'name' => $data->name,
-    //            'type' => $data->type,
-    //            'description' => $data->description,
-    //            'descriptionformat' => $data->descriptionformat,
-    //            'sortorder' => $data->descriptionformat,
-    //            'categoryid' => $data->categoryid,
-    //            'configdata' => $data->configdata,
-    //            'timecreated' => time(),
-    //            'timemodified' => time()
-    //    ], true);
-    //
-    //    return $insertid;
-    //}
-    //
-    //public static function update_field($data) {
-    //    global $DB;
-    //
-    //    $updatearray = [
-    //            'id' => $data->id,
-    //            'name' => $data->name,
-    //            'shortname' => $data->shortname,
-    //            'timemodified' => time()
-    //    ];
-    //
-    //    $DB->update_record('cfield_field', $updatearray);
-    //}
 
     public static function get_field($id) {
         return field_factory::load($id);
     }
-
 }

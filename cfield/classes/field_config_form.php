@@ -48,7 +48,8 @@ class field_config_form extends \moodleform {
         $mform->setType('shortname', PARAM_NOTAGS);
         $mform->addRule('shortname', get_string('shortname'), 'required');
 
-        $desceditoroptions = array('trusttext' => true,
+        $desceditoroptions = array(
+                'trusttext' => true,
                 'subdirs' => true,
                 'maxfiles' => 5,
                 'maxbytes' => 0,
