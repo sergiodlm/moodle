@@ -30,10 +30,12 @@ class core_cfield_renderer extends plugin_renderer_base {
 
         $data = $list->export_for_template($this);
 
-        if ( !empty($data['success']) ) {
-            $data['alert'] = $render->notification(base64_decode($data['success']));
-        } elseif ( !empty($data['error']) ) {
-            $data['alert'] = $render->notification(base64_decode($data['error']));
+        $data->success = 'HOLA KARAKOLA';
+
+        if ( !empty($data->success) ) {
+            $data->alert = $render->notification(base64_decode($data->success), 'success');
+        } elseif ( !empty($data->error) ) {
+            $data->alert = $render->notification(base64_decode($data->error), 'error');
         }
 
         return $this->render_from_template('core_cfield/cfield', $data);
