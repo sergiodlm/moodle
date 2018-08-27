@@ -43,15 +43,18 @@ class lib {
             $record = field_factory::load($id);
             $classfieldtype = '\cfield_'. $record->get_type().'\field';
             $categoryid = $record->get_categoryid();
-            $arrayform = [
-                    'name'          => $record->get_name(),
-                    'shortname'     => $record->get_shortname(),
-                    'categoryid'    => $record->get_categoryid(),
+            $arrayform = (object)[
+                    'id'                => $id,
+                    'name'              => $record->get_name(),
+                    'shortname'         => $record->get_shortname(),
+                    'categoryid'        => $record->get_categoryid(),
+                    'description'       => $record->get_description(),
+                    'descriptionformat' => $record->get_descriptionformat(),
             ];
         }else {
             $classfieldtype = '\cfield_'.$type.'\field';
             $id ='';
-            $arrayform = null;
+            $arrayform = (object)null;
             $categoryid = null;
         }
 
@@ -98,6 +101,21 @@ class lib {
         // Get fields for field type.
         $mform =  $handler1->get_field_config_form(null,$args);
 
+        if ($id) {
+             $textfieldoptions = array(
+                    'trusttext' => true,
+                    'subdirs' => true,
+                    'maxfiles' => 50,
+                    'maxbytes' => 0,
+                    'context' => $PAGE->context,
+                    'noclean' => 0,
+                    'enable_filemanagement' => true
+            );
+
+            file_prepare_standard_editor($arrayform, 'description', $textfieldoptions, $PAGE->context, 'core_cfield', 'description', $arrayform->id);
+
+        }
+
         $mform->set_data($arrayform);
 
         // Process Form data.
@@ -118,6 +136,22 @@ class lib {
                 //$fielddata->configdata = $data->configdata;
                 //$fielddata->sortorder = $data->sortorder;
 
+                if ( isset($data->description_editor) ) {
+
+                    $textfieldoptions = array('trusttext' => true,
+                            'subdirs' => true,
+                            'maxfiles' => 5,
+                            'maxbytes' => 0,
+                            'context' => $PAGE->context,
+                            'noclean' => 0,
+                            'enable_filemanagement' => true);
+
+                    $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context, 'core_cfield',
+                            'description', $data->id);
+                    $fielddata->description = $data->description;
+                    $fielddata->descriptionformat = $data->descriptionformat;
+                }
+
             } else {
                 // New.
                 $fielddata = new \stdClass();
@@ -129,6 +163,22 @@ class lib {
                 $fielddata->configdata = null;
                 $fielddata->id = null;
                 $fielddata->type = $type;
+
+                if ( isset($data->description_editor) ) {
+
+                    $textfieldoptions = array('trusttext' => true,
+                            'subdirs' => true,
+                            'maxfiles' => 5,
+                            'maxbytes' => 0,
+                            'context' => $PAGE->context,
+                            'noclean' => 0,
+                            'enable_filemanagement' => true);
+
+                    //$data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $context, 'core_cfield',
+                    //        'description', $data->id);
+                    //$fielddata->description = $data->description;
+                    //$fielddata->descriptionformat = $data->descriptionformat;
+                }
             }
 
             $field = new $classfieldtype($fielddata);

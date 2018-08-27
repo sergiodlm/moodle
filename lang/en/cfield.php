@@ -40,3 +40,7 @@ $string['confirmdeletecategory'] = 'Are you sure? (All fields inside this catego
 $string['formcategorycheckname'] = 'Category name already exists';
 $string['formfieldcheckname'] = 'Name already exists';
 $string['formfieldcheckshortname'] = 'Short Name already exists';
+$string['specificsettings'] = 'Specific settings';
+$string['commonsettings'] = 'Common settings';
+$string['maxlength'] = 'Max length';
+$string['description'] = 'Description';

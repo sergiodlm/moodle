@@ -34,13 +34,40 @@ class field_config_form extends \moodleform {
     // \core_cfield\field $fielddefinition
 
     public function definition() {
+        global $PAGE;
         $mform = $this->_form;
 
-        $this->_customdata['classfieldtype']::add_fields_edit_form($mform);
+        // We add common settings here.
+        $mform->addElement('header', '_commonsettings', get_string('commonsettings', 'core_cfield'));
+
+        $mform->addElement('text', 'name', get_string('fieldname', 'core_cfield'));
+        $mform->setType('name', PARAM_NOTAGS);
+        $mform->addRule('name', get_string('name'), 'required');
+
+        $mform->addElement('text', 'shortname', get_string('fieldshortname', 'core_cfield'));
+        $mform->setType('shortname', PARAM_NOTAGS);
+        $mform->addRule('shortname', get_string('shortname'), 'required');
+
+        $desceditoroptions = array('trusttext' => true,
+                'subdirs' => true,
+                'maxfiles' => 5,
+                'maxbytes' => 0,
+                'context' => $PAGE->context,
+                'noclean' => 0,
+                'enable_filemanagement' => true);
+
+        $mform->addElement('editor', 'description_editor', get_string('description', 'core_cfield'), null, $desceditoroptions);
+        $mform->setType('description_editor', PARAM_RAW);
 
         $select = $mform->addElement('select', 'categoryid', get_string('category', 'core_cfield'), $this->_customdata['categorylist']);
         $select->setSelected($this->_customdata['categoryid']);
 
+        $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_cfield'));
+
+        // We add specific settings here.
+        $this->_customdata['classfieldtype']::add_field_to_edit_form($mform);
+
+        // We add hidden fields.
         $mform->addElement('hidden', 'handler', $this->_customdata['handler']);
         $mform->setType('handler', PARAM_RAW);
 
@@ -54,7 +81,7 @@ class field_config_form extends \moodleform {
         $mform->setType('action', PARAM_RAW);
 
         if (!empty($this->_customdata['id'])) {
-
+            // Field exists.
             $mform->addElement('hidden', 'id', $this->_customdata['id']);
             $mform->setType('id', PARAM_INT);
             $mform->addElement('hidden', 'itemid', $this->_customdata['id']);
@@ -62,6 +89,7 @@ class field_config_form extends \moodleform {
 
             $this->add_action_buttons(true, get_string('modify', 'core_cfield'));
         } else {
+            // New field.
             $this->add_action_buttons(true, get_string('add', 'core_cfield'));
         }
     }
