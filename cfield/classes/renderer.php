@@ -25,8 +25,17 @@ defined('MOODLE_INTERNAL') || die;
 class core_cfield_renderer extends plugin_renderer_base {
 
     protected function render_management(core_cfield\output\management $list) {
+        global $PAGE;
+        $render = new \core_renderer($PAGE, 'cfield');
 
         $data = $list->export_for_template($this);
+
+        if ( !empty($data['success']) ) {
+            $data['alert'] = $render->notification(base64_decode($data['success']));
+        } elseif ( !empty($data['error']) ) {
+            $data['alert'] = $render->notification(base64_decode($data['error']));
+        }
+
         return $this->render_from_template('core_cfield/cfield', $data);
     }
 }
