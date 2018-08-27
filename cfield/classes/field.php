@@ -22,8 +22,6 @@
 
 namespace core_cfield;
 
-use Horde\Socket\Client\Exception;
-
 defined('MOODLE_INTERNAL') || die;
 
 abstract class field {
@@ -38,6 +36,7 @@ abstract class field {
     protected $configdata;
     protected $timecreated;
     protected $timemodified;
+    protected $data;
 
     private $db;
     const CLASS_TABLE = 'cfield_field';
@@ -48,26 +47,25 @@ abstract class field {
     public function __construct(\stdClass $fielddata) {
         global $DB;
 
-        if (
-                empty($fielddata->shortname) ||
-                empty($fielddata->name) ||
-                empty($fielddata->type) ||
-                empty($fielddata->categoryid)
-        ) {
+        /*
+        if (!isset($fielddata->id) || (empty($fielddata->shortname) || empty($fielddata->name) ||
+                    empty($fielddata->type) || empty($fielddata->categoryid))) {
             throw new Exception();
         }
+        */
 
         $this->id                = !empty($fielddata->id) ? $fielddata->id : null;
         $this->shortname         = $fielddata->shortname;
-        $this->name              = $fielddata->name;
-        $this->type              = $fielddata->type;
+        $this->name              = empty($fielddata->name) ? null : $fielddata->name;
+        $this->type              = empty($fielddata->type) ? null : $fielddata->type;
         $this->description       = !empty($fielddata->description) ? $fielddata->description : null;
         $this->descriptionformat = !empty($fielddata->descriptionformat) ? $fielddata->descriptionformat : null;
         $this->sortorder         = !empty($fielddata->sortorder) ? $fielddata->sortorder : null;
-        $this->categoryid        = $fielddata->categoryid;
+        $this->categoryid        = empty($fielddata->categoryid) ? null : $fielddata->categoryid;
         $this->configdata        = !empty($fielddata->configdata) ? $fielddata->configdata : null;
         $this->timecreated       = !empty($fielddata->timecreated) ? $fielddata->timecreated : time();
         $this->timemodified      = !empty($fielddata->timemodified) ? $fielddata->timemodified : time();
+        $this->datarecord        = null;
 
         $this->db = $DB;
 
@@ -75,8 +73,7 @@ abstract class field {
     }
 
     public function delete() {
-        $this->db->delete_records($this::CLASS_TABLE, ['id' => $this->id]);
-        return true;
+        return $this->db->delete_records($this::CLASS_TABLE, ['id' => $this->id]);
     }
 
     private function insert() {
@@ -330,6 +327,25 @@ abstract class field {
     }
 
     /**
+     * TODO: check locked status.
+     *
+     * @return field
+     */
+    public function is_locked() {
+        return false;
+    }
+
+    /**
+     * Hook for child classess to process the data before it gets saved in database
+     * @param stdClass $data
+     * @param stdClass $datarecord The object that will be used to save the record
+     * @return  mixed
+     */
+    public function edit_save_data_preprocess($data, $datarecord) {
+        return $data;
+    }
+
+    /**
      * Print out the form field.
      * @param moodleform $mform instance of the moodleform class
      * @return bool
@@ -372,7 +388,7 @@ abstract class field {
      * @param moodleform $mform instance of the moodleform class
      */
     public function edit_field_set_locked($mform) {
-        if (!$mform->elementExists($this->inputname)) {
+        if (!$mform->elementExists($this->shortname)) {
             return;
         }
         if ($this->is_locked() and !has_capability('moodle/course:update', context_course::instance($this->courseid))) {
@@ -402,5 +418,63 @@ abstract class field {
      */
     public function is_required() {
         return true; //(boolean)$this->required;
+    }
+
+    public function set_datarecord($data) {
+        $this->datarecord = $data;
+        $this->set_data($data);
+    }
+
+    public function set_data($data) {
+        $this->data = $data;
+    }
+
+    /**
+     * Saves the data coming from form
+     * @param stdClass $datanew data coming from the form
+     * @return mixed returns data id if success of db insert/update, false on fail, 0 if not permitted
+     */
+    public function edit_save_data($datanew) {
+        global $DB;
+
+        if (!isset($datanew->{$this->shortname})) {
+            // Field not present in form, probably locked and invisible - skip it.
+            return;
+        }
+
+        $data = new \stdClass();
+
+        $datanew->{$this->shortname} = $this->edit_save_data_preprocess($datanew->{$this->shortname}, $data);
+
+        $this->datarecord->charvalue = $datanew->{$this->shortname};
+
+        if ($this->datarecord->id) {
+            $this->datarecord->timemodified = time();
+            $DB->update_record('cfield_data', $this->datarecord);
+        } else {
+            $this->datarecord->timecreated = time();
+            $this->datarecord->timemodified = time();
+            $DB->insert_record('cfield_data', $this->datarecord);
+        }
+    }
+
+    /**
+     * Validate the custom field.
+     *
+     * @param stdClass $datanew data coming from the form
+     * @return  array contains error messages
+     */
+    public function edit_validate_field($datanew) {
+        return [];
+    }
+
+    /**
+     * Loads an object with data for this field.
+     * @param stdClass $user a user object
+     */
+    public function edit_load_data($data) {
+        if ($this->data !== null) {
+            $data->{$this->shortname} = $this->data;
+        }
     }
 }

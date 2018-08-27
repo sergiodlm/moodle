@@ -2569,6 +2569,8 @@ function update_course($data, $editoroptions = NULL) {
         }
     }
 
+    course_customfields_save_data($data);
+
     // Update with the new data
     $DB->update_record('course', $data);
     // make sure the modinfo cache is reset
@@ -4260,9 +4262,13 @@ function can_download_from_backup_filearea($filearea, \context $context, stdClas
     return $candownload;
 }
 
+/**
+ * Adds custom fields to course edit forms.
+ * @param moodleform $mform
+ */
 function course_add_custom_fields($mform) {
 
-    $handler  = new core_course\cfield\course_handler(null, 'course');
+    $handler  = new core_course\cfield\course_handler(null, 'core_course', 'course');
     $categories = $handler->get_fields_definitions();
     foreach ($categories as $category) {
         // Check first if *any* fields will be displayed.
@@ -4282,5 +4288,38 @@ function course_add_custom_fields($mform) {
         foreach ($fieldstodisplay as $formfield) {
             $formfield->edit_field($mform);
         }
+    }
+}
+
+/**
+ * Custom fields definition after data
+ * @param moodleform $mform
+ * @param int $userid
+ */
+function course_customfields_definition_after_data($mform, $courseid) {
+    global $CFG;
+
+    $handler  = new core_course\cfield\course_handler(null, 'core_course', 'course');
+    $fields = $handler->get_fields_with_data($courseid);
+    foreach ($fields as $formfield) {
+        $formfield->edit_after_data($mform);
+    }
+}
+
+function course_customfields_load_data($data) {
+
+    $handler  = new core_course\cfield\course_handler(null, 'core_course', 'course');
+    $fields = $handler->get_fields_with_data($data->id);
+    foreach ($fields as $formfield) {
+        $formfield->edit_load_data($data);
+    }
+}
+
+function course_customfields_save_data($data) {
+
+    $handler  = new core_course\cfield\course_handler(null, 'core_course', 'course');
+    $fields = $handler->get_fields_with_data($data->id);
+    foreach ($fields as $formfield) {
+        $formfield->edit_save_data($data);
     }
 }
