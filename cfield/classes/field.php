@@ -320,4 +320,87 @@ abstract class field {
         return $this;
     }
 
+    /**
+     * TODO: check capabilities.
+     *
+     * @return field
+     */
+    public function is_editable() {
+        return true;
+    }
+
+    /**
+     * Print out the form field.
+     * @param moodleform $mform instance of the moodleform class
+     * @return bool
+     */
+    public function edit_field($mform) {
+        if (!$this->is_editable()) {
+            return false;
+        }
+
+        $this->edit_field_add($mform);
+        $this->edit_field_set_default($mform);
+        $this->edit_field_set_required($mform);
+        return true;
+    }
+
+    /**
+     * Sets the default data for the field in the form object
+     * @param  moodleform $mform instance of the moodleform class
+     */
+    public function edit_field_set_default($mform) {
+        if (!empty($this->field->defaultdata)) {
+            $mform->setDefault($this->shortnamename, $this->field->defaultdata);
+        }
+    }
+
+    /**
+     * Sets the required flag for the field in the form object
+     *
+     * @param moodleform $mform instance of the moodleform class
+     */
+    public function edit_field_set_required($mform) {
+        global $USER;
+        if ($this->is_required() && ($this->is_editable())) {
+            $mform->addRule($this->shortname, get_string('required'), 'required', null, 'client');
+        }
+    }
+
+    /**
+     * HardFreeze the field if locked.
+     * @param moodleform $mform instance of the moodleform class
+     */
+    public function edit_field_set_locked($mform) {
+        if (!$mform->elementExists($this->inputname)) {
+            return;
+        }
+        if ($this->is_locked() and !has_capability('moodle/course:update', context_course::instance($this->courseid))) {
+            $mform->hardFreeze($this->shortname);
+            $mform->setConstant($this->shortname, $this->data);
+        }
+    }
+
+    /**
+     * Tweaks the edit form.
+     * @param moodleform $mform instance of the moodleform class
+     * @return bool
+     */
+    public function edit_after_data($mform) {
+        if (!$this->is_editable()) {
+            return false;
+        }
+
+        $this->edit_field_set_locked($mform);
+        return true;
+    }
+
+    /**
+     * Check if the field is required.
+     * @internal This method should not generally be overwritten by child classes.
+     * @return bool
+     */
+    public function is_required() {
+        return true; //(boolean)$this->required;
+    }
 }

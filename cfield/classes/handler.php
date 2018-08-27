@@ -28,8 +28,9 @@ abstract class handler {
 
     protected $itemid;
 
-    public function __construct($itemid = null) {
+    public function __construct($itemid = null, $component = null) {
         $this->itemid = $itemid;
+        $this->component = $component;
     }
 
     abstract public function get_component() : string;
