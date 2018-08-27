@@ -86,6 +86,15 @@ class lib {
                 'action'            => 'editfield'
         );
 
+        switch($options['area']) {
+            case 'course':
+                $urlorigin = '/course/cfields.php';
+                break;
+            default:
+                print_object($options['component']);
+                die;
+        }
+
         // Get fields for field type.
         $mform =  $handler1->get_field_config_form(null,$args);
 
@@ -93,7 +102,7 @@ class lib {
 
         // Process Form data.
         if ($mform->is_cancelled()) {
-            redirect($url);
+            redirect(new \moodle_url($urlorigin));
         } else if ($data = $mform->get_data()) {
 
             if (!empty($data->id)) {
@@ -125,14 +134,14 @@ class lib {
             $field = new $classfieldtype($fielddata);
             try {
                 $field->save();
-                $url = new \moodle_url('/cfield/edit.php', [
+                $url = new \moodle_url($urlorigin, [
                         'handler'   => $handler,
                         'type'  => $type,
                         'success'   => base64_encode('Entry inserted correctly'),
                         'action'    => 'editfield'
                 ]);
             } catch (\dml_write_exception $exception) {
-                $url = new \moodle_url('/cfield/edit.php', [
+                $url = new \moodle_url($urlorigin, [
                         'handler'   => $handler,
                         'type'  => $type,
                         'error'     => base64_encode('Error: Duplicate entry'),
@@ -201,13 +210,22 @@ class lib {
         ];
         $args = ['handler' => $handler, 'id' => $id, 'action' => $action];
 
+        switch($options['area']) {
+            case 'course':
+                $urlorigin = '/course/cfields.php';
+                break;
+            default:
+                print_object($options['component']);
+                die;
+        }
+
         $mform =  $handler1->get_category_config_form(null,$args);
 
         $mform->set_data($arrayform);
 
         // Process Form data.
         if ($mform->is_cancelled()) {
-            redirect($url);
+            redirect(new \moodle_url($urlorigin));
         } else if ($data = $mform->get_data()) {
 
             if (!empty($data->id)) {
@@ -224,24 +242,15 @@ class lib {
                 $category = new category($categorydata);
             }
 
-            switch($options['area']) {
-                case 'course':
-                    $url ='/course/cfields.php';
-                    break;
-                default:
-                    print_object($options['component']);
-                    die;
-            }
-
             try {
                 $category->save();
-                $url = new \moodle_url($url, [
+                $url = new \moodle_url($urlorigin, [
                         'handler'   => $handler,
                         'success'   => base64_encode('Entry inserted correctly'),
                         'action'    => $action
                 ]);
             } catch (\dml_write_exception $exception) {
-                $url = new \moodle_url($url, [
+                $url = new \moodle_url($urlorigin, [
                         'handler'   => $handler,
                         'error'     => base64_encode('Error: Duplicate entry'),
                         'action'    => $action
