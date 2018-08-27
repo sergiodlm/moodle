@@ -4259,3 +4259,28 @@ function can_download_from_backup_filearea($filearea, \context $context, stdClas
     }
     return $candownload;
 }
+
+function course_add_custom_fields($mform) {
+
+    $handler  = new core_course\cfield\course_handler(null, 'course');
+    $categories = $handler->get_fields_definitions();
+    foreach ($categories as $category) {
+        // Check first if *any* fields will be displayed.
+        $fieldstodisplay = [];
+
+        foreach ($category->get_fields() as $formfield) {
+            if ($formfield->is_editable()) {
+                $fieldstodisplay[] = $formfield;
+            }
+        }
+        if (empty($fieldstodisplay)) {
+            continue;
+        }
+
+        // Display the header and the fields.
+        $mform->addElement('header', 'category_'.$category->get_id(), format_string($category->get_name()));
+        foreach ($fieldstodisplay as $formfield) {
+            $formfield->edit_field($mform);
+        }
+    }
+}
