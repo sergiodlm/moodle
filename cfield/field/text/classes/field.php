@@ -22,9 +22,10 @@
 
 namespace cfield_text;
 
-class field extends \core_cfield\field{
-    const TYPE = 'text';
+class field extends \core_cfield\field {
 
+    const TYPE = 'text';
+    const SIZE = 40;
 
     /**
      * Add fields for editing a text field.
@@ -32,8 +33,24 @@ class field extends \core_cfield\field{
      */
     public static function add_field_to_edit_form( \MoodleQuickForm $mform) {
         //public static function add_fields_edit_form(\core_cfield\field $fielddefinition, \moodleform $form, \MoodleQuickForm $mform) {
+
+        $linkstargetlist = array(
+                ''          => get_string('none', 'core_cfield'),
+                '_blank'    => get_string('newwindow', 'core_cfield'),
+                '_self'     => get_string('sameframe', 'core_cfield'),
+                '_top'      => get_string('samewindow', 'core_cfield')
+        );
+
+        // Max length.
         $mform->addElement('text', 'configdata[maxlength]', get_string('maxlength', 'core_cfield'));
         $mform->setType('configdata[maxlength]', PARAM_INT);
+
+        // Link.
+        $mform->addElement('text', 'configdata[link]', get_string('link', 'core_cfield'));
+        $mform->setType('configdata[link]', PARAM_URL);
+
+        // Link target.
+        $mform->addElement('select', 'configdata[linktarget]', get_string('linktarget', 'core_cfield'), $linkstargetlist);
     }
 
     /**
@@ -41,12 +58,7 @@ class field extends \core_cfield\field{
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-        $size = 40;//$this->field->param1;
-        $maxlength = 40;//$this->field->param2;
-        $fieldtype = 'text'; //($this->field->param3 == 1 ? 'password' : 'text');
-
-        // Create the form field.
-        $mform->addElement($fieldtype, $this->shortname, format_string($this->name), 'maxlength="'.$maxlength.'" size="'.$size.'" ');
+        $mform->addElement(self::TYPE, $this->shortname, format_string($this->name), 'size="'.self::SIZE.'" ');
         $mform->setType($this->shortname, PARAM_TEXT);
     }
 

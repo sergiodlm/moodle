@@ -33,8 +33,8 @@ class lib {
 
         $id = $args['id'];
         $handler = $args['handler'];
-        $action = $args['action'];
-        $itemid = $args['itemid'];
+        //$action = $args['action'];
+        //$itemid = $args['itemid'];
         $type = $args['type'];
         $success = $args['success'];
         $error = $args['error'];
@@ -54,9 +54,12 @@ class lib {
             ];
 
             // We format configdata fields.
-            foreach ($configdata as $a => $b) {
-                $arrayform->configdata[$a] = $b;
+            if($configdata) {
+                foreach ($configdata as $a => $b) {
+                    $arrayform->configdata[$a] = $b;
+                }
             }
+
 
         } else {
             $classfieldtype = '\cfield_'.$type.'\field';
@@ -70,8 +73,8 @@ class lib {
         $PAGE->set_context(\context_system::instance());
         $PAGE->set_url($url);
         $PAGE->set_pagelayout('report');
-        $PAGE->set_title('cfield');
-        $PAGE->navbar->add(get_string('edit'), new \moodle_url($url));
+        $PAGE->set_title(get_string('customfields', 'core_cfield'));
+        $PAGE->navbar->add(get_string('edit'), $url);
 
         $handler1 = new $handler(null);
 
@@ -86,7 +89,11 @@ class lib {
             $categorylist[$category->id] = $category->name;
         }
 
-        $yesnolist = array( 0 => 'No', 1 => 'Yes');
+        $yesnolist = array(
+                0 => get_string('no', 'core_cfield'),
+                1 => get_string('yes', 'core_cfield')
+        );
+
 
         $args = array(
                 'handler'           => $handler,
@@ -96,17 +103,8 @@ class lib {
                 'categorylist'      => $categorylist,
                 'categoryid'        => $categoryid,
                 'action'            => 'editfield',
-                'yesnolist'          => $yesnolist
+                'yesnolist'         => $yesnolist,
         );
-
-        switch($options['area']) {
-            case 'course':
-                $urlorigin = '/course/cfields.php';
-                break;
-            default:
-                // TODO finish
-                die;
-        }
 
         // Get fields for field type.
         $mform =  $handler1->get_field_config_form(null,$args);
@@ -129,7 +127,7 @@ class lib {
 
         // Process Form data.
         if ($mform->is_cancelled()) {
-            redirect(new \moodle_url($urlorigin));
+            redirect(new \moodle_url($handler1->url));
         } else if ($data = $mform->get_data()) {
 
             if (!empty($data->id)) {
@@ -140,11 +138,6 @@ class lib {
                 $fielddata->shortname = $data->shortname;
                 $fielddata->categoryid = $data->categoryid;
                 $fielddata->type = $data->type;//datatype;
-                //$fielddata->description = $data->description;
-                //$fielddata->descriptionformat = $data->descriptionformat;
-                //$fielddata->configdata = $data->configdata;
-                //$fielddata->sortorder = $data->sortorder;
-                //print_object($data->configdata);die;
                 $fielddata->configdata = json_encode ($data->configdata);
 
                 if ( isset($data->description_editor) ) {
@@ -166,16 +159,16 @@ class lib {
                 $field = new $classfieldtype($fielddata);
                 try {
                     $field->save();
-                    $url = new \moodle_url($urlorigin, [
+                    $url = new \moodle_url($handler1->url, [
                             'handler'   => $handler,
-                            'type'  => $type,
+                            'type'      => $type,
                             'success'   => base64_encode('Entry inserted correctly'),
                             'action'    => 'editfield'
                     ]);
                 } catch (\dml_write_exception $exception) {
-                    $url = new \moodle_url($urlorigin, [
+                    $url = new \moodle_url($handler1->url, [
                             'handler'   => $handler,
-                            'type'  => $type,
+                            'type'      => $type,
                             'error'     => base64_encode('Error: Duplicate entry'),
                             'action'    => 'editfield'
                     ]);
@@ -187,10 +180,6 @@ class lib {
                 $fielddata->name = $data->name;
                 $fielddata->shortname = $data->shortname;
                 $fielddata->categoryid = $data->categoryid;
-                $fielddata->description = null;
-                $fielddata->descriptionformat = null;
-                $fielddata->configdata = null;
-                $fielddata->id = null;
                 $fielddata->type = $type;
 
                 $field = new $classfieldtype($fielddata);
@@ -219,15 +208,14 @@ class lib {
                         $savedfield->save();
                     }
 
-
-                    $url = new \moodle_url($urlorigin, [
+                    $url = new \moodle_url($handler1->url, [
                             'handler'   => $handler,
                             'type'  => $type,
                             'success'   => base64_encode('Entry inserted correctly'),
                             'action'    => 'editfield'
                     ]);
                 } catch (\dml_write_exception $exception) {
-                    $url = new \moodle_url($urlorigin, [
+                    $url = new \moodle_url($handler1->url, [
                             'handler'   => $handler,
                             'type'  => $type,
                             'error'     => base64_encode('Error: Duplicate entry'),
@@ -286,26 +274,16 @@ class lib {
         $PAGE->set_context(\context_system::instance());
         $PAGE->set_url($url);
         $PAGE->set_pagelayout('report');
-        $PAGE->set_title('cfield');
+        $PAGE->set_title(get_string('customfields', 'core_cfield'));
         $PAGE->navbar->add(get_string('edit'), new \moodle_url($url));
 
         $handler1 = new $handler(null);
 
-        $options = [
-                'component' => $handler1->get_component(),
-                'area' => $handler1->get_area(),
-                'itemid' => $handler1->get_item_id()
+        $args = [
+                'handler'   => $handler,
+                'id'        => $id,
+                'action'    => $action
         ];
-        $args = ['handler' => $handler, 'id' => $id, 'action' => $action];
-
-        switch($options['area']) {
-            case 'course':
-                $urlorigin = '/course/cfields.php';
-                break;
-            default:
-                print_object($options['component']);
-                die;
-        }
 
         $mform =  $handler1->get_category_config_form(null,$args);
 
@@ -313,7 +291,7 @@ class lib {
 
         // Process Form data.
         if ($mform->is_cancelled()) {
-            redirect(new \moodle_url($urlorigin));
+            redirect(new \moodle_url($handler1->url));
         } else if ($data = $mform->get_data()) {
 
             if (!empty($data->id)) {
@@ -324,21 +302,21 @@ class lib {
                 // New.
                 $categorydata = new \stdClass();
                 $categorydata->name = $data->name;
-                $categorydata->component = $options['component'];
-                $categorydata->area = $options['area'];
-                $categorydata->itemid = $options['itemid'];
+                $categorydata->component = $handler1->get_component();
+                $categorydata->area = $handler1->get_area();
+                $categorydata->itemid = $handler1->get_item_id();
                 $category = new category($categorydata);
             }
 
             try {
                 $category->save();
-                $url = new \moodle_url($urlorigin, [
+                $url = new \moodle_url($handler1->url, [
                         'handler'   => $handler,
                         'success'   => base64_encode('Entry inserted correctly'),
                         'action'    => $action
                 ]);
             } catch (\dml_write_exception $exception) {
-                $url = new \moodle_url($urlorigin, [
+                $url = new \moodle_url($handler1->url, [
                         'handler'   => $handler,
                         'error'     => base64_encode('Error: Duplicate entry'),
                         'action'    => $action
