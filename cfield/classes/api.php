@@ -39,7 +39,6 @@ class api {
         return field_factory::load($id);
     }
 
-
     public static function get_fields_with_data($component, $area, $recordid) {
         global $DB;
         $sql = 'SELECT f.id as field_id, f.shortname, d.*, f.type
