@@ -28,6 +28,8 @@ use Horde\Socket\Client\Exception;
 defined('MOODLE_INTERNAL') || die;
 
 class category {
+    protected $dataobject;
+    /*
     protected $id;
     protected $name;
     protected $description;
@@ -39,9 +41,9 @@ class category {
     protected $area;
     protected $itemid;
     protected $contextid;
+    */
     protected $fields;
 
-    private $db;
     const CLASS_TABLE = 'cfield_category';
     const LENGTH_NAME = 400;
     const LENGTH_COMPONENT = 100;
@@ -58,25 +60,15 @@ class category {
             throw new Exception();
         }
 
-        $this->id                = empty($categorydata->id) ? null : $categorydata->id;
-        $this->name              = $categorydata->name;
-        $this->description       = empty($categorydata->description) ? null : $categorydata->description;
-        $this->descriptionformat = empty($categorydata->descriptionformat) ? null : $categorydata->descriptionformat;
-        $this->sortorder         = empty($categorydata->sortorder) ? null : $categorydata->sortorder;
-        $this->timecreated       = empty($categorydata->timecreated) ? null : time();
-        $this->timemodified      = empty($categorydata->timemodified) ? null : time();
-        $this->component         = $categorydata->component;
-        $this->area              = $categorydata->area;
-        $this->itemid            = empty($categorydata->itemid) ? null : $categorydata->itemid;
-        $this->contextid         = empty($categorydata->contextid) ? null : $categorydata->contextid;
-        $this->fields            = new \ArrayObject();
-
-        $this->db = $DB;
+        $this->dataobject = $categorydata;
+        $this->fields = new \ArrayObject();
 
         return $this;
     }
 
     public function delete() {
+        global $DB;
+
         $category = category::load($this->get_id());
 
         if ( count($category->get_fields()) > 0 ) {
@@ -89,23 +81,16 @@ class category {
             }
         }
 
-        return $this->db->delete_records(self::CLASS_TABLE, ['id' => $this->id]);
+        return $DB->delete_records(self::CLASS_TABLE, ['id' => $this->id]);
     }
 
     private function insert() {
-        $dataobject = array(
-                'name'              => $this->name,
-                'description'       => $this->description,
-                'descriptionformat' => $this->descriptionformat,
-                'sortorder'         => $this->sortorder,
-                'timecreated'       => time(),
-                'timemodified'      => time(),
-                'component'         => $this->component,
-                'area'              => $this->area,
-                'itemid'            => $this->itemid,
-                'contextid'         => $this->contextid
-        );
-        $this->id   = $this->db->insert_record(self::CLASS_TABLE, $dataobject, $returnid = true, $bulk = false);
+        global $DB;
+
+        $now = time();
+        $this->dataobject->timecreated = $now;
+        $this->dataobject->timemodified = $now;
+        $this->id = $DB->insert_record(self::CLASS_TABLE, $this->dataobject);
 
         foreach ($this->fields as $field) {
             $field->set_categoryid($this->id);
@@ -116,33 +101,23 @@ class category {
     }
 
     private function update() {
-        $dataobject = array(
-                'id'                => $this->id,
-                'name'              => $this->name,
-                'description'       => $this->description,
-                'descriptionformat' => $this->descriptionformat,
-                'sortorder'         => $this->sortorder,
-                'timecreated'       => $this->timecreated,
-                'timemodified'      => time(),
-                'component'         => $this->component,
-                'area'              => $this->area,
-                'itemid'            => $this->itemid,
-                'contextid'         => $this->contextid
-        );
+        global $DB;
+
+        $this->dataobject->timemodified = $now;
 
         foreach ($this->fields as $field) {
             $field->set_categoryid($this->id);
             $field->save();
         }
 
-        if ($this->db->update_record(self::CLASS_TABLE, $dataobject, $bulk = false)) {
+        if ($DB->update_record(self::CLASS_TABLE, $this->dataobject)) {
             return $this;
         }
         return false;
     }
 
     public function save() {
-        if (empty($this->id)) {
+        if (empty($this->dataobject->id)) {
             return $this->insert();
         }
 
@@ -150,11 +125,11 @@ class category {
     }
 
     public function get_id() {
-        return $this->id;
+        return $this->dataobject->id;
     }
 
     public function get_name() {
-        return $this->name;
+        return $this->dataobject->name;
     }
 
     public function set_fields($field) {
@@ -212,7 +187,7 @@ class category {
      */
     public
     function get_description() {
-        return $this->description;
+        return $this->dataobject->description;
     }
 
     /**
@@ -221,7 +196,7 @@ class category {
      */
     public
     function set_description($description) {
-        $this->description = $description;
+        $this->dataobject->description = $description;
         return $this;
     }
 
@@ -230,7 +205,7 @@ class category {
      */
     public
     function get_descriptionformat() {
-        return $this->descriptionformat;
+        return $this->dataobject->descriptionformat;
     }
 
     /**
@@ -239,7 +214,7 @@ class category {
      */
     public
     function set_descriptionformat($descriptionformat) {
-        $this->descriptionformat = $descriptionformat;
+        $this->dataobject->descriptionformat = $descriptionformat;
         return $this;
     }
 
@@ -248,7 +223,7 @@ class category {
      */
     public
     function get_sortorder() {
-        return $this->sortorder;
+        return $this->dataobject->sortorder;
     }
 
     /**
@@ -257,7 +232,7 @@ class category {
      */
     public
     function set_sortorder($sortorder) {
-        $this->sortorder = $sortorder;
+        $this->dataobject->sortorder = $sortorder;
         return $this;
     }
 
@@ -266,7 +241,7 @@ class category {
      */
     public
     function get_timecreated() {
-        return $this->timecreated;
+        return $this->dataobject->timecreated;
     }
 
     /**
@@ -275,7 +250,7 @@ class category {
      */
     public
     function set_timecreated($timecreated) {
-        $this->timecreated = $timecreated;
+        $this->dataobject->timecreated = $timecreated;
         return $this;
     }
 
@@ -284,7 +259,7 @@ class category {
      */
     public
     function get_timemodified() {
-        return $this->timemodified;
+        return $this->dataobject->timemodified;
     }
 
     /**
@@ -293,7 +268,7 @@ class category {
      */
     public
     function set_timemodified($timemodified) {
-        $this->timemodified = $timemodified;
+        $this->dataobject->timemodified = $timemodified;
         return $this;
     }
 
@@ -302,7 +277,7 @@ class category {
      */
     public
     function get_component() {
-        return $this->component;
+        return $this->dataobject->component;
     }
 
     /**
@@ -311,7 +286,7 @@ class category {
      */
     public
     function set_component($component) {
-        $this->component = $component;
+        $this->dataobject->component = $component;
         return $this;
     }
 
@@ -320,7 +295,7 @@ class category {
      */
     public
     function get_area() {
-        return $this->area;
+        return $this->dataobject->area;
     }
 
     /**
@@ -329,7 +304,7 @@ class category {
      */
     public
     function set_area($area) {
-        $this->area = $area;
+        $this->dataobject->area = $area;
         return $this;
     }
 
@@ -338,7 +313,7 @@ class category {
      */
     public
     function get_itemid() {
-        return $this->itemid;
+        return $this->dataobject->itemid;
     }
 
     /**
@@ -347,7 +322,7 @@ class category {
      */
     public
     function set_itemid($itemid) {
-        $this->itemid = $itemid;
+        $this->dataobject->itemid = $itemid;
         return $this;
     }
 
@@ -356,7 +331,7 @@ class category {
      */
     public
     function get_contextid() {
-        return $this->contextid;
+        return $this->dataobject->contextid;
     }
 
     /**
@@ -365,7 +340,7 @@ class category {
      */
     public
     function set_contextid($contextid) {
-        $this->contextid = $contextid;
+        $this->dataobject->contextid = $contextid;
         return $this;
     }
 
@@ -383,7 +358,7 @@ class category {
      */
     public
     function set_name($name) {
-        $this->name = $name;
+        $this->dataobject->name = $name;
         return $this;
     }
 }
