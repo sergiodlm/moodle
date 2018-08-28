@@ -30,7 +30,7 @@ class data {
     protected $recordid;
     protected $intvalue;
     protected $decvalue;
-    protected $shortcharval;
+    protected $shortcharvalue;
     protected $charvalue;
     protected $value;
     protected $valueformat;
@@ -50,7 +50,7 @@ class data {
         $this->recordid     = $data->recordid;
         $this->intvalue     = $data->intvalue;
         $this->decvalue     = $data->decvalue;
-        $this->shortcharval = $data->shortcharval;
+        $this->shortcharvalue = $data->shortcharvalue;
         $this->charvalue    = $data->charvalue;
         $this->value        = $data->value;
         $this->valueformat  = $data->valueformat;
@@ -58,9 +58,40 @@ class data {
         $this->timemodified = !empty($data->timemodified) ? $data->timemodified : time();
         $this->contextid    = $data->contextid;
 
+        $this->field        = null;
+        $this->category     = null;
+
         $this->db = $DB;
 
         return $this;
+    }
+
+    public static function load_recordid_data($component, $area, $recordid) {
+        global $DB;
+
+        $categories = category::load_array(
+                [
+                        'component' => $component,
+                        'area'      => $area
+                ]
+        );
+
+        $records = $DB->get_records(self::CLASS_TABLE, ['recordid' => $recordid]);
+        $records_array = new \ArrayObject();
+        foreach ($records as $record) {
+            $data = new data($record);
+            foreach ($categories as $category) {
+                foreach ($category->get_fields() as $field) {
+                    if ($field->get_id() == $data->get_fieldid()) {
+                        $data->set_field($field);
+                        $data->set_category($category);
+                    }
+                }
+            }
+            $records_array->append( $data );
+        }
+
+        return $records_array;
     }
 
     public static function load(int $id) {
@@ -75,7 +106,7 @@ class data {
                 'recordid'     => $this->recordid,
                 'intvalue'     => $this->intvalue,
                 'decvalue'     => $this->decvalue,
-                'shortcharval' => $this->shortcharval,
+                'shortcharvalue' => $this->shortcharvalue,
                 'charvalue'    => $this->charvalue,
                 'value'        => $this->value,
                 'valueformat'  => $this->valueformat,
@@ -95,7 +126,7 @@ class data {
                 'recordid'     => $this->recordid,
                 'intvalue'     => $this->intvalue,
                 'decvalue'     => $this->decvalue,
-                'shortcharval' => $this->shortcharval,
+                'shortcharvalue' => $this->shortcharvalue,
                 'charvalue'    => $this->charvalue,
                 'value'        => $this->value,
                 'valueformat'  => $this->valueformat,
@@ -121,23 +152,15 @@ class data {
     /**
      * @return null
      */
-    public function getId() {
+    public function get_id() {
         return $this->id;
     }
 
-    /**
-     * @param null $id
-     * @return data
-     */
-    public function setId($id) {
-        $this->id = $id;
-        return $this;
-    }
 
     /**
      * @return mixed
      */
-    public function getFieldid() {
+    public function get_fieldid() {
         return $this->fieldid;
     }
 
@@ -145,7 +168,7 @@ class data {
      * @param mixed $fieldid
      * @return data
      */
-    public function setFieldid($fieldid) {
+    public function set_fieldid($fieldid) {
         $this->fieldid = $fieldid;
         return $this;
     }
@@ -153,7 +176,7 @@ class data {
     /**
      * @return mixed
      */
-    public function getRecordid() {
+    public function get_recordid() {
         return $this->recordid;
     }
 
@@ -161,7 +184,7 @@ class data {
      * @param mixed $recordid
      * @return data
      */
-    public function setRecordid($recordid) {
+    public function set_recordid($recordid) {
         $this->recordid = $recordid;
         return $this;
     }
@@ -169,7 +192,7 @@ class data {
     /**
      * @return mixed
      */
-    public function getIntvalue() {
+    public function get_intvalue() {
         return $this->intvalue;
     }
 
@@ -177,7 +200,7 @@ class data {
      * @param mixed $intvalue
      * @return data
      */
-    public function setIntvalue($intvalue) {
+    public function set_intvalue($intvalue) {
         $this->intvalue = $intvalue;
         return $this;
     }
@@ -185,7 +208,7 @@ class data {
     /**
      * @return mixed
      */
-    public function getDecvalue() {
+    public function get_decvalue() {
         return $this->decvalue;
     }
 
@@ -193,7 +216,7 @@ class data {
      * @param mixed $decvalue
      * @return data
      */
-    public function setDecvalue($decvalue) {
+    public function set_decvalue($decvalue) {
         $this->decvalue = $decvalue;
         return $this;
     }
@@ -201,23 +224,23 @@ class data {
     /**
      * @return mixed
      */
-    public function getShortcharval() {
-        return $this->shortcharval;
+    public function get_shortcharvalue() {
+        return $this->shortcharvalue;
     }
 
     /**
-     * @param mixed $shortcharval
+     * @param mixed $shortcharvalue
      * @return data
      */
-    public function setShortcharval($shortcharval) {
-        $this->shortcharval = $shortcharval;
+    public function set_shortcharvalue($shortcharvalue) {
+        $this->shortcharvauell = $shortcharvalue;
         return $this;
     }
 
     /**
      * @return mixed
      */
-    public function getCharvalue() {
+    public function get_charvalue() {
         return $this->charvalue;
     }
 
@@ -225,7 +248,7 @@ class data {
      * @param mixed $charvalue
      * @return data
      */
-    public function setCharvalue($charvalue) {
+    public function set_charvalue($charvalue) {
         $this->charvalue = $charvalue;
         return $this;
     }
@@ -233,7 +256,7 @@ class data {
     /**
      * @return mixed
      */
-    public function getValue() {
+    public function get_value() {
         return $this->value;
     }
 
@@ -241,7 +264,7 @@ class data {
      * @param mixed $value
      * @return data
      */
-    public function setValue($value) {
+    public function set_value($value) {
         $this->value = $value;
         return $this;
     }
@@ -249,7 +272,7 @@ class data {
     /**
      * @return mixed
      */
-    public function getValueformat() {
+    public function get_valueformat() {
         return $this->valueformat;
     }
 
@@ -257,7 +280,7 @@ class data {
      * @param mixed $valueformat
      * @return data
      */
-    public function setValueformat($valueformat) {
+    public function set_valueformat($valueformat) {
         $this->valueformat = $valueformat;
         return $this;
     }
@@ -265,39 +288,22 @@ class data {
     /**
      * @return int
      */
-    public function getTimecreated(): int {
+    public function get_timecreated(): int {
         return $this->timecreated;
-    }
-
-    /**
-     * @param int $timecreated
-     * @return data
-     */
-    public function setTimecreated(int $timecreated): data {
-        $this->timecreated = $timecreated;
-        return $this;
     }
 
     /**
      * @return int
      */
-    public function getTimemodified(): int {
+    public function get_timemodified(): int {
         return $this->timemodified;
     }
 
-    /**
-     * @param int $timemodified
-     * @return data
-     */
-    public function setTimemodified(int $timemodified): data {
-        $this->timemodified = $timemodified;
-        return $this;
-    }
 
     /**
      * @return mixed
      */
-    public function getContextid() {
+    public function get_contextid() {
         return $this->contextid;
     }
 
@@ -305,10 +311,40 @@ class data {
      * @param mixed $contextid
      * @return data
      */
-    public function setContextid($contextid) {
+    public function set_contextid($contextid) {
         $this->contextid = $contextid;
         return $this;
     }
 
+    /**
+     * @param field $field
+     * @return data
+     */
+    public function set_field(field $field) : data {
+    $this->field = $field;
+    return $this;
+}
 
+    /**
+     * @return field
+     */
+    public function get_field() : field {
+        return $this->field;
+    }
+
+    /**
+     * @param category $category
+     * @return data
+     */
+    public function set_category(category $category) : data {
+        $this->category = $category;
+        return $this;
+    }
+
+    /**
+     * @return category
+     */
+    public function get_category() : category {
+        return $this->category;
+    }
 }
