@@ -60,8 +60,13 @@ class field_config_form extends \moodleform {
         $mform->addElement('editor', 'description_editor', get_string('description', 'core_cfield'), null, $desceditoroptions);
         $mform->setType('description_editor', PARAM_RAW);
 
+        // Category list.
         $select = $mform->addElement('select', 'categoryid', get_string('category', 'core_cfield'), $this->_customdata['categorylist']);
         $select->setSelected($this->_customdata['categoryid']);
+
+        // If field is required.
+        $select = $mform->addElement('select', 'configdata[required]', get_string('isfieldrequired', 'core_cfield'), $this->_customdata['yesnolist']);
+        //$select->setSelected($this->_customdata['configdata[required]']);
 
         $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_cfield'));
 
