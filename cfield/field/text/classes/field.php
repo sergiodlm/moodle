@@ -30,16 +30,10 @@ class field extends \core_cfield\field{
      * Add fields for editing a text field.
      * @param moodleform $mform
      */
-    public static function add_fields_edit_form( \MoodleQuickForm $mform) {
+    public static function add_field_to_edit_form( \MoodleQuickForm $mform) {
         //public static function add_fields_edit_form(\core_cfield\field $fielddefinition, \moodleform $form, \MoodleQuickForm $mform) {
-
-        $mform->addElement('text', 'name', get_string('fieldname', 'core_cfield'));
-        $mform->setType('name', PARAM_NOTAGS);
-        $mform->addRule('name', get_string('name'), 'required');
-
-        $mform->addElement('text', 'shortname', get_string('fieldshortname', 'core_cfield'));
-        $mform->setType('shortname', PARAM_NOTAGS);
-        $mform->addRule('shortname', get_string('shortname'), 'required');
+        $mform->addElement('text', 'configdata[maxlength]', get_string('maxlength', 'core_cfield'));
+        $mform->setType('configdata[maxlength]', PARAM_INT);
     }
 
     /**

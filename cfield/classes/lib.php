@@ -1,5 +1,5 @@
 <?php
-//This file is part of Moodle - http://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -43,15 +43,18 @@ class lib {
             $record = field_factory::load($id);
             $classfieldtype = '\cfield_'. $record->get_type().'\field';
             $categoryid = $record->get_categoryid();
-            $arrayform = [
-                    'name'          => $record->get_name(),
-                    'shortname'     => $record->get_shortname(),
-                    'categoryid'    => $record->get_categoryid(),
+            $arrayform = (object)[
+                    'id'                => $id,
+                    'name'              => $record->get_name(),
+                    'shortname'         => $record->get_shortname(),
+                    'categoryid'        => $record->get_categoryid(),
+                    'description'       => $record->get_description(),
+                    'descriptionformat' => $record->get_descriptionformat(),
             ];
-        }else {
+        } else {
             $classfieldtype = '\cfield_'.$type.'\field';
-            $id ='';
-            $arrayform = null;
+            $id = '';
+            $arrayform = (object)null;
             $categoryid = null;
         }
 
@@ -72,7 +75,7 @@ class lib {
         ];
 
         $categorylist = array();
-        foreach( category::list($options) as $category) {
+        foreach ( category::list($options) as $category) {
             $categorylist[$category->id] = $category->name;
         }
 
@@ -91,12 +94,27 @@ class lib {
                 $urlorigin = '/course/cfields.php';
                 break;
             default:
-                print_object($options['component']);
+                // TODO finish
                 die;
         }
 
         // Get fields for field type.
         $mform =  $handler1->get_field_config_form(null,$args);
+
+        if ($id) {
+             $textfieldoptions = array(
+                    'trusttext' => true,
+                    'subdirs' => true,
+                    'maxfiles' => 50,
+                    'maxbytes' => 0,
+                    'context' => $PAGE->context,
+                    'noclean' => 0,
+                    'enable_filemanagement' => true
+            );
+
+            file_prepare_standard_editor($arrayform, 'description', $textfieldoptions, $PAGE->context, 'core_cfield', 'description', $arrayform->id);
+
+        }
 
         $mform->set_data($arrayform);
 
@@ -118,6 +136,40 @@ class lib {
                 //$fielddata->configdata = $data->configdata;
                 //$fielddata->sortorder = $data->sortorder;
 
+                if ( isset($data->description_editor) ) {
+
+                    $textfieldoptions = array('trusttext' => true,
+                            'subdirs' => true,
+                            'maxfiles' => 5,
+                            'maxbytes' => 0,
+                            'context' => $PAGE->context,
+                            'noclean' => 0,
+                            'enable_filemanagement' => true);
+
+                    $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context, 'core_cfield',
+                            'description', $data->id);
+                    $fielddata->description = $data->description;
+                    $fielddata->descriptionformat = $data->descriptionformat;
+                }
+
+                $field = new $classfieldtype($fielddata);
+                try {
+                    $field->save();
+                    $url = new \moodle_url($urlorigin, [
+                            'handler'   => $handler,
+                            'type'  => $type,
+                            'success'   => base64_encode('Entry inserted correctly'),
+                            'action'    => 'editfield'
+                    ]);
+                } catch (\dml_write_exception $exception) {
+                    $url = new \moodle_url($urlorigin, [
+                            'handler'   => $handler,
+                            'type'  => $type,
+                            'error'     => base64_encode('Error: Duplicate entry'),
+                            'action'    => 'editfield'
+                    ]);
+                }
+
             } else {
                 // New.
                 $fielddata = new \stdClass();
@@ -129,25 +181,50 @@ class lib {
                 $fielddata->configdata = null;
                 $fielddata->id = null;
                 $fielddata->type = $type;
+
+                $field = new $classfieldtype($fielddata);
+                try {
+                    $savedfield = $field->save();
+                    $insertid = $savedfield->get_id();
+
+                    if ( isset($data->description_editor) ) {
+
+                        $textfieldoptions = array(
+                                'trusttext' => true,
+                                'subdirs' => true,
+                                'maxfiles' => 5,
+                                'maxbytes' => 0,
+                                'context' => $PAGE->context,
+                                'noclean' => 0,
+                                'enable_filemanagement' => true
+                        );
+
+                        $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context, 'core_cfield',
+                                'description', $insertid);
+
+                        $savedfield->set_description($data->description);
+                        $savedfield->set_descriptionformat($data->descriptionformat);
+                        $savedfield->set_id($insertid);
+                        $savedfield->save();
+                    }
+
+
+                    $url = new \moodle_url($urlorigin, [
+                            'handler'   => $handler,
+                            'type'  => $type,
+                            'success'   => base64_encode('Entry inserted correctly'),
+                            'action'    => 'editfield'
+                    ]);
+                } catch (\dml_write_exception $exception) {
+                    $url = new \moodle_url($urlorigin, [
+                            'handler'   => $handler,
+                            'type'  => $type,
+                            'error'     => base64_encode('Error: Duplicate entry'),
+                            'action'    => 'editfield'
+                    ]);
+                }
             }
 
-            $field = new $classfieldtype($fielddata);
-            try {
-                $field->save();
-                $url = new \moodle_url($urlorigin, [
-                        'handler'   => $handler,
-                        'type'  => $type,
-                        'success'   => base64_encode('Entry inserted correctly'),
-                        'action'    => 'editfield'
-                ]);
-            } catch (\dml_write_exception $exception) {
-                $url = new \moodle_url($urlorigin, [
-                        'handler'   => $handler,
-                        'type'  => $type,
-                        'error'     => base64_encode('Error: Duplicate entry'),
-                        'action'    => 'editfield'
-                ]);
-            }
             redirect($url);
         }
 
