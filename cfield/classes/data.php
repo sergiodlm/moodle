@@ -71,7 +71,15 @@ class data {
 
     private function insert() {
         $dataobject = array(
-
+                'fieldid'      => $this->fieldid,
+                'recordid'     => $this->recordid,
+                'intvalue'     => $this->intvalue,
+                'decvalue'     => $this->decvalue,
+                'shortcharval' => $this->shortcharval,
+                'charvalue'    => $this->charvalue,
+                'value'        => $this->value,
+                'valueformat'  => $this->valueformat,
+                'contextid'    => $this->contextid,
                 'timecreated'       => time(),
                 'timemodified'      => time(),
         );
@@ -82,10 +90,18 @@ class data {
 
     private function update() {
         $dataobject = array(
-                'id'                => $this->id,
-
-                'timecreated'       => $this->timecreated,
-                'timemodified'      => time(),
+                'id'           => $this->id,
+                'fieldid'      => $this->fieldid,
+                'recordid'     => $this->recordid,
+                'intvalue'     => $this->intvalue,
+                'decvalue'     => $this->decvalue,
+                'shortcharval' => $this->shortcharval,
+                'charvalue'    => $this->charvalue,
+                'value'        => $this->value,
+                'valueformat'  => $this->valueformat,
+                'contextid'    => $this->contextid,
+                'timecreated'  => $this->timecreated,
+                'timemodified' => time(),
         );
 
         if ($this->db->update_record($this::CLASS_TABLE, $dataobject, $bulk = false)) {
@@ -101,5 +117,198 @@ class data {
 
         return $this->update();
     }
+
+    /**
+     * @return null
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * @param null $id
+     * @return data
+     */
+    public function setId($id) {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFieldid() {
+        return $this->fieldid;
+    }
+
+    /**
+     * @param mixed $fieldid
+     * @return data
+     */
+    public function setFieldid($fieldid) {
+        $this->fieldid = $fieldid;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRecordid() {
+        return $this->recordid;
+    }
+
+    /**
+     * @param mixed $recordid
+     * @return data
+     */
+    public function setRecordid($recordid) {
+        $this->recordid = $recordid;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIntvalue() {
+        return $this->intvalue;
+    }
+
+    /**
+     * @param mixed $intvalue
+     * @return data
+     */
+    public function setIntvalue($intvalue) {
+        $this->intvalue = $intvalue;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDecvalue() {
+        return $this->decvalue;
+    }
+
+    /**
+     * @param mixed $decvalue
+     * @return data
+     */
+    public function setDecvalue($decvalue) {
+        $this->decvalue = $decvalue;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getShortcharval() {
+        return $this->shortcharval;
+    }
+
+    /**
+     * @param mixed $shortcharval
+     * @return data
+     */
+    public function setShortcharval($shortcharval) {
+        $this->shortcharval = $shortcharval;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCharvalue() {
+        return $this->charvalue;
+    }
+
+    /**
+     * @param mixed $charvalue
+     * @return data
+     */
+    public function setCharvalue($charvalue) {
+        $this->charvalue = $charvalue;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValue() {
+        return $this->value;
+    }
+
+    /**
+     * @param mixed $value
+     * @return data
+     */
+    public function setValue($value) {
+        $this->value = $value;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValueformat() {
+        return $this->valueformat;
+    }
+
+    /**
+     * @param mixed $valueformat
+     * @return data
+     */
+    public function setValueformat($valueformat) {
+        $this->valueformat = $valueformat;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimecreated(): int {
+        return $this->timecreated;
+    }
+
+    /**
+     * @param int $timecreated
+     * @return data
+     */
+    public function setTimecreated(int $timecreated): data {
+        $this->timecreated = $timecreated;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimemodified(): int {
+        return $this->timemodified;
+    }
+
+    /**
+     * @param int $timemodified
+     * @return data
+     */
+    public function setTimemodified(int $timemodified): data {
+        $this->timemodified = $timemodified;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContextid() {
+        return $this->contextid;
+    }
+
+    /**
+     * @param mixed $contextid
+     * @return data
+     */
+    public function setContextid($contextid) {
+        $this->contextid = $contextid;
+        return $this;
+    }
+
 
 }
