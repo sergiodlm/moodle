@@ -137,7 +137,7 @@ abstract class field {
         $where = 'WHERE categoryid '.$sql;
 
         $fields_array = new \ArrayObject();
-        foreach ($DB->get_records_sql('SELECT * FROM {'.self::CLASS_TABLE.'} '.$where, $params) as $field) {
+        foreach ($DB->get_records_sql('SELECT * FROM {'.self::CLASS_TABLE.'} '.$where.' ORDER BY sortorder DESC', $params) as $field) {
             $fields_array->append(field_factory::load($field->id));
         }
 

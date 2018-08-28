@@ -165,7 +165,7 @@ class category {
     public static function list(array $options) {
         global $DB;
 
-        return $DB->get_records(self::CLASS_TABLE, $options);
+        return $DB->get_records(self::CLASS_TABLE, $options, 'sortorder DESC');
     }
 
     public static function load(int $id) {
