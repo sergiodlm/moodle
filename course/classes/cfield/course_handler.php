@@ -15,14 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   xxxx_xxxx
- * @copyright 2018, David Matamoros <davidmc@moodle.com>
+ * @package   core_cfield
+ * @copyright 2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace core_course\cfield;
 
 class course_handler extends \core_cfield\handler {
+
+     public $url = '/course/cfields.php';
 
      public function get_component() : string {
          return 'core_course';

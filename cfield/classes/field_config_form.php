@@ -31,8 +31,6 @@ require_once($CFG->libdir . '/formslib.php');
 
 class field_config_form extends \moodleform {
 
-    // \core_cfield\field $fielddefinition
-
     public function definition() {
         global $PAGE;
         $mform = $this->_form;
@@ -65,20 +63,17 @@ class field_config_form extends \moodleform {
         $select->setSelected($this->_customdata['categoryid']);
 
         // If field is required.
-        $select = $mform->addElement('select', 'configdata[required]', get_string('isfieldrequired', 'core_cfield'), $this->_customdata['yesnolist']);
-        //$select->setSelected($this->_customdata['configdata[required]']);
-
-        $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_cfield'));
+        $mform->addElement('select', 'configdata[required]', get_string('isfieldrequired', 'core_cfield'), $this->_customdata['yesnolist']);
 
         // We add specific settings here.
+        $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_cfield'));
+
+        // We load specific fields from type.
         $this->_customdata['classfieldtype']::add_field_to_edit_form($mform);
 
         // We add hidden fields.
         $mform->addElement('hidden', 'handler', $this->_customdata['handler']);
         $mform->setType('handler', PARAM_RAW);
-
-        $mform->addElement('hidden', 'classfieldtype', $this->_customdata['classfieldtype']);
-        $mform->setType('classfieldtype', PARAM_RAW);
 
         $mform->addElement('hidden', 'type', $this->_customdata['type']);
         $mform->setType('type', PARAM_RAW);
@@ -90,8 +85,8 @@ class field_config_form extends \moodleform {
             // Field exists.
             $mform->addElement('hidden', 'id', $this->_customdata['id']);
             $mform->setType('id', PARAM_INT);
-            $mform->addElement('hidden', 'itemid', $this->_customdata['id']);
-            $mform->setType('itemid', PARAM_INT);
+            //$mform->addElement('hidden', 'itemid', $this->_customdata['itemid']);
+            //$mform->setType('itemid', PARAM_INT);
 
             $this->add_action_buttons(true, get_string('modify', 'core_cfield'));
         } else {

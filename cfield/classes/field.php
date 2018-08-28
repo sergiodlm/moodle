@@ -356,8 +356,10 @@ abstract class field {
         }
 
         $this->edit_field_add($mform);
-        $this->edit_field_set_default($mform);
+        //$this->edit_field_set_default($mform);
         $this->edit_field_set_required($mform);
+        $this->edit_field_set_maxlength($mform);
+
         return true;
     }
 
@@ -365,19 +367,33 @@ abstract class field {
      * Sets the default data for the field in the form object
      * @param  moodleform $mform instance of the moodleform class
      */
-    public function edit_field_set_default($mform) {
-        if (!empty($this->field->defaultdata)) {
-            $mform->setDefault($this->shortnamename, $this->field->defaultdata);
+    //public function edit_field_set_default($mform) {
+    //    if (!empty($this->field->defaultdata)) {
+    //        $mform->setDefault($this->shortname, $this->field->defaultdata);
+    //    }
+    //}
+
+    public function edit_field_set_maxlength($mform) {
+        $maxlength = $this->has_maxlength();
+        if ($maxlength && ($this->is_editable())) {
+            $mform->addRule($this->shortname, get_string('maxlength', 'core_cfield'), 'maxlength', $maxlength, 'client');
         }
     }
 
-    /**
+    public function has_maxlength() {
+        $configdata = json_decode( $this->get_configdata() );
+        if(isset($configdata->maxlength)) {
+            return $configdata->maxlength;
+        }
+        return false;
+    }
+
+     /**
      * Sets the required flag for the field in the form object
      *
      * @param moodleform $mform instance of the moodleform class
      */
     public function edit_field_set_required($mform) {
-        global $USER;
         if ($this->is_required() && ($this->is_editable())) {
             $mform->addRule($this->shortname, get_string('required'), 'required', null, 'client');
         }
@@ -417,7 +433,11 @@ abstract class field {
      * @return bool
      */
     public function is_required() {
-        return true; //(boolean)$this->required;
+        $configdata = json_decode( $this->get_configdata() );
+        if($configdata) {
+            return (boolean)$configdata->required;
+        }
+        return false;
     }
 
     public function set_datarecord($data) {
