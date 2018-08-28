@@ -30,8 +30,6 @@ class core_cfield_renderer extends plugin_renderer_base {
 
         $data = $list->export_for_template($this);
 
-        $data->success = 'HOLA KARAKOLA';
-
         if ( !empty($data->success) ) {
             $data->alert = $render->notification(base64_decode($data->success), 'success');
         } elseif ( !empty($data->error) ) {
@@ -39,5 +37,9 @@ class core_cfield_renderer extends plugin_renderer_base {
         }
 
         return $this->render_from_template('core_cfield/cfield', $data);
+    }
+
+    public function load($id) {
+
     }
 }
