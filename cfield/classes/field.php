@@ -73,6 +73,9 @@ abstract class field {
     }
 
     public function delete() {
+        if (!data::bulk_delete_from_fields([$this->id])) {
+            return false;
+        }
         return $this->db->delete_records($this::CLASS_TABLE, ['id' => $this->id]);
     }
 

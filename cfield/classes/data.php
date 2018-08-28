@@ -347,4 +347,22 @@ class data {
     public function get_category() : category {
         return $this->category;
     }
+
+    public static function bulk_delete_from_fields(array $fieldids) {
+        global $DB;
+
+        if (!empty($fieldids)) {
+            $where = 'fieldid<0';
+            foreach ($fieldids as $fieldid) {
+                $where .= " OR fieldid=$fieldid";
+            }
+
+            if (! $DB->delete_records_select(self::CLASS_TABLE, $where)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }

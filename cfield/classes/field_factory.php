@@ -51,17 +51,20 @@ class field_factory {
         global $DB;
 
         if (!empty($ids)) {
+            if (!data::bulk_delete_from_fields($ids)) {
+                return false;
+            }
+
             $where = 'id<0';
             foreach ($ids as $id) {
                 $where .= " OR id=$id";
             }
 
-            if ($DB->delete_records_select(self::CFIELD_TABLE, $where)) {
-                return true;
+            if (! $DB->delete_records_select(self::CFIELD_TABLE, $where)) {
+                return false;
             }
-
         }
 
-        return false;
+        return true;
     }
 }
