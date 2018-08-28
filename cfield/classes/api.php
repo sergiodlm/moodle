@@ -38,4 +38,36 @@ class api {
     public static function get_field($id) {
         return field_factory::load($id);
     }
+
+
+    public static function get_fields_with_data($component, $area, $recordid) {
+        global $DB;
+        $sql = 'SELECT f.id as field_id, f.shortname, d.*, f.type
+                  FROM {cfield_category} c
+                  JOIN {cfield_field} f
+                    ON (c.id = f.categoryid)
+             LEFT JOIN {cfield_data} d
+                    ON (f.id = d.fieldid AND d.recordid = :recordid)
+                 WHERE c.component = :component
+                   AND c.area = :area';
+        $where = ['component' => $component, 'area' => $area, 'recordid' => $recordid];
+        $fieldsdata = $DB->get_records_sql($sql, $where);
+        $formfields = [];
+        foreach($fieldsdata as $data) {
+            // Assuming data->type is safe already.
+            $classname = "\\cfield_".$data->type."\\field";
+            $field = new \stdclass();
+            $field->id = $data->field_id;
+            $field->shortname = $data->shortname;
+            $formfield = new $classname($field);
+            if ($data->id == null) {
+                $data->fieldid = $data->field_id;
+                $data->recordid = $recordid;
+            }
+            $formfield->set_datarecord($data);
+            $formfields[] = $formfield;
+        }
+        return $formfields;
+    }
+
 }

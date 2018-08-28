@@ -49,4 +49,8 @@ class field extends \core_cfield\field{
         $mform->addElement($fieldtype, $this->shortname, format_string($this->name), 'maxlength="'.$maxlength.'" size="'.$size.'" ');
         $mform->setType($this->shortname, PARAM_TEXT);
     }
+
+    public function set_data($data) {
+        $this->data = $data->charvalue;
+    }
 }

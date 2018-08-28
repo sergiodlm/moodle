@@ -44,3 +44,4 @@ $string['specificsettings'] = 'Specific settings';
 $string['commonsettings'] = 'Common settings';
 $string['maxlength'] = 'Max length';
 $string['description'] = 'Description';
+$string['isfieldrequired'] = 'Is this field required?';

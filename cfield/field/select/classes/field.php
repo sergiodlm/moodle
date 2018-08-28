@@ -46,5 +46,4 @@ class field extends \core_cfield\field{
         $mform->addElement('text', 'shortname', get_string('fieldshortname', 'core_cfield'));
         $mform->setType('shortname', PARAM_NOTAGS);
     }
-
 }

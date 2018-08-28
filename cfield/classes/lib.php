@@ -43,6 +43,7 @@ class lib {
             $record = field_factory::load($id);
             $classfieldtype = '\cfield_'. $record->get_type().'\field';
             $categoryid = $record->get_categoryid();
+            $configdata = json_decode( $record->get_configdata() );
             $arrayform = (object)[
                     'id'                => $id,
                     'name'              => $record->get_name(),
@@ -51,6 +52,12 @@ class lib {
                     'description'       => $record->get_description(),
                     'descriptionformat' => $record->get_descriptionformat(),
             ];
+
+            // We format configdata fields.
+            foreach ($configdata as $a => $b) {
+                $arrayform->configdata[$a] = $b;
+            }
+
         } else {
             $classfieldtype = '\cfield_'.$type.'\field';
             $id = '';
@@ -79,6 +86,8 @@ class lib {
             $categorylist[$category->id] = $category->name;
         }
 
+        $yesnolist = array( 0 => 'No', 1 => 'Yes');
+
         $args = array(
                 'handler'           => $handler,
                 'id'                => $id,
@@ -86,7 +95,8 @@ class lib {
                 'type'              => $type,
                 'categorylist'      => $categorylist,
                 'categoryid'        => $categoryid,
-                'action'            => 'editfield'
+                'action'            => 'editfield',
+                'yesnolist'          => $yesnolist
         );
 
         switch($options['area']) {
@@ -113,7 +123,6 @@ class lib {
             );
 
             file_prepare_standard_editor($arrayform, 'description', $textfieldoptions, $PAGE->context, 'core_cfield', 'description', $arrayform->id);
-
         }
 
         $mform->set_data($arrayform);
@@ -135,6 +144,8 @@ class lib {
                 //$fielddata->descriptionformat = $data->descriptionformat;
                 //$fielddata->configdata = $data->configdata;
                 //$fielddata->sortorder = $data->sortorder;
+                //print_object($data->configdata);die;
+                $fielddata->configdata = json_encode ($data->configdata);
 
                 if ( isset($data->description_editor) ) {
 

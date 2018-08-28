@@ -28,14 +28,15 @@ abstract class handler {
 
     protected $itemid;
 
-    public function __construct($itemid = null, $component = null) {
+    public function __construct($itemid = null, $component = null, $area = null) {
         $this->itemid = $itemid;
         $this->component = $component;
+        $this->area = $area;
     }
 
-    abstract public function get_component() : string;
+    public function get_component() { return $this->component; }
 
-    abstract public function get_area() : string;
+    public function get_area() { return $this->area; }
 
     public function get_item_id() { return $this->itemid; }
 
@@ -70,4 +71,7 @@ abstract class handler {
         //return array_filter($fields, [$this, 'is_field_supported']);
     }
 
+    public function get_fields_with_data($recordid) {
+        return api::get_fields_with_data($this->get_component(), $this->get_area(), $recordid);
+    }
 }
