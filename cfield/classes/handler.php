@@ -74,4 +74,70 @@ abstract class handler {
     public function get_fields_with_data($recordid) {
         return api::get_fields_with_data($this->get_component(), $this->get_area(), $recordid);
     }
+
+    /**
+     * Custom fields definition after data
+     * @param moodleform $mform
+     * @param int $userid
+     */
+    public function definition_after_data($mform, $recordid) {
+        global $CFG;
+
+        $fields = $this->get_fields_with_data($recordid);
+        foreach ($fields as $formfield) {
+            $formfield->edit_after_data($mform);
+        }
+    }
+
+    public function validate_data($mform, $data, $files) {
+        $errors = [];
+        $fields = $this->get_fields_with_data($data['id']);
+        foreach ($fields as $formfield) {
+            $errors += $formfield->edit_validate_field($data, $files);
+        }
+        return $errors;
+    }
+
+    public function load_data($data) {
+        $fields = $this->get_fields_with_data($data->id);
+        foreach ($fields as $formfield) {
+            $formfield->edit_load_data($data);
+        }
+    }
+
+
+    public function save_data($data) {
+        $fields = $this->get_fields_with_data($data->id);
+        foreach ($fields as $formfield) {
+            $formfield->edit_save_data($data);
+        }
+    }
+
+    /**
+     * Adds custom fields to course edit forms.
+     * @param moodleform $mform
+     */
+    public function add_custom_fields($mform) {
+
+        $categories = $this->get_fields_definitions();
+        foreach ($categories as $category) {
+            // Check first if *any* fields will be displayed.
+            $fieldstodisplay = [];
+
+            foreach ($category->get_fields() as $formfield) {
+                if ($formfield->is_editable()) {
+                    $fieldstodisplay[] = $formfield;
+                }
+            }
+            if (empty($fieldstodisplay)) {
+                continue;
+            }
+
+            // Display the header and the fields.
+            $mform->addElement('header', 'category_'.$category->get_id(), format_string($category->get_name()));
+            foreach ($fieldstodisplay as $formfield) {
+                $formfield->edit_field($mform);
+            }
+        }
+    }
 }

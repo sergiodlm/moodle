@@ -108,7 +108,8 @@ if ($id) {
 }
 
 // Load custom fields data.
-course_customfields_load_data($course);
+$handler  = new core_course\cfield\course_handler(null, 'core_course', 'course');
+$handler->load_data($course);
 
 // Prepare course and the editor.
 $editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true);

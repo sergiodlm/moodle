@@ -320,7 +320,8 @@ class course_edit_form extends moodleform {
                     array('itemtype' => 'course', 'component' => 'core'));
         }
 
-        course_add_custom_fields($mform);
+        $handler  = new core_course\cfield\course_handler(null, 'core_course', 'course');
+        $handler->add_custom_fields($mform);
 
         // When two elements we need a group.
         $buttonarray = array();
@@ -387,7 +388,8 @@ class course_edit_form extends moodleform {
         }
 
         // Add the custom fields.
-        course_customfields_definition_after_data($mform, $courseid);
+        $handler  = new core_course\cfield\course_handler(null, 'core_course', 'course');
+        $handler->definition_after_data($mform, $courseid);
     }
 
     /**
@@ -432,10 +434,7 @@ class course_edit_form extends moodleform {
 
         // Add the custom fields validation.
         $handler  = new core_course\cfield\course_handler(null, 'core_course', 'course');
-        $fields = $handler->get_fields_with_data($data['id']);
-        foreach ($fields as $formfield) {
-            $errors += $formfield->edit_validate_field($data, $files);
-        }
+        $errors += $handler->validate_data($mform, $data, $files);
 
         return $errors;
     }
