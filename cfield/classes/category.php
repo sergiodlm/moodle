@@ -22,26 +22,10 @@
 
 namespace core_cfield;
 
-use core_calendar\local\event\proxies\std_proxy;
-use Horde\Socket\Client\Exception;
-
 defined('MOODLE_INTERNAL') || die;
 
 class category {
     protected $dataobject;
-    /*
-    protected $id;
-    protected $name;
-    protected $description;
-    protected $descriptionformat;
-    protected $sortorder;
-    protected $timecreated;
-    protected $timemodified;
-    protected $component;
-    protected $area;
-    protected $itemid;
-    protected $contextid;
-    */
     protected $fields;
 
     const CLASS_TABLE = 'cfield_category';
@@ -52,11 +36,7 @@ class category {
     public function __construct(\stdClass $categorydata) {
         global $DB;
 
-        if (
-                empty($categorydata->name)      ||
-                empty($categorydata->area)      ||
-                empty($categorydata->component)
-        ) {
+        if (empty($categorydata->name) || empty($categorydata->area) || empty($categorydata->component)) {
             throw new Exception();
         }
 
@@ -81,19 +61,19 @@ class category {
             }
         }
 
-        return $DB->delete_records(self::CLASS_TABLE, ['id' => $this->id]);
+        return $DB->delete_records(self::CLASS_TABLE, ['id' => $this->get_id()]);
     }
 
     private function insert() {
         global $DB;
 
         $now = time();
-        $this->dataobject->timecreated = $now;
-        $this->dataobject->timemodified = $now;
-        $this->id = $DB->insert_record(self::CLASS_TABLE, $this->dataobject);
+        $this->set_timecreated($now);
+        $this->set_timemodified($now);
+        $this->set_id($DB->insert_record(self::CLASS_TABLE, $this->dataobject));
 
         foreach ($this->fields as $field) {
-            $field->set_categoryid($this->id);
+            $field->set_categoryid($this->get_id());
             $field->save();
         }
 
@@ -103,10 +83,10 @@ class category {
     private function update() {
         global $DB;
 
-        $this->dataobject->timemodified = $now;
+        $this->set_timemodified(time());
 
         foreach ($this->fields as $field) {
-            $field->set_categoryid($this->id);
+            $field->set_categoryid($this->get_id());
             $field->save();
         }
 
@@ -117,7 +97,7 @@ class category {
     }
 
     public function save() {
-        if (empty($this->dataobject->id)) {
+        if (empty($this->get_id())) {
             return $this->insert();
         }
 
