@@ -40,6 +40,7 @@ class category {
             throw new Exception();
         }
 
+        $categorydata->sortorder = 0;
         $this->dataobject = $categorydata;
         $this->fields = new \ArrayObject();
 
