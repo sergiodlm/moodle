@@ -40,12 +40,72 @@ abstract class field {
         return $this;
     }
 
+    private static function reorder($categoryid): bool {
+        global $DB;
+
+        $fieldneighbours = $DB->get_records( self::CLASS_TABLE, [ 'categoryid' => $categoryid ], 'sortorder DESC' );
+
+        $neworder = count($fieldneighbours);
+        foreach ($fieldneighbours as $field) {
+            $dataobject            = new \stdClass();
+            $dataobject->id        = $field->id;
+            $dataobject->sortorder = $neworder--;
+            if (!$DB->update_record(self::CLASS_TABLE, $dataobject)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function up() : self {
+        $previusfielddata = $this->db->get_record(
+                $this::CLASS_TABLE,
+                [
+                        'sortorder'  => $this->get_sortorder() + 1,
+                        'categoryid' => $this->get_categoryid()
+                ]
+        );
+
+        if (!empty($previusfielddata)) {
+            $previusfield = new field_factory($previusfielddata);
+            $previusfield->set_sortorder( $this->get_sortorder() - 1 );
+            $previusfield->save();
+            $this->set_sortorder( $this->get_sortorder() + 1 );
+            $this->save();
+        }
+
+        return $this;
+    }
+
+    public function down() : self {
+        $previusfielddata = $this->db->get_record(
+                $this::CLASS_TABLE,
+                [
+                        'sortorder'  => $this->get_sortorder() - 1,
+                        'categoryid' => $this->get_categoryid()
+                ]
+        );
+
+        if (!empty($previusfielddata)) {
+            $previusfield = new field_factory($previusfielddata);
+            $previusfield->set_sortorder( $this->get_sortorder() + 1 );
+            $previusfield->save();
+            $this->set_sortorder( $this->get_sortorder() - 1 );
+            $this->save();
+        }
+
+        return $this;
+    }
+
+
     public function delete() {
         global $DB;
 
         if (!data::bulk_delete_from_fields([$this->get_id()])) {
             return false;
         }
+        $this::reorder( $this->get_categoryid() );
         return $DB->delete_records($this::CLASS_TABLE, ['id' => $this->get_id()]);
     }
 
@@ -55,6 +115,7 @@ abstract class field {
         $now = time();
         $this->dataobject->timecreated = $now;
         $this->dataobject->timemodified = $now;
+        $this->dataobject->sortorder = 0;
 
         $this->set_id($DB->insert_record($this::CLASS_TABLE, $this->dataobject));
         return $this;
@@ -72,6 +133,7 @@ abstract class field {
 
     public function save() {
         if (!$this->get_id()) {
+            $this::reorder( $this->get_categoryid() );
             return $this->insert();
         }
 
