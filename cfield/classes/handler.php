@@ -54,12 +54,25 @@ abstract class handler {
         return true;
     }
 
-    public function get_category_config_form($action, $args) : \core_cfield\category_config_form {
-        return new \core_cfield\category_config_form($action,$args);
+    public function get_category_config_form($handler) : \core_cfield\category_config_form {
+        return new \core_cfield\category_config_form(null, ['handler' => $handler]);
     }
 
     public function get_field_config_form($action, $args) : \core_cfield\field_config_form {
         return new \core_cfield\field_config_form($action, $args);
+    }
+
+    public function new_category($name) {
+        $categorydata = new \stdClass();
+        $categorydata->name = $name;
+        $categorydata->component = $this->get_component();
+        $categorydata->area = $this->get_area();
+        $categorydata->itemid = $this->get_item_id();
+        return new category($categorydata);
+    }
+
+    public function load_category($id) {
+        return \core_cfield\category::load($id);
     }
 
     abstract public function can_configure($itemid = null) : bool;

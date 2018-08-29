@@ -97,15 +97,23 @@ class category {
     }
 
     public function save() {
-        if (empty($this->get_id())) {
+        if (!$this->get_id()) {
             return $this->insert();
         }
-
         return $this->update();
     }
 
     public function get_id() {
-        return $this->dataobject->id;
+        if (isset($this->dataobject->id)) {
+            return $this->dataobject->id;
+        } else {
+            return false;
+        }
+    }
+
+    public function set_id($id) {
+        $this->dataobject->id = $id;
+        return $this;
     }
 
     public function get_name() {
@@ -165,8 +173,7 @@ class category {
     /**
      * @return mixed
      */
-    public
-    function get_description() {
+    public function get_description() {
         return $this->dataobject->description;
     }
 
@@ -174,8 +181,7 @@ class category {
      * @param mixed $description
      * @return category
      */
-    public
-    function set_description($description) {
+    public function set_description($description) {
         $this->dataobject->description = $description;
         return $this;
     }
@@ -183,8 +189,7 @@ class category {
     /**
      * @return mixed
      */
-    public
-    function get_descriptionformat() {
+    public function get_descriptionformat() {
         return $this->dataobject->descriptionformat;
     }
 
@@ -192,8 +197,7 @@ class category {
      * @param mixed $descriptionformat
      * @return category
      */
-    public
-    function set_descriptionformat($descriptionformat) {
+    public function set_descriptionformat($descriptionformat) {
         $this->dataobject->descriptionformat = $descriptionformat;
         return $this;
     }
@@ -201,8 +205,7 @@ class category {
     /**
      * @return mixed
      */
-    public
-    function get_sortorder() {
+    public function get_sortorder() {
         return $this->dataobject->sortorder;
     }
 
@@ -210,8 +213,7 @@ class category {
      * @param mixed $sortorder
      * @return category
      */
-    public
-    function set_sortorder($sortorder) {
+    public function set_sortorder($sortorder) {
         $this->dataobject->sortorder = $sortorder;
         return $this;
     }
@@ -219,8 +221,7 @@ class category {
     /**
      * @return mixed
      */
-    public
-    function get_timecreated() {
+    public function get_timecreated() {
         return $this->dataobject->timecreated;
     }
 
@@ -228,8 +229,7 @@ class category {
      * @param mixed $timecreated
      * @return category
      */
-    public
-    function set_timecreated($timecreated) {
+    public function set_timecreated($timecreated) {
         $this->dataobject->timecreated = $timecreated;
         return $this;
     }
@@ -237,8 +237,7 @@ class category {
     /**
      * @return mixed
      */
-    public
-    function get_timemodified() {
+    public function get_timemodified() {
         return $this->dataobject->timemodified;
     }
 
@@ -246,8 +245,7 @@ class category {
      * @param mixed $timemodified
      * @return category
      */
-    public
-    function set_timemodified($timemodified) {
+    public function set_timemodified($timemodified) {
         $this->dataobject->timemodified = $timemodified;
         return $this;
     }
@@ -255,8 +253,7 @@ class category {
     /**
      * @return mixed
      */
-    public
-    function get_component() {
+    public function get_component() {
         return $this->dataobject->component;
     }
 
@@ -264,8 +261,7 @@ class category {
      * @param mixed $component
      * @return category
      */
-    public
-    function set_component($component) {
+    public function set_component($component) {
         $this->dataobject->component = $component;
         return $this;
     }
@@ -273,8 +269,7 @@ class category {
     /**
      * @return mixed
      */
-    public
-    function get_area() {
+    public function get_area() {
         return $this->dataobject->area;
     }
 
@@ -282,8 +277,7 @@ class category {
      * @param mixed $area
      * @return category
      */
-    public
-    function set_area($area) {
+    public function set_area($area) {
         $this->dataobject->area = $area;
         return $this;
     }
@@ -291,8 +285,7 @@ class category {
     /**
      * @return mixed
      */
-    public
-    function get_itemid() {
+    public function get_itemid() {
         return $this->dataobject->itemid;
     }
 
@@ -300,8 +293,7 @@ class category {
      * @param mixed $itemid
      * @return category
      */
-    public
-    function set_itemid($itemid) {
+    public function set_itemid($itemid) {
         $this->dataobject->itemid = $itemid;
         return $this;
     }
@@ -309,8 +301,7 @@ class category {
     /**
      * @return mixed
      */
-    public
-    function get_contextid() {
+    public function get_contextid() {
         return $this->dataobject->contextid;
     }
 
@@ -318,8 +309,7 @@ class category {
      * @param mixed $contextid
      * @return category
      */
-    public
-    function set_contextid($contextid) {
+    public function set_contextid($contextid) {
         $this->dataobject->contextid = $contextid;
         return $this;
     }
@@ -327,8 +317,7 @@ class category {
     /**
      * @return mixed
      */
-    public
-    function get_fields() {
+    public function get_fields() {
         return $this->fields;
     }
 
@@ -336,8 +325,7 @@ class category {
      * @param mixed $name
      * @return category
      */
-    public
-    function set_name($name) {
+    public function set_name($name) {
         $this->dataobject->name = $name;
         return $this;
     }

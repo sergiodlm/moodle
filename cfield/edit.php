@@ -45,16 +45,6 @@ switch ($action) {
         \core_cfield\lib::edit_field($args);
 
         break;
-    case 'editcategory':
-
-        $args = array(
-                'id'        => $id,
-                'handler'   => $handler,
-                'action'    => $action
-        );
-        \core_cfield\lib::edit_category($args);
-
-        break;
     default:
         die;
 }
