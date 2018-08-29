@@ -40,7 +40,6 @@ class category {
             throw new Exception();
         }
 
-        $categorydata->sortorder = 0;
         $this->dataobject = $categorydata;
         $this->fields = new \ArrayObject();
 
@@ -141,6 +140,7 @@ class category {
         $now = time();
         $this->set_timecreated($now);
         $this->set_timemodified($now);
+        $this->dataobject->sortorder = 0;
         $this->set_id($DB->insert_record(self::CLASS_TABLE, $this->dataobject));
 
         foreach ($this->fields as $field) {
