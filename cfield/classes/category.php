@@ -48,43 +48,29 @@ class category {
 
     private static function reorder($options): bool {
         global $DB;
-        
-        $categoryneighbours = $DB->get_records(
-                self::CLASS_TABLE,
-                [
-                        'component' => $options->component,
-                        'area'      => $options->area,
-                        'itemid'    => $options->itemid,
-                ],
-                'sortorder DESC'
-        );
+
+        $categoryneighbours = self::load_array($options);
 
         $neworder = count($categoryneighbours);
         foreach ($categoryneighbours as $category) {
-            $dataobject            = new \stdClass();
-            $dataobject->id        = $category->id;
-            $dataobject->sortorder = $neworder--;
-            if (!$DB->update_record(self::CLASS_TABLE, $dataobject)) {
-                return false;
-            }
+            $category->set_sortorder($neworder--);
+            $category->save();
         }
 
         return true;
     }
 
     public function up() : self {
-        $previuscategorydata = $this->db->get_record(
-                $this::CLASS_TABLE,
+        $previuscategory = self::load_array(
                 [
                         'sortorder' => $this->get_sortorder() + 1,
                         'component' => $this->get_component(),
                         'area'      => $this->get_area(),
                         'itemid'    => $this->get_itemid(),
                 ]
-        );
+        )[0];
 
-        if (!empty($previuscategorydata)) {
-            $previuscategory = new category($previuscategorydata);
+        if (!empty($previuscategory)) {
             $previuscategory->set_sortorder( $this->get_sortorder() - 1 );
             $previuscategory->save();
             $this->set_sortorder( $this->get_sortorder() + 1 );
@@ -95,20 +81,18 @@ class category {
     }
 
     public function down() : self {
-        $nextcategorydata = $this->db->get_record(
-                $this::CLASS_TABLE,
+        $previuscategory = self::load_array(
                 [
                         'sortorder' => $this->get_sortorder() - 1,
                         'component' => $this->get_component(),
                         'area'      => $this->get_area(),
                         'itemid'    => $this->get_itemid(),
                 ]
-        );
+        )[0];
 
-        if (!empty($nextcategorydata)) {
-            $nextcategory = new category($nextcategorydata);
-            $nextcategory->set_sortorder( $this->get_sortorder() + 1 );
-            $nextcategory->save();
+        if (!empty($previuscategory)) {
+            $previuscategory->set_sortorder( $this->get_sortorder() + 1 );
+            $previuscategory->save();
             $this->set_sortorder( $this->get_sortorder() - 1 );
             $this->save();
         }
@@ -130,6 +114,14 @@ class category {
                 return false;
             }
         }
+
+        $this::reorder(
+                [
+                        'component' => $this->get_component(),
+                        'area'      => $this->get_area(),
+                        'itemid'    => $this->get_itemid()
+                ]
+        );
 
         return $DB->delete_records(self::CLASS_TABLE, ['id' => $this->get_id()]);
     }
@@ -168,12 +160,14 @@ class category {
     }
 
     public function save() {
-        if (empty($this->id)) {
-            $options = new \stdClass();
-            $options->component = $this->get_component();
-            $options->area      = $this->get_area();
-            $options->itemid    = $this->get_itemid();
-            self::reorder( $options );
+        if (empty($this->get_id())) {
+            $this::reorder(
+                    [
+                            'component' => $this->get_component(),
+                            'area'      => $this->get_area(),
+                            'itemid'    => $this->get_itemid()
+                    ]
+            );
             return $this->insert();
         }
         return $this->update();

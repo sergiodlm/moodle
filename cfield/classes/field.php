@@ -105,6 +105,7 @@ abstract class field {
         if (!data::bulk_delete_from_fields([$this->get_id()])) {
             return false;
         }
+        $this::reorder( $this->get_categoryid() );
         return $DB->delete_records($this::CLASS_TABLE, ['id' => $this->get_id()]);
     }
 
@@ -132,7 +133,7 @@ abstract class field {
 
     public function save() {
         if (!$this->get_id()) {
-            self::reorder( $this->get_categoryid() );
+            $this::reorder( $this->get_categoryid() );
             return $this->insert();
         }
 
