@@ -20,11 +20,10 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                             // Deal with this exception (I recommend core/notify exception function for this).
                         });
                     }).fail(function() {
-                        // do something with the exception
+                        // Do something with the exception.
                     });
                 });
-            }
-        ).fail(notification.exception);
+        }).fail(notification.exception);
     };
     var confirmDeleteCategory = function(id, handler) {
         str.get_strings([
@@ -46,11 +45,10 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                             // Deal with this exception (I recommend core/notify exception function for this).
                         });
                     }).fail(function() {
-                        // do something with the exception
+                        // Do something with the exception.
                     });
                 });
-            }
-        ).fail(notification.exception);
+        }).fail(notification.exception);
     };
     return {
         init: function() {

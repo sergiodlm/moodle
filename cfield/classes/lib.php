@@ -33,8 +33,8 @@ class lib {
 
         $id = $args['id'];
         $handler = $args['handler'];
-        //$action = $args['action'];
-        //$itemid = $args['itemid'];
+        // $action = $args['action'];
+        // $itemid = $args['itemid'];
         $type = $args['type'];
         $success = $args['success'];
         $error = $args['error'];
@@ -54,18 +54,20 @@ class lib {
             ];
 
             // We format configdata fields.
-            if($configdata) {
+            if ($configdata) {
                 foreach ($configdata as $a => $b) {
                     $arrayform->configdata[$a] = $b;
                 }
             }
-
 
         } else {
             $classfieldtype = '\cfield_'.$type.'\field';
             $id = '';
             $arrayform = (object)null;
             $categoryid = null;
+
+            $configdata = new \stdClass();
+            $configdata->required = 0;
         }
 
         $url = new \moodle_url('/cfield/edit.php');
@@ -85,7 +87,7 @@ class lib {
         ];
 
         $categorylist = array();
-        foreach ( category::list($options) as $category) {
+        foreach (category::list($options) as $category) {
             $categorylist[$category->id] = $category->name;
         }
 
@@ -93,7 +95,6 @@ class lib {
                 0 => get_string('no', 'core_cfield'),
                 1 => get_string('yes', 'core_cfield')
         );
-
 
         $args = array(
                 'handler'           => $handler,
@@ -104,10 +105,11 @@ class lib {
                 'categoryid'        => $categoryid,
                 'action'            => 'editfield',
                 'yesnolist'         => $yesnolist,
+                'required'         => $configdata->required,
         );
 
         // Get fields for field type.
-        $mform =  $handler1->get_field_config_form(null,$args);
+        $mform = $handler1->get_field_config_form(null, $args);
 
         if ($id) {
              $textfieldoptions = array(
@@ -120,7 +122,15 @@ class lib {
                     'enable_filemanagement' => true
             );
 
-            file_prepare_standard_editor($arrayform, 'description', $textfieldoptions, $PAGE->context, 'core_cfield', 'description', $arrayform->id);
+            file_prepare_standard_editor(
+                    $arrayform,
+                    'description',
+                    $textfieldoptions,
+                    $PAGE->context,
+                    'core_cfield',
+                    'description',
+                    $arrayform->id
+            );
         }
 
         $mform->set_data($arrayform);
@@ -137,21 +147,29 @@ class lib {
                 $fielddata->name = $data->name;
                 $fielddata->shortname = $data->shortname;
                 $fielddata->categoryid = $data->categoryid;
-                $fielddata->type = $data->type;//datatype;
+                $fielddata->type = $data->type;
                 $fielddata->configdata = json_encode ($data->configdata);
 
                 if ( isset($data->description_editor) ) {
 
-                    $textfieldoptions = array('trusttext' => true,
-                            'subdirs' => true,
-                            'maxfiles' => 5,
-                            'maxbytes' => 0,
-                            'context' => $PAGE->context,
-                            'noclean' => 0,
+                    $textfieldoptions = array(
+                            'trusttext'             => true,
+                            'subdirs'               => true,
+                            'maxfiles'              => 5,
+                            'maxbytes'              => 0,
+                            'context'               => $PAGE->context,
+                            'noclean'               => 0,
                             'enable_filemanagement' => true);
 
-                    $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context, 'core_cfield',
-                            'description', $data->id);
+                    $data = file_postupdate_standard_editor(
+                            $data,
+                            'description',
+                            $textfieldoptions,
+                            $PAGE->context,
+                            'core_cfield',
+                            'description',
+                            $data->id
+                    );
                     $fielddata->description = $data->description;
                     $fielddata->descriptionformat = $data->descriptionformat;
                 }
@@ -187,15 +205,15 @@ class lib {
                     $savedfield = $field->save();
                     $insertid = $savedfield->get_id();
 
-                    if ( isset($data->description_editor) ) {
+                    if (isset($data->description_editor)) {
 
                         $textfieldoptions = array(
-                                'trusttext' => true,
-                                'subdirs' => true,
-                                'maxfiles' => 5,
-                                'maxbytes' => 0,
-                                'context' => $PAGE->context,
-                                'noclean' => 0,
+                                'trusttext'             => true,
+                                'subdirs'               => true,
+                                'maxfiles'              => 5,
+                                'maxbytes'              => 0,
+                                'context'               => $PAGE->context,
+                                'noclean'               => 0,
                                 'enable_filemanagement' => true
                         );
 
@@ -210,14 +228,14 @@ class lib {
 
                     $url = new \moodle_url($handler1->url, [
                             'handler'   => $handler,
-                            'type'  => $type,
+                            'type'      => $type,
                             'success'   => base64_encode('Entry inserted correctly'),
                             'action'    => 'editfield'
                     ]);
                 } catch (\dml_write_exception $exception) {
                     $url = new \moodle_url($handler1->url, [
                             'handler'   => $handler,
-                            'type'  => $type,
+                            'type'      => $type,
                             'error'     => base64_encode('Error: Duplicate entry'),
                             'action'    => 'editfield'
                     ]);
@@ -285,7 +303,7 @@ class lib {
                 'action'    => $action
         ];
 
-        $mform =  $handler1->get_category_config_form(null,$args);
+        $mform = $handler1->get_category_config_form(null, $args);
 
         $mform->set_data($arrayform);
 
