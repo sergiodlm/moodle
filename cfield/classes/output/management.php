@@ -103,7 +103,7 @@ class management implements renderable, templatable{
         $data->categories = $categoriesarray;
 
         // Create a new dropdown for types of fields.
-        $options = ['text' => 'Text Input','textarea'=>'Text Area'];
+        $options = ['text' => 'Text Input', 'textarea' => 'Text Area', 'select' => 'Dropdown Menu'];
         $select = new \single_select($data->link, 'type', $options, '', array('' => get_string('choosedots')), 'newfieldform');
         $data->singleselect = $select->export_for_template($output);
 

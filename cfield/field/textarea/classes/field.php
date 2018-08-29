@@ -52,8 +52,8 @@ global $PAGE;
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-        $mform->addElement('editor', $this->shortname, format_string($this->name));
-        $mform->setType($this->shortname, PARAM_TEXT);
+        $mform->addElement('editor', $this->dataobject->shortname, format_string($this->dataobject->name));
+        $mform->setType($this->dataobject->shortname, PARAM_TEXT);
     }
 
     public function set_data($data) {

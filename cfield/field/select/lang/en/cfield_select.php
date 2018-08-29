@@ -22,5 +22,5 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Text field';
+$string['pluginname'] = 'Dropdown Menu';
 

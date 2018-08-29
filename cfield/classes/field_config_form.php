@@ -62,10 +62,10 @@ class field_config_form extends \moodleform {
         $select = $mform->addElement('select', 'categoryid', get_string('category', 'core_cfield'), $this->_customdata['categorylist']);
 
         // If field is required.
-        $yesnolist = [0 => get_string('no', 'core_cfield'), 1 => get_string('yes', 'core_cfield')];
+        $mform->addElement('selectyesno', 'configdata[required]', get_string('isfieldrequired', 'core_cfield'));
 
-        $mform->addElement('select', 'configdata[required]', get_string('isfieldrequired', 'core_cfield'), $yesnolist);
-        //$select->setSelected($this->_customdata['required']);
+        // If field data is unique.
+        $mform->addElement('selectyesno', 'configdata[unique]', get_string('isdataunique', 'core_cfield'));
 
         // We add specific settings here.
         $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_cfield'));

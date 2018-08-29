@@ -40,6 +40,9 @@ class field_factory {
             case \cfield_textarea\field::TYPE:
                 return new \cfield_textarea\field($field);
                 break;
+            case \cfield_select\field::TYPE:
+                return new \cfield_select\field($field);
+                break;
             default:
                 throw new Exception('Error: Type field not recognized.');
         }

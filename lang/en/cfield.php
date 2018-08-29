@@ -54,3 +54,4 @@ $string['sameframe'] = 'Same frame';
 $string['samewindow'] = 'Same window';
 $string['yes'] = 'Yes';
 $string['no'] = 'No';
+$string['isdataunique'] = 'Should the data be unique?';
