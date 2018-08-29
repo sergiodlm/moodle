@@ -46,13 +46,15 @@ class category {
         return $this;
     }
 
-    private function reorder(): bool {
-        $categoryneighbours = $this->db->get_records(
-                $this::CLASS_TABLE,
+    private static function reorder($options): bool {
+        global $DB;
+        
+        $categoryneighbours = $DB->get_records(
+                self::CLASS_TABLE,
                 [
-                        'area'      => $this->area,
-                        'itemid'    => $this->itemid,
-                        'contextid' => $this->contextid
+                        'component' => $options->component,
+                        'area'      => $options->area,
+                        'itemid'    => $options->itemid,
                 ]
         );
 
@@ -61,7 +63,7 @@ class category {
             $dataobject            = new \stdClass();
             $dataobject->id        = $category->id;
             $dataobject->sortorder = $neworder--;
-            if (!$this->db->update_record($this::CLASS_TABLE, $dataobject)) {
+            if (!$DB->update_record(self::CLASS_TABLE, $dataobject)) {
                 return false;
             }
         }
@@ -74,9 +76,9 @@ class category {
                 $this::CLASS_TABLE,
                 [
                         'sortorder' => $this->get_sortorder() + 1,
-                        'area'      => $this->area,
-                        'itemid'    => $this->itemid,
-                        'contextid' => $this->contextid
+                        'component' => $this->get_component(),
+                        'area'      => $this->get_area(),
+                        'itemid'    => $this->get_itemid(),
                 ]
         );
 
@@ -96,9 +98,9 @@ class category {
                 $this::CLASS_TABLE,
                 [
                         'sortorder' => $this->get_sortorder() - 1,
-                        'area'      => $this->area,
-                        'itemid'    => $this->itemid,
-                        'contextid' => $this->contextid
+                        'component' => $this->get_component(),
+                        'area'      => $this->get_area(),
+                        'itemid'    => $this->get_itemid(),
                 ]
         );
 
@@ -165,7 +167,11 @@ class category {
 
     public function save() {
         if (empty($this->id)) {
-            $this->reorder();
+            $options = new \stdClass();
+            $options->component = $this->get_component();
+            $options->area      = $this->get_area();
+            $options->itemid    = $this->get_itemid();
+            self::reorder( $options );
             return $this->insert();
         }
         return $this->update();
