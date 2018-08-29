@@ -55,7 +55,8 @@ class category {
                         'component' => $options->component,
                         'area'      => $options->area,
                         'itemid'    => $options->itemid,
-                ]
+                ],
+                'sortorder DESC'
         );
 
         $neworder = count($categoryneighbours);
