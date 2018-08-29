@@ -64,6 +64,7 @@ class field_config_form extends \moodleform {
 
         // If field is required.
         $mform->addElement('select', 'configdata[required]', get_string('isfieldrequired', 'core_cfield'), $this->_customdata['yesnolist']);
+        $select->setSelected($this->_customdata['required']);
 
         // We add specific settings here.
         $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_cfield'));

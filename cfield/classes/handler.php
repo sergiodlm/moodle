@@ -34,22 +34,32 @@ abstract class handler {
         $this->area = $area;
     }
 
-    public function get_component() { return $this->component; }
+    public function get_component() {
+        return $this->component;
+    }
 
-    public function get_area() { return $this->area; }
+    public function get_area() {
+        return $this->area;
+    }
 
-    public function get_item_id() { return $this->itemid; }
+    public function get_item_id() {
+        return $this->itemid;
+    }
 
-    public function uses_item_id() : bool { return false; }
+    public function uses_item_id() : bool {
+        return false;
+    }
 
-    public function uses_categories() : bool { return true; }
+    public function uses_categories() : bool {
+        return true;
+    }
 
-    public function get_category_config_form($action,$args) : \core_cfield\category_config_form {
+    public function get_category_config_form($action, $args) : \core_cfield\category_config_form {
         return new \core_cfield\category_config_form($action,$args);
     }
 
-    public function get_field_config_form($action,$args) : \core_cfield\field_config_form {
-        return new \core_cfield\field_config_form($action,$args);
+    public function get_field_config_form($action, $args) : \core_cfield\field_config_form {
+        return new \core_cfield\field_config_form($action, $args);
     }
 
     abstract public function can_configure($itemid = null) : bool;
@@ -68,7 +78,7 @@ abstract class handler {
                 $this->get_item_id()
         );
         return $fields;
-        //return array_filter($fields, [$this, 'is_field_supported']);
+        // return array_filter($fields, [$this, 'is_field_supported']);
     }
 
     public function get_fields_with_data($recordid) {
