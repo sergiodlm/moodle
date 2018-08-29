@@ -76,6 +76,73 @@ class category {
         return $this;
     }
 
+    private function reorder(): bool {
+        $categoryneighbours = $this->db->get_records(
+                $this::CLASS_TABLE,
+                [
+                        'area'      => $this->area,
+                        'itemid'    => $this->itemid,
+                        'contextid' => $this->contextid
+                ]
+        );
+
+        $neworder = count($categoryneighbours);
+        foreach ($categoryneighbours as $category) {
+            $dataobject            = new \stdClass();
+            $dataobject->id        = $category->id;
+            $dataobject->sortorder = $neworder--;
+            if (!$this->db->update_record($this::CLASS_TABLE, $dataobject)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function up() : self {
+        $previuscategorydata = $this->db->get_record(
+                $this::CLASS_TABLE,
+                [
+                        'sortorder' => $this->get_sortorder() + 1,
+                        'area'      => $this->area,
+                        'itemid'    => $this->itemid,
+                        'contextid' => $this->contextid
+                ]
+        );
+
+        if (!empty($previuscategorydata)) {
+            $previuscategory = new category($previuscategorydata);
+            $previuscategory->set_sortorder( $this->get_sortorder() - 1 );
+            $previuscategory->save();
+            $this->set_sortorder( $this->get_sortorder() + 1 );
+            $this->save();
+        }
+
+        return $this;
+    }
+
+    public function down() : self {
+        $nextcategorydata = $this->db->get_record(
+                $this::CLASS_TABLE,
+                [
+                        'sortorder' => $this->get_sortorder() - 1,
+                        'area'      => $this->area,
+                        'itemid'    => $this->itemid,
+                        'contextid' => $this->contextid
+                ]
+        );
+
+        if (!empty($nextcategorydata)) {
+            $nextcategory = new category($nextcategorydata);
+            $nextcategory->set_sortorder( $this->get_sortorder() + 1 );
+            $nextcategory->save();
+            $this->set_sortorder( $this->get_sortorder() - 1 );
+            $this->save();
+        }
+
+        return $this;
+    }
+
     public function delete() {
         $category = category::load($this->get_id());
 
@@ -143,6 +210,7 @@ class category {
 
     public function save() {
         if (empty($this->id)) {
+            $this->reorder();
             return $this->insert();
         }
 

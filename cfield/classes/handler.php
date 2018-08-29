@@ -29,9 +29,9 @@ abstract class handler {
     protected $itemid;
 
     public function __construct($itemid = null, $component = null, $area = null) {
-        $this->itemid = $itemid;
+        $this->itemid    = $itemid;
         $this->component = $component;
-        $this->area = $area;
+        $this->area      = $area;
     }
 
     public function get_component() { return $this->component; }
