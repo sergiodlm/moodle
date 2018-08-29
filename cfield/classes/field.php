@@ -25,101 +25,53 @@ namespace core_cfield;
 defined('MOODLE_INTERNAL') || die;
 
 abstract class field {
-    protected $id;
-    protected $shortname;
-    protected $name;
-    protected $type;
-    protected $description;
-    protected $descriptionformat;
-    protected $sortorder;
-    protected $categoryid;
-    protected $configdata;
-    protected $timecreated;
-    protected $timemodified;
+    protected $dataobject;
     protected $data;
 
     private $db;
+
     const CLASS_TABLE = 'cfield_field';
     const LENGTH_SHORTNAME = 100;
     const LENGTH_NAME = 400;
     const LENGTH_TYPE = 100;
 
     public function __construct(\stdClass $fielddata) {
-        global $DB;
-
-        /*
-        if (!isset($fielddata->id) || (empty($fielddata->shortname) || empty($fielddata->name) ||
-                    empty($fielddata->type) || empty($fielddata->categoryid))) {
-            throw new Exception();
-        }
-        */
-
-        $this->id                = !empty($fielddata->id) ? $fielddata->id : null;
-        $this->shortname         = $fielddata->shortname;
-        $this->name              = empty($fielddata->name) ? null : $fielddata->name;
-        $this->type              = empty($fielddata->type) ? null : $fielddata->type;
-        $this->description       = !empty($fielddata->description) ? $fielddata->description : null;
-        $this->descriptionformat = !empty($fielddata->descriptionformat) ? $fielddata->descriptionformat : null;
-        $this->sortorder         = !empty($fielddata->sortorder) ? $fielddata->sortorder : null;
-        $this->categoryid        = empty($fielddata->categoryid) ? null : $fielddata->categoryid;
-        $this->configdata        = !empty($fielddata->configdata) ? $fielddata->configdata : null;
-        $this->timecreated       = !empty($fielddata->timecreated) ? $fielddata->timecreated : time();
-        $this->timemodified      = !empty($fielddata->timemodified) ? $fielddata->timemodified : time();
-        $this->datarecord        = null;
-
-        $this->db = $DB;
-
+        $this->dataobject = $fielddata;
         return $this;
     }
 
     public function delete() {
-        if (!data::bulk_delete_from_fields([$this->id])) {
+        global $DB;
+
+        if (!data::bulk_delete_from_fields([$this->get_id()])) {
             return false;
         }
-        return $this->db->delete_records($this::CLASS_TABLE, ['id' => $this->id]);
+        return $DB->delete_records($this::CLASS_TABLE, ['id' => $this->get_id()]);
     }
 
     private function insert() {
-        $dataobject = array(
-                'shortname'         => $this->shortname,
-                'name'              => $this->name,
-                'type'              => $this->type,
-                'description'       => $this->description,
-                'descriptionformat' => $this->descriptionformat,
-                'sortorder'         => $this->sortorder,
-                'categoryid'        => $this->categoryid,
-                'configdata'        => $this->configdata,
-                'timecreated'       => time(),
-                'timemodified'      => time(),
-        );
+        global $DB;
 
-        $this->id = $this->db->insert_record($this::CLASS_TABLE, $dataobject, $returnid = true, $bulk = false);
+        $now = time();
+        $this->dataobject->timecreated = $now;
+        $this->dataobject->timemodified = $now;
+
+        $this->set_id($DB->insert_record($this::CLASS_TABLE, $this->dataobject));
         return $this;
     }
 
     private function update() {
-        $dataobject = array(
-                'id'                => $this->id,
-                'shortname'         => $this->shortname,
-                'name'              => $this->name,
-                'type'              => $this->type,
-                'description'       => $this->description,
-                'descriptionformat' => $this->descriptionformat,
-                'sortorder'         => $this->sortorder,
-                'categoryid'        => $this->categoryid,
-                'configdata'        => $this->configdata,
-                'timecreated'       => $this->timecreated,
-                'timemodified'      => time(),
-        );
+        global $DB;
 
-        if ($this->db->update_record($this::CLASS_TABLE, $dataobject, $bulk = false)) {
+        $this->set_timemodified(time());
+        if ($DB->update_record($this::CLASS_TABLE, $this->dataobject)) {
             return $this;
         }
         return false;
     }
 
     public function save() {
-        if (empty($this->id)) {
+        if (!$this->get_id()) {
             return $this->insert();
         }
 
@@ -148,7 +100,11 @@ abstract class field {
      * @return mixed
      */
     public function get_id() {
-        return $this->id;
+        if (isset($this->dataobject->id)) {
+            return $this->dataobject->id;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -156,7 +112,7 @@ abstract class field {
      * @return field
      */
     public function set_id($id) {
-        $this->id = $id;
+        $this->dataobject->id = $id;
         return $this;
     }
 
@@ -164,7 +120,7 @@ abstract class field {
      * @return mixed
      */
     public function get_shortname() {
-        return $this->shortname;
+        return $this->dataobject->shortname;
     }
 
     /**
@@ -172,7 +128,7 @@ abstract class field {
      * @return field
      */
     public function set_shortname($shortname) {
-        $this->shortname = $shortname;
+        $this->dataobject->shortname = $shortname;
         return $this;
     }
 
@@ -180,7 +136,7 @@ abstract class field {
      * @return mixed
      */
     public function get_name() {
-        return $this->name;
+        return $this->dataobject->name;
     }
 
     /**
@@ -188,7 +144,7 @@ abstract class field {
      * @return field
      */
     public function set_name($name) {
-        $this->name = $name;
+        $this->dataobject->name = $name;
         return $this;
     }
 
@@ -196,7 +152,7 @@ abstract class field {
      * @return mixed
      */
     public function get_type() {
-        return $this->type;
+        return $this->dataobject->type;
     }
 
     /**
@@ -204,7 +160,7 @@ abstract class field {
      * @return field
      */
     public function set_type($type) {
-        $this->type = $type;
+        $this->dataobject->type = $type;
         return $this;
     }
 
@@ -212,7 +168,7 @@ abstract class field {
      * @return mixed
      */
     public function get_description() {
-        return $this->description;
+        return $this->dataobject->description;
     }
 
     /**
@@ -220,7 +176,7 @@ abstract class field {
      * @return field
      */
     public function set_description($description) {
-        $this->description = $description;
+        $this->dataobject->description = $description;
         return $this;
     }
 
@@ -228,7 +184,7 @@ abstract class field {
      * @return mixed
      */
     public function get_descriptionformat() {
-        return $this->descriptionformat;
+        return $this->dataobject->descriptionformat;
     }
 
     /**
@@ -236,7 +192,7 @@ abstract class field {
      * @return field
      */
     public function set_descriptionformat($descriptionformat) {
-        $this->descriptionformat = $descriptionformat;
+        $this->dataobject->descriptionformat = $descriptionformat;
         return $this;
     }
 
@@ -244,7 +200,7 @@ abstract class field {
      * @return mixed
      */
     public function get_sortorder() {
-        return $this->sortorder;
+        return $this->dataobject->sortorder;
     }
 
     /**
@@ -252,7 +208,7 @@ abstract class field {
      * @return field
      */
     public function set_sortorder($sortorder) {
-        $this->sortorder = $sortorder;
+        $this->dataobject->sortorder = $sortorder;
         return $this;
     }
 
@@ -260,7 +216,7 @@ abstract class field {
      * @return mixed
      */
     public function get_categoryid() {
-        return $this->categoryid;
+        return $this->dataobject->categoryid;
     }
 
     /**
@@ -268,7 +224,7 @@ abstract class field {
      * @return field
      */
     public function set_categoryid($categoryid) {
-        $this->categoryid = $categoryid;
+        $this->dataobject->categoryid = $categoryid;
         return $this;
     }
 
@@ -276,7 +232,7 @@ abstract class field {
      * @return mixed
      */
     public function get_configdata() {
-        return $this->configdata;
+        return $this->dataobject->configdata;
     }
 
     /**
@@ -284,7 +240,7 @@ abstract class field {
      * @return field
      */
     public function set_configdata($configdata) {
-        $this->configdata = $configdata;
+        $this->dataobject->configdata = $configdata;
         return $this;
     }
 
@@ -292,7 +248,7 @@ abstract class field {
      * @return mixed
      */
     public function get_timecreated() {
-        return $this->timecreated;
+        return $this->dataobject->timecreated;
     }
 
     /**
@@ -300,7 +256,7 @@ abstract class field {
      * @return field
      */
     public function set_timecreated($timecreated) {
-        $this->timecreated = $timecreated;
+        $this->dataobject->timecreated = $timecreated;
         return $this;
     }
 
@@ -472,11 +428,12 @@ abstract class field {
         $this->datarecord->charvalue = $datanew->{$this->shortname};
 
         if ($this->datarecord->id) {
-            $this->datarecord->timemodified = time();
+            $this->set_timemodified(time());
             $DB->update_record('cfield_data', $this->datarecord);
         } else {
-            $this->datarecord->timecreated = time();
-            $this->datarecord->timemodified = time();
+            $now = time();
+            $this->set_timecreated($now);
+            $this->set_timemodified($now);
             $DB->insert_record('cfield_data', $this->datarecord);
         }
     }

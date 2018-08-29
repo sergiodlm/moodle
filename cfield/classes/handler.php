@@ -34,22 +34,50 @@ abstract class handler {
         $this->area      = $area;
     }
 
-    public function get_component() { return $this->component; }
-
-    public function get_area() { return $this->area; }
-
-    public function get_item_id() { return $this->itemid; }
-
-    public function uses_item_id() : bool { return false; }
-
-    public function uses_categories() : bool { return true; }
-
-    public function get_category_config_form($action,$args) : \core_cfield\category_config_form {
-        return new \core_cfield\category_config_form($action,$args);
+    public function get_component() {
+        return $this->component;
     }
 
-    public function get_field_config_form($action,$args) : \core_cfield\field_config_form {
-        return new \core_cfield\field_config_form($action,$args);
+    public function get_area() {
+        return $this->area;
+    }
+
+    public function get_item_id() {
+        return $this->itemid;
+    }
+
+    public function uses_item_id() : bool {
+        return false;
+    }
+
+    public function uses_categories() : bool {
+        return true;
+    }
+
+    public function get_category_config_form($handler) : \core_cfield\category_config_form {
+        return new \core_cfield\category_config_form(null, ['handler' => $handler]);
+    }
+
+    public function get_field_config_form($args) : \core_cfield\field_config_form {
+        return new \core_cfield\field_config_form(null, $args);
+    }
+
+    public function new_category($name) {
+        $categorydata = new \stdClass();
+        $categorydata->name = $name;
+        $categorydata->component = $this->get_component();
+        $categorydata->area = $this->get_area();
+        $categorydata->itemid = $this->get_item_id();
+        return new category($categorydata);
+    }
+
+    public function load_category($id) {
+        return \core_cfield\category::load($id);
+    }
+
+    public function categories_list() {
+        $options = ['component' => $this->get_component(), 'area' => $this->get_area(), 'itemid' => $this->get_item_id()];
+        return \core_cfield\category::list($options);
     }
 
     abstract public function can_configure($itemid = null) : bool;
@@ -68,7 +96,7 @@ abstract class handler {
                 $this->get_item_id()
         );
         return $fields;
-        //return array_filter($fields, [$this, 'is_field_supported']);
+        // return array_filter($fields, [$this, 'is_field_supported']);
     }
 
     public function get_fields_with_data($recordid) {

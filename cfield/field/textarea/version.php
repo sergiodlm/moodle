@@ -15,24 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package core
- * @copyright 2018 Toni Barbera (toni@moodle.com)
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   cfield_textarea
+ * @copyright 2018 David Matamoros <toni@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-global $OUTPUT, $PAGE, $CFG;
+defined('MOODLE_INTERNAL') || die();
 
-require_once('../config.php');
-require_once($CFG->libdir.'/adminlib.php');
+$plugin->component = 'cfield_textarea';
+$plugin->version   = 2018081301;
+$plugin->requires  = 2018050800;
 
-global $PAGE;
-
-admin_externalpage_setup('course_cfields');
-
-$output = $PAGE->get_renderer('core_cfield');
-$handler = new  \core_course\cfield\course_handler();
-$outputpage = new \core_cfield\output\management($handler);
-
-echo $output->header(),
-     $output->render($outputpage),
-     $output->footer();

@@ -22,39 +22,152 @@
 
 require_once(__DIR__ . '/../config.php');
 
-$handler = required_param('handler', PARAM_RAW);
+$handlerparam = required_param('handler', PARAM_RAW);
 $itemid = optional_param('itemid', 0, PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT);
-$type = optional_param('type',null,PARAM_NOTAGS);
-$action = optional_param('action', null, PARAM_NOTAGS);
-$success = optional_param('success', false, PARAM_BASE64);
-$error   = optional_param('error', false, PARAM_BASE64);
+$type = optional_param('type', null, PARAM_NOTAGS);
 
-switch ($action) {
-    case 'editfield':
+if ($id) {
+    $record = \core_cfield\field_factory::load($id);
+    $classfieldtype = '\cfield_'. $record->get_type().'\field';
+    $configdata = json_decode( $record->get_configdata() );
+    $arrayform = (object)[
+            'id'                => $id,
+            'name'              => $record->get_name(),
+            'shortname'         => $record->get_shortname(),
+            'type'              => $record->get_type(),
+            'categoryid'        => $record->get_categoryid(),
+            'description'       => $record->get_description(),
+            'descriptionformat' => $record->get_descriptionformat(),
+    ];
 
-        $args = array(
-                'id'        => $id,
-                'handler'   => $handler,
-                'action'    => $action,
-                'itemid'    => $itemid,
-                'type'      => $type,
-                'success'   => $success,
-                'error'     => $error
-        );
-        \core_cfield\lib::edit_field($args);
+    // We format configdata fields.
+    if ($configdata) {
+        foreach ($configdata as $a => $b) {
+            $arrayform->configdata[$a] = $b;
+        }
+    }
 
-        break;
-    case 'editcategory':
-
-        $args = array(
-                'id'        => $id,
-                'handler'   => $handler,
-                'action'    => $action
-        );
-        \core_cfield\lib::edit_category($args);
-
-        break;
-    default:
-        die;
+} else {
+    $classfieldtype = '\cfield_'.$type.'\field';
+    $arrayform = (object)null;
+    $arrayform->type = $type;
+    $arrayform->configdata = ['required' => 0];
 }
+
+$url = new \moodle_url('/cfield/edit.php', ['handler' => $handlerparam]);
+
+$PAGE->set_context(\context_system::instance());
+$PAGE->set_url($url);
+$PAGE->set_pagelayout('report');
+$PAGE->set_title(get_string('customfields', 'core_cfield'));
+$PAGE->navbar->add(get_string('edit'), $url);
+
+$handler = new $handlerparam(null);
+
+$categorylist = array();
+foreach ($handler->categories_list() as $category) {
+    $categorylist[$category->id] = $category->name;
+}
+
+$args = ['handler' => $handlerparam, 'classfieldtype' => $classfieldtype, 'categorylist' => $categorylist];
+
+// Get fields for field type.
+$mform = $handler->get_field_config_form($args);
+
+if ($id) {
+    $textfieldoptions = array('trusttext' => true, 'subdirs' => true, 'maxfiles' => 50, 'maxbytes' => 0,
+                              'context' => $PAGE->context, 'noclean' => 0, 'enable_filemanagement' => true);
+
+    file_prepare_standard_editor($arrayform, 'description', $textfieldoptions, $PAGE->context, 'core_cfield',
+                                 'description', $arrayform->id);
+}
+
+$mform->set_data($arrayform);
+
+// Process Form data.
+if ($mform->is_cancelled()) {
+    redirect(new \moodle_url($handler->url));
+} else if ($data = $mform->get_data()) {
+
+    if (!empty($data->id)) {
+        // Update.
+        $fielddata = new \stdClass();
+        $fielddata->id = $data->id;
+        $fielddata->name = $data->name;
+        $fielddata->shortname = $data->shortname;
+        $fielddata->categoryid = $data->categoryid;
+        $fielddata->type = $data->type;
+        $fielddata->configdata = json_encode($data->configdata);
+
+        if ( isset($data->description_editor) ) {
+
+            $textfieldoptions = ['trusttext' => true, 'subdirs' => true, 'maxfiles' => 5, 'maxbytes' => 0,
+                                 'context' => $PAGE->context, 'noclean' => 0, 'enable_filemanagement' => true];
+
+            $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context,
+                                                    'core_cfield', 'description', $data->id);
+
+            $fielddata->description = $data->description;
+            $fielddata->descriptionformat = $data->descriptionformat;
+        }
+
+        $field = new $classfieldtype($fielddata);
+        try {
+            $field->save();
+            redirect(new moodle_url($handler->url));
+        } catch (\dml_write_exception $exception) {
+            $notification = 'error';
+        }
+
+    } else {
+        // New.
+        $fielddata = new \stdClass();
+        $fielddata->name = $data->name;
+        $fielddata->shortname = $data->shortname;
+        $fielddata->categoryid = $data->categoryid;
+        $fielddata->type = $type;
+
+        $field = new $classfieldtype($fielddata);
+        try {
+            $savedfield = $field->save();
+            $insertid = $savedfield->get_id();
+
+            if (isset($data->description_editor)) {
+
+                $textfieldoptions = array(
+                        'trusttext'             => true,
+                        'subdirs'               => true,
+                        'maxfiles'              => 5,
+                        'maxbytes'              => 0,
+                        'context'               => $PAGE->context,
+                        'noclean'               => 0,
+                        'enable_filemanagement' => true
+                );
+
+                $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context, 'core_cfield',
+                                                        'description', $insertid);
+
+                $savedfield->set_description($data->description);
+                $savedfield->set_descriptionformat($data->descriptionformat);
+                $savedfield->set_id($insertid);
+                $savedfield->save();
+            }
+            $notification = 'success';
+            redirect(new moodle_url($handler->url));
+        } catch (\dml_write_exception $exception) {
+            $notification = 'error';
+        }
+    }
+}
+
+echo $OUTPUT->header();
+
+if (isset($notification)) {
+    $renderer = new \core_renderer($PAGE, 'cfield');
+    echo $renderer->notification($notification, $notification);
+}
+
+$mform->display();
+
+echo $OUTPUT->footer();

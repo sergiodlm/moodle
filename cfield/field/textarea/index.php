@@ -15,24 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package core
- * @copyright 2018 Toni Barbera (toni@moodle.com)
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   cfield_text
+ * @copyright 2018, David Matamoros <davidmc@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-global $OUTPUT, $PAGE, $CFG;
-
-require_once('../config.php');
-require_once($CFG->libdir.'/adminlib.php');
-
-global $PAGE;
-
-admin_externalpage_setup('course_cfields');
-
-$output = $PAGE->get_renderer('core_cfield');
-$handler = new  \core_course\cfield\course_handler();
-$outputpage = new \core_cfield\output\management($handler);
-
-echo $output->header(),
-     $output->render($outputpage),
-     $output->footer();

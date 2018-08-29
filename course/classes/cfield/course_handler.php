@@ -32,11 +32,11 @@ class course_handler extends \core_cfield\handler {
 
      public function get_area() : string {
          return 'course';
-    }
+     }
 
-    public function can_configure($itemid = null) : bool {
-        return has_capability('moodle/category:manage', \context_system::instance());
-    }
+     public function can_configure($itemid = null) : bool {
+         return has_capability('moodle/category:manage', \context_system::instance());
+     }
 
      public function can_edit($recordid = null, $itemid = null) : bool {
          if ($recordid) {

@@ -22,8 +22,6 @@
 
 namespace core_cfield;
 
-use Horde\Socket\Client\Exception;
-
 defined('MOODLE_INTERNAL') || die;
 
 class field_factory {
@@ -39,8 +37,8 @@ class field_factory {
             case \cfield_text\field::TYPE:
                 return new \cfield_text\field($field);
                 break;
-            case \cfield_select\field::TYPE:
-                return new \cfield_select\field($field);
+            case \cfield_textarea\field::TYPE:
+                return new \cfield_textarea\field($field);
                 break;
             default:
                 throw new Exception('Error: Type field not recognized.');
