@@ -142,7 +142,7 @@ abstract class handler {
     }
 
     /**
-     * Adds custom fields to course edit forms.
+     * Adds custom fields to edit forms.
      * @param moodleform $mform
      */
     public function add_custom_fields($mform) {

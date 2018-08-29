@@ -65,4 +65,16 @@ class field extends \core_cfield\field {
     public function set_data($data) {
         $this->data = $data->charvalue;
     }
+
+    public function get_data() {
+        return $this->dataobject->charvalue;
+    }
+
+    public function display() {
+        return \html_writer::start_tag('div') .
+               \html_writer::tag('span', format_string($this->get_name()), ['class' => 'cfieldname']).
+               ' : '.
+               \html_writer::tag('span', format_string($this->get_data()), ['class' => 'cfieldvalue']).
+               \html_writer::end_tag('div');
+    }
 }
