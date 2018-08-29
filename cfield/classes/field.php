@@ -71,7 +71,7 @@ abstract class field {
     }
 
     public function save() {
-        if (empty($this->get_id())) {
+        if (!$this->get_id()) {
             return $this->insert();
         }
 
@@ -100,7 +100,11 @@ abstract class field {
      * @return mixed
      */
     public function get_id() {
-        return $this->dataobject->id;
+        if (isset($this->dataobject->id)) {
+            return $this->dataobject->id;
+        } else {
+            return false;
+        }
     }
 
     /**

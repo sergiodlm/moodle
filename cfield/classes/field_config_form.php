@@ -60,11 +60,12 @@ class field_config_form extends \moodleform {
 
         // Category list.
         $select = $mform->addElement('select', 'categoryid', get_string('category', 'core_cfield'), $this->_customdata['categorylist']);
-        $select->setSelected($this->_customdata['categoryid']);
 
         // If field is required.
-        $mform->addElement('select', 'configdata[required]', get_string('isfieldrequired', 'core_cfield'), $this->_customdata['yesnolist']);
-        $select->setSelected($this->_customdata['required']);
+        $yesnolist = [0 => get_string('no', 'core_cfield'), 1 => get_string('yes', 'core_cfield')];
+
+        $mform->addElement('select', 'configdata[required]', get_string('isfieldrequired', 'core_cfield'), $yesnolist);
+        //$select->setSelected($this->_customdata['required']);
 
         // We add specific settings here.
         $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_cfield'));
@@ -76,33 +77,21 @@ class field_config_form extends \moodleform {
         $mform->addElement('hidden', 'handler', $this->_customdata['handler']);
         $mform->setType('handler', PARAM_RAW);
 
-        $mform->addElement('hidden', 'type', $this->_customdata['type']);
-        $mform->setType('type', PARAM_RAW);
+        $mform->addElement('hidden', 'type');
+        $mform->setType('type', PARAM_NOTAGS);
 
-        $mform->addElement('hidden', 'action', $this->_customdata['action']);
-        $mform->setType('action', PARAM_RAW);
+        $mform->addElement('hidden', 'id');
+        $mform->setType('id', PARAM_INT);
 
-        if (!empty($this->_customdata['id'])) {
-            // Field exists.
-            $mform->addElement('hidden', 'id', $this->_customdata['id']);
-            $mform->setType('id', PARAM_INT);
-            //$mform->addElement('hidden', 'itemid', $this->_customdata['itemid']);
-            //$mform->setType('itemid', PARAM_INT);
-
-            $this->add_action_buttons(true, get_string('modify', 'core_cfield'));
-        } else {
-            // New field.
-            $this->add_action_buttons(true, get_string('add', 'core_cfield'));
-        }
+        $this->add_action_buttons(true);
     }
-
 
     public function validation($data, $files = array()) {
         global $DB;
 
         $errors = array();
 
-        if (!empty($this->_customdata['id'])) {
+        if (!empty($data['id'])) {
             if ( $DB->record_exists_select('cfield_field', 'shortname = ? AND id <> ? AND categoryid = ?', array($data['shortname'], $data['id'], $data['categoryid']) )) {
                 $errors['shortname'] = get_string('formfieldcheckshortname', 'core_cfield');
             }
