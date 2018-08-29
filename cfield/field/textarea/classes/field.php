@@ -57,6 +57,17 @@ global $PAGE;
     }
 
     public function set_data($data) {
-        $this->data = $data->charvalue;
+        $this->data = $data->value;
+    }
+
+    public function get_data() {
+        return $this->dataobject->value;
+    }
+
+    public function display() {
+        return \html_writer::start_tag('div') .
+               \html_writer::tag('span', format_string($this->get_name()), ['class' => 'cfieldname']).
+               \html_writer::tag('span', format_text($this->get_data()), ['class' => 'cfieldvalue']).
+               \html_writer::end_tag('div');
     }
 }
