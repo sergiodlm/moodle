@@ -22,8 +22,6 @@
 
 namespace core_cfield;
 
-use Horde\Socket\Client\Exception;
-
 defined('MOODLE_INTERNAL') || die;
 
 class field_factory {

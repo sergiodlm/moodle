@@ -58,8 +58,8 @@ abstract class handler {
         return new \core_cfield\category_config_form(null, ['handler' => $handler]);
     }
 
-    public function get_field_config_form($action, $args) : \core_cfield\field_config_form {
-        return new \core_cfield\field_config_form($action, $args);
+    public function get_field_config_form($args) : \core_cfield\field_config_form {
+        return new \core_cfield\field_config_form(null, $args);
     }
 
     public function new_category($name) {
@@ -73,6 +73,11 @@ abstract class handler {
 
     public function load_category($id) {
         return \core_cfield\category::load($id);
+    }
+
+    public function categories_list() {
+        $options = ['component' => $this->get_component(), 'area' => $this->get_area(), 'itemid' => $this->get_item_id()];
+        return \core_cfield\category::list($options);
     }
 
     abstract public function can_configure($itemid = null) : bool;

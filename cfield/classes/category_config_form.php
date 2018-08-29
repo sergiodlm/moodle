@@ -68,7 +68,7 @@ class category_config_form extends \moodleform {
 
         $errors = array();
 
-        if (!empty($this->_customdata['id'])) {
+        if (!empty($data['id'])) {
             if ( $DB->record_exists_select('cfield_category', 'name = ? AND id <> ?', array($data['name'], $data['id']) )) {
                 $errors['name'] = get_string('formcategorycheckname', 'core_cfield');
             }
