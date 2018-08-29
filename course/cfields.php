@@ -33,10 +33,6 @@ $output = $PAGE->get_renderer('core_cfield');
 $handler = new  \core_course\cfield\course_handler();
 $outputpage = new \core_cfield\output\management($handler);
 
-echo $output->header();
-echo $output->render($outputpage);
-echo $output->footer();
-
-
-
-
+echo $output->header(),
+     $output->render($outputpage),
+     $output->footer();

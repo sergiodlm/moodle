@@ -49,20 +49,11 @@ class category_config_form extends \moodleform {
         $mform->addElement('hidden', 'handler', $this->_customdata['handler']);
         $mform->setType('handler', PARAM_RAW);
 
-        $mform->addElement('hidden', 'action', $this->_customdata['action']);
-        $mform->setType('action', PARAM_NOTAGS);
+        $mform->addElement('hidden', 'id');
+        $mform->setType('id', PARAM_INT);
 
-        if (!empty($this->_customdata['id'])) {
-
-            $mform->addElement('hidden', 'id', $this->_customdata['id']);
-            $mform->setType('id', PARAM_INT);
-
-            $this->add_action_buttons(true, get_string('modify', 'core_cfield'));
-        } else {
-            $this->add_action_buttons(true, get_string('add', 'core_cfield'));
-        }
+        $this->add_action_buttons(true);
     }
-
 
     /**
      * Perform validation on categories.

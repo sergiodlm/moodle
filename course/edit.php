@@ -108,7 +108,7 @@ if ($id) {
 }
 
 // Load custom fields data.
-$handler  = new core_course\cfield\course_handler(null, 'core_course', 'course');
+$handler  = new core_course\cfield\course_handler(null);
 $handler->load_data($course);
 
 // Prepare course and the editor.

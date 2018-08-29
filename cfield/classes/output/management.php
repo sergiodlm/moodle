@@ -54,8 +54,8 @@ class management implements renderable, templatable{
 
         $categoriesarray = array();
 
-        foreach ($categories as $category)
-        {
+        foreach ($categories as $category) {
+
             $categoryarray = array();
             $categoryarray['id'] =$category->get_id();
             $categoryarray['name'] = $category->get_name();
@@ -63,20 +63,17 @@ class management implements renderable, templatable{
             $categoryarray['deleteicon'] = $deleteicon;
             $categoryarray['editicon'] = $editicon;
 
-            $categoryarray['deletecategoryurl'] = (string)new \moodle_url('/cfield/edit.php', [
+            $categoryarray['deletecategoryurl'] = (string)new \moodle_url('/cfield/edit_category.php', [
                     'deletecategory' => $categoryarray['id'],
                     'handler' => $data->handler,
                     'sesskey' => sesskey()
             ]);
 
-            $categoryarray['editcategoryurl'] = (string)new \moodle_url('/cfield/edit.php', [
-                    'id' => $categoryarray['id'],
-                    'handler' => $data->handler,
-                    'action' => 'editcategory',
+            $categoryarray['editcategoryurl'] = (string)new \moodle_url('/cfield/edit_category.php', [
+                    'id' => $categoryarray['id'], 'handler' => $data->handler,
             ]);
 
-            foreach ($category->get_fields() as $field)
-            {
+            foreach ($category->get_fields() as $field) {
                 global $OUTPUT;
 
                 $fieldarray['type'] = $field->get_type();
@@ -96,7 +93,6 @@ class management implements renderable, templatable{
                         'id' => $fieldarray['id'],
                         'handler' => $data->handler,
                         'type' => $fieldarray['type'],
-                        'action' => 'editfield'
                 ]);
 
                 $categoryarray['fields'][] = $fieldarray;
@@ -112,8 +108,8 @@ class management implements renderable, templatable{
         $data->singleselect = $select->export_for_template($output);
 
         // Create a new category link.
-        $options = array('action' => 'editcategory', 'handler' => $data->handler);
-        $data->singlebutton = $OUTPUT->single_button(new \moodle_url('/cfield/edit.php', $options), get_string('createnewccategory', 'core_cfield'));
+        $options = array('handler' => $data->handler);
+        $data->singlebutton = $OUTPUT->single_button(new \moodle_url('/cfield/edit_category.php', $options), get_string('createnewccategory', 'core_cfield'));
 
         return $data;
     }
