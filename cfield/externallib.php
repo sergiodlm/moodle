@@ -83,6 +83,8 @@ class core_cfield_external extends external_api {
                                         'deletefieldurl' => new external_value(PARAM_NOTAGS, 'deleteurl'),
                                         'deleteicon' => new external_value(PARAM_RAW, 'deleteicon'),
                                         'id' => new external_value(PARAM_RAW, 'id'),
+                                        'upiconfield' => new external_value(PARAM_RAW, 'up icon'),
+                                        'downiconfield' => new external_value(PARAM_RAW, 'down icon'),
                                     )
                                 )
                             , '', VALUE_OPTIONAL),
@@ -114,7 +116,6 @@ class core_cfield_external extends external_api {
     }
 
     public static function move_up_field($id) {
-        echo $id;
         $record = \core_cfield\field_factory::load($id);
         $record->up();
     }
@@ -129,7 +130,6 @@ class core_cfield_external extends external_api {
     }
 
     public static function move_down_field($id) {
-        echo $id;
         $record = \core_cfield\field_factory::load($id);
         $record->down();
     }

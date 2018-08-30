@@ -36,7 +36,9 @@ abstract class field {
     const LENGTH_TYPE = 100;
 
     public function __construct(\stdClass $fielddata) {
+        global $DB;
         $this->dataobject = $fielddata;
+        $this->db = $DB;
         return $this;
     }
 
@@ -68,8 +70,8 @@ abstract class field {
         );
 
         if (!empty($previusfielddata)) {
-            $previusfield = new field_factory($previusfielddata);
-            $previusfield->set_sortorder( $this->get_sortorder() - 1 );
+            $previusfield = field_factory::load($previusfielddata->id);
+            $previusfield->set_sortorder( $this->get_sortorder());
             $previusfield->save();
             $this->set_sortorder( $this->get_sortorder() + 1 );
             $this->save();
@@ -88,8 +90,8 @@ abstract class field {
         );
 
         if (!empty($previusfielddata)) {
-            $previusfield = new field_factory($previusfielddata);
-            $previusfield->set_sortorder( $this->get_sortorder() + 1 );
+            $previusfield = field_factory::load($previusfielddata->id);
+            $previusfield->set_sortorder( $this->get_sortorder());
             $previusfield->save();
             $this->set_sortorder( $this->get_sortorder() - 1 );
             $this->save();

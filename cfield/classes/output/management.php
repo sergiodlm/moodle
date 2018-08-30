@@ -92,8 +92,10 @@ class management implements renderable, templatable{
                 $fieldarray['downicon'] = null;
                 $sortorder = $field->get_sortorder();
                 $fieldcount = $DB->count_records('cfield_field', array('categoryid' => $category->get_id()));
-                if($sortorder < $fieldcount)  $fieldarray['upicon'] = $upicon;
-                if($sortorder > 1)  $fieldarray['downicon'] = $downicon;
+                if($sortorder < $fieldcount)  $fieldarray['upiconfield'] = $upicon;
+                else $fieldarray['upiconfield'] = '';
+                if($sortorder > 1)  $fieldarray['downiconfield'] = $downicon;
+                else $fieldarray['downiconfield'] = '';
 
                 $fieldarray['deletefieldurl'] = (string)new \moodle_url('/cfield/edit.php', [
                        'delete' => $fieldarray['id'],
