@@ -51,6 +51,8 @@ class management implements renderable, templatable{
 
         $deleteicon = $OUTPUT->pix_icon('t/delete',get_string('delete'));
         $editicon = $OUTPUT->pix_icon('t/edit',get_string('edit'));
+        $upicon = $OUTPUT->pix_icon('t/up', get_string('moveup'));
+        $downicon = $OUTPUT->pix_icon('t/down', get_string('movedown'));
 
         $categoriesarray = array();
 
@@ -62,6 +64,8 @@ class management implements renderable, templatable{
             $categoryarray['customfield'] = get_string('customfield', 'core_cfield');
             $categoryarray['deleteicon'] = $deleteicon;
             $categoryarray['editicon'] = $editicon;
+            //$categoryarray['upicon'] = $upicon;
+            //$categoryarray['downicon'] = $downicon;
 
             $categoryarray['deletecategoryurl'] = (string)new \moodle_url('/cfield/edit_category.php', [
                     'deletecategory' => $categoryarray['id'],
@@ -82,6 +86,15 @@ class management implements renderable, templatable{
                 $fieldarray['deleteicon'] = $deleteicon;
                 $fieldarray['editicon'] = $editicon;
 
+                // Count the number of fields in this category.
+                global $DB;
+                $fieldarray['upicon'] = null;
+                $fieldarray['downicon'] = null;
+                $sortorder = $field->get_sortorder();
+                $fieldcount = $DB->count_records('cfield_field', array('categoryid' => $category->get_id()));
+                if($sortorder < $fieldcount)  $fieldarray['upicon'] = $upicon;
+                if($sortorder > 1)  $fieldarray['downicon'] = $downicon;
+
                 $fieldarray['deletefieldurl'] = (string)new \moodle_url('/cfield/edit.php', [
                        'delete' => $fieldarray['id'],
                        'handler' => $data->handler,
@@ -101,6 +114,8 @@ class management implements renderable, templatable{
         }
 
         $data->categories = $categoriesarray;
+
+        //echo '<pre>';var_dump($categoriesarray);die;
 
         // Create a new dropdown for types of fields.
         $options = ['text' => 'Text Input', 'textarea' => 'Text Area', 'select' => 'Dropdown Menu'];

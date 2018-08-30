@@ -2166,6 +2166,22 @@ $functions = array(
             'type'        => 'write',
             'ajax'        => 'true'
     ),
+    'core_cfield_move_up_field' => array(
+            'classname'   => 'core_cfield_external',
+            'methodname'  => 'move_up_field',
+            'classpath'   => 'cfield/externallib.php',
+            'description' => 'Moves up a field',
+            'type'        => 'write',
+            'ajax'        => 'true'
+    ),
+    'core_cfield_move_down_field' => array(
+            'classname'   => 'core_cfield_external',
+            'methodname'  => 'move_down_field',
+            'classpath'   => 'cfield/externallib.php',
+            'description' => 'Moves down a field',
+            'type'        => 'write',
+            'ajax'        => 'true'
+    ),
 );
 
 $services = array(

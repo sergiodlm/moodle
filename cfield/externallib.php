@@ -106,4 +106,34 @@ class core_cfield_external extends external_api {
 
     public static function delete_category_returns() {
     }
+
+    public static function move_up_field_parameters() {
+        return new external_function_parameters(
+                array('id' => new external_value(PARAM_INT, 'Entry ID to move up', VALUE_REQUIRED))
+        );
+    }
+
+    public static function move_up_field($id) {
+        echo $id;
+        $record = \core_cfield\field_factory::load($id);
+        $record->up();
+    }
+
+    public static function move_up_field_returns() {
+    }
+
+    public static function move_down_field_parameters() {
+        return new external_function_parameters(
+                array('id' => new external_value(PARAM_INT, 'Entry ID to move down', VALUE_REQUIRED))
+        );
+    }
+
+    public static function move_down_field($id) {
+        echo $id;
+        $record = \core_cfield\field_factory::load($id);
+        $record->down();
+    }
+
+    public static function move_down_field_returns() {
+    }
 }
