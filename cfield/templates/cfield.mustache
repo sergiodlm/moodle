@@ -43,8 +43,8 @@
     {{#categories}}
         <p>
             <h3>{{name}}</h3>
-            <a href="{{{editcategoryurl}}}" data-role="edit" data-id="{{id}}">Edit category</a>
-            <a href="{{{deletecategoryurl}}}" class="confirm_delete_category" data-id="{{id}}">{{{deleteicon}}}</a>
+            <a href="{{{editcategoryurl}}}" data-role="editcategory" data-id="{{id}}">{{{editicon}}}</a>
+            <a href="{{{deletecategoryurl}}}" class="confirm_delete_category" data-role="deletecategory" data-id="{{id}}">{{{deleteicon}}}</a>
             <a href="" class="move_up_category" data-id="{{id}}">{{{upiconcategory}}}</a>
             <a href="" class="move_down_category" data-id="{{id}}">{{{downiconcategory}}}</a>
         </p>
