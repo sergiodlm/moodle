@@ -48,10 +48,11 @@ abstract class field {
         $fieldneighbours = $DB->get_records( self::CLASS_TABLE, [ 'categoryid' => $categoryid ], 'sortorder DESC' );
 
         $neworder = count($fieldneighbours);
+
         foreach ($fieldneighbours as $field) {
             $dataobject            = new \stdClass();
             $dataobject->id        = $field->id;
-            $dataobject->sortorder = $neworder--;
+            $dataobject->sortorder = --$neworder;
             if (!$DB->update_record(self::CLASS_TABLE, $dataobject)) {
                 return false;
             }
@@ -101,14 +102,18 @@ abstract class field {
     }
 
 
-    public function delete() {
+    public function delete() : bool {
         global $DB;
 
         if (!data::bulk_delete_from_fields([$this->get_id()])) {
             return false;
         }
-        $this::reorder( $this->get_categoryid() );
-        return $DB->delete_records($this::CLASS_TABLE, ['id' => $this->get_id()]);
+        if ( $DB->delete_records($this::CLASS_TABLE, ['id' => $this->get_id()]) ) {
+            $this::reorder( $this->get_categoryid() );
+            return true;
+        }
+
+        return false;
     }
 
     private function insert() {
@@ -135,8 +140,9 @@ abstract class field {
 
     public function save() {
         if (!$this->get_id()) {
+            $this->insert();
             $this::reorder( $this->get_categoryid() );
-            return $this->insert();
+            return $this;
         }
 
         return $this->update();

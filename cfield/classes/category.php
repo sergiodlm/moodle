@@ -52,8 +52,9 @@ class category {
         $categoryneighbours = self::load_array($options);
 
         $neworder = count($categoryneighbours);
+
         foreach ($categoryneighbours as $category) {
-            $category->set_sortorder($neworder--);
+            $category->set_sortorder(--$neworder);
             $category->save();
         }
 
@@ -135,7 +136,7 @@ class category {
         $now = time();
         $this->set_timecreated($now);
         $this->set_timemodified($now);
-        $this->dataobject->sortorder = 0;
+        $this->dataobject->sortorder = -1;
         $this->set_id($DB->insert_record(self::CLASS_TABLE, $this->dataobject));
 
         foreach ($this->fields as $field) {
