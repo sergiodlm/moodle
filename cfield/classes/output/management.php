@@ -64,8 +64,14 @@ class management implements renderable, templatable{
             $categoryarray['customfield'] = get_string('customfield', 'core_cfield');
             $categoryarray['deleteicon'] = $deleteicon;
             $categoryarray['editicon'] = $editicon;
-            //$categoryarray['upicon'] = $upicon;
-            //$categoryarray['downicon'] = $downicon;
+
+            // Move up and down categories.
+            $sortorder = $category->get_sortorder();
+            $categoriescount = $category->get_count_categories();
+            if($sortorder < $categoriescount)  $categoryarray['upiconcategory'] = $upicon;
+            else $categoryarray['upiconcategory'] = '';
+            if($sortorder > 1)  $categoryarray['downiconcategory'] = $downicon;
+            else $categoryarray['downiconcategory'] = '';
 
             $categoryarray['deletecategoryurl'] = (string)new \moodle_url('/cfield/edit_category.php', [
                     'deletecategory' => $categoryarray['id'],
@@ -86,14 +92,13 @@ class management implements renderable, templatable{
                 $fieldarray['deleteicon'] = $deleteicon;
                 $fieldarray['editicon'] = $editicon;
 
-                // Count the number of fields in this category.
-                global $DB;
-                $fieldarray['upicon'] = null;
-                $fieldarray['downicon'] = null;
+                // Move up and down fields.
                 $sortorder = $field->get_sortorder();
-                $fieldcount = $DB->count_records('cfield_field', array('categoryid' => $category->get_id()));
-                if($sortorder < $fieldcount)  $fieldarray['upicon'] = $upicon;
-                if($sortorder > 1)  $fieldarray['downicon'] = $downicon;
+                $fieldcount = $field->get_count_fields();
+                if($sortorder < $fieldcount)  $fieldarray['upiconfield'] = $upicon;
+                else $fieldarray['upiconfield'] = '';
+                if($sortorder > 1)  $fieldarray['downiconfield'] = $downicon;
+                else $fieldarray['downiconfield'] = '';
 
                 $fieldarray['deletefieldurl'] = (string)new \moodle_url('/cfield/edit.php', [
                        'delete' => $fieldarray['id'],
@@ -114,8 +119,6 @@ class management implements renderable, templatable{
         }
 
         $data->categories = $categoriesarray;
-
-        //echo '<pre>';var_dump($categoriesarray);die;
 
         // Create a new dropdown for types of fields.
         $options = ['text' => 'Text Input', 'textarea' => 'Text Area', 'select' => 'Dropdown Menu'];

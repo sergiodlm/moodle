@@ -45,6 +45,8 @@
             <h3>{{name}}</h3>
             <a href="{{{editcategoryurl}}}" >{{{editicon}}}</a>
             <a href="{{{deletecategoryurl}}}" class="confirm_delete_category" data-id="{{id}}">{{{deleteicon}}}</a>
+            <a href="" class="move_up_category" data-id="{{id}}">{{{upiconcategory}}}</a>
+            <a href="" class="move_down_category" data-id="{{id}}">{{{downiconcategory}}}</a>
         </p>
         <div>
             <table id="core_cfield-managefields-wrapper" class="generaltable fullwidth">
@@ -67,12 +69,8 @@
                             <td>
                                 <a href="{{{editfieldurl}}}" >{{{editicon}}}</a>
                                 <a href="{{{deletefieldurl}}}" class="confirm_delete" data-id="{{id}}">{{{deleteicon}}}</a>
-                                <a href="" class="move_up_field" data-id="{{id}}">{{{upicon}}}</a>
-
-                                <a href="" >{{{downicon}}}</a>
-                                <!--{{#actions}}-->
-                                    <!--{{>core/action_menu}}-->
-                                <!--{{/actions}}-->
+                                <a href="" class="move_up_field" data-id="{{id}}">{{{upiconfield}}}</a>
+                                <a href="" class="move_down_field" data-id="{{id}}">{{{downiconfield}}}</a>
                             </td>
                         </tr>
                     {{/fields}}
