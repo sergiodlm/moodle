@@ -71,7 +71,7 @@ class category {
         )[0];
 
         if (!empty($previuscategory)) {
-            $previuscategory->set_sortorder( $this->get_sortorder() - 1 );
+            $previuscategory->set_sortorder( $this->get_sortorder());
             $previuscategory->save();
             $this->set_sortorder( $this->get_sortorder() + 1 );
             $this->save();
@@ -91,7 +91,7 @@ class category {
         )[0];
 
         if (!empty($previuscategory)) {
-            $previuscategory->set_sortorder( $this->get_sortorder() + 1 );
+            $previuscategory->set_sortorder( $this->get_sortorder());
             $previuscategory->save();
             $this->set_sortorder( $this->get_sortorder() - 1 );
             $this->save();
@@ -398,5 +398,11 @@ class category {
     public function set_name($name) {
         $this->dataobject->name = $name;
         return $this;
+    }
+
+    // Get total count of categories for this component and area.
+    public function get_count_categories() {
+        global $DB;
+        return $DB->count_records('cfield_category', array('component' => $this->dataobject->component, 'area' => $this->dataobject->area));
     }
 }

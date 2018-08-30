@@ -73,6 +73,8 @@ class core_cfield_external extends external_api {
                             'deletecategoryurl' => new external_value(PARAM_NOTAGS, 'delete category url'),
                             'deleteicon' => new external_value(PARAM_RAW, 'delete icon'),
                             'editicon' => new external_value(PARAM_RAW, 'edit icon'),
+                            'upiconcategory' => new external_value(PARAM_RAW, 'up icon'),
+                            'downiconcategory' => new external_value(PARAM_RAW, 'down icon'),
                             'fields' => new external_multiple_structure(
                                 new external_single_structure(
                                     array(
@@ -135,5 +137,33 @@ class core_cfield_external extends external_api {
     }
 
     public static function move_down_field_returns() {
+    }
+
+    public static function move_up_category_parameters() {
+        return new external_function_parameters(
+                array('id' => new external_value(PARAM_INT, 'Entry ID to move up', VALUE_REQUIRED))
+        );
+    }
+
+    public static function move_up_category($id) {
+        $record = \core_cfield\category::load($id);
+        $record->up();
+    }
+
+    public static function move_up_category_returns() {
+    }
+
+    public static function move_down_category_parameters() {
+        return new external_function_parameters(
+                array('id' => new external_value(PARAM_INT, 'Entry ID to move down', VALUE_REQUIRED))
+        );
+    }
+
+    public static function move_down_category($id) {
+        $record = \core_cfield\category::load($id);
+        $record->down();
+    }
+
+    public static function move_down_category_returns() {
     }
 }

@@ -521,4 +521,10 @@ abstract class field {
             $data->{$this->shortname} = $this->data;
         }
     }
+
+    // Get total count of fields for this category.
+    public function get_count_fields() {
+        global $DB;
+        return $DB->count_records('cfield_field', array('categoryid' => $this->dataobject->categoryid ));
+    }
 }
