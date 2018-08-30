@@ -58,8 +58,10 @@ class field extends \core_cfield\field {
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-        $mform->addElement(self::TYPE, $this->shortname, format_string($this->name), 'size="'.self::SIZE.'" ');
-        $mform->setType($this->shortname, PARAM_TEXT);
+        //$mform->addElement(self::TYPE, $this->shortname, format_string($this->name), 'size="'.self::SIZE.'" ');
+        //var_dump($this->dataobject->shortname);die;
+        $mform->addElement(self::TYPE, $this->dataobject->shortname, format_string($this->dataobject->name), 'size="'.self::SIZE.'" ');
+        $mform->setType($this->dataobject->shortname, PARAM_TEXT);
     }
 
     public function set_data($data) {

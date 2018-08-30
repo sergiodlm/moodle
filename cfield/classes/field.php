@@ -397,7 +397,7 @@ abstract class field {
     public function edit_field_set_maxlength($mform) {
         $maxlength = $this->has_maxlength();
         if ($maxlength && ($this->is_editable())) {
-            $mform->addRule($this->shortname, get_string('maxlength', 'core_cfield'), 'maxlength', $maxlength, 'client');
+            $mform->addRule($this->dataobject->shortname, get_string('maxlength', 'core_cfield'), 'maxlength', $maxlength, 'client');
         }
     }
 
@@ -416,7 +416,7 @@ abstract class field {
      */
     public function edit_field_set_required($mform) {
         if ($this->is_required() && ($this->is_editable())) {
-            $mform->addRule($this->shortname, get_string('required'), 'required', null, 'client');
+            $mform->addRule($this->dataobject->shortname, get_string('required'), 'required', null, 'client');
         }
     }
 
@@ -429,8 +429,8 @@ abstract class field {
             return;
         }
         if ($this->is_locked() and !has_capability('moodle/course:update', context_course::instance($this->courseid))) {
-            $mform->hardFreeze($this->shortname);
-            $mform->setConstant($this->shortname, $this->data);
+            $mform->hardFreeze($this->dataobject->shortname);
+            $mform->setConstant($this->dataobject->shortname, $this->data);
         }
     }
 

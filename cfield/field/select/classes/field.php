@@ -25,25 +25,29 @@ namespace cfield_select;
 class field extends \core_cfield\field{
 
     const TYPE = 'select';
-
-   //public function get_definitions() {
-   //     return (object)array(
-   //             'type' => 'text',
-   //             'class' => 'cfield_text'
-   //     );
-   // }
+    const SIZE = 40;
 
     /**
      * Add fields for editing a text field.
      * @param moodleform $mform
      */
-    public static function add_fields_edit_form( \MoodleQuickForm $mform) {
+    public static function add_field_to_edit_form( \MoodleQuickForm $mform) {
         //public static function add_fields_edit_form(\core_cfield\field $fielddefinition, \moodleform $form, \MoodleQuickForm $mform) {
 
-        $mform->addElement('text', 'name', get_string('fieldname', 'core_cfield'));
-        $mform->setType('name', PARAM_NOTAGS);
+        $mform->addElement('textarea', 'configdata[options]', 'Menu options (one per line)');
 
-        $mform->addElement('text', 'shortname', get_string('fieldshortname', 'core_cfield'));
-        $mform->setType('shortname', PARAM_NOTAGS);
+    }
+
+    /**
+     * Add fields for editing a textarea field.
+     * @param moodleform $mform
+     */
+    public function edit_field_add($mform) {
+        $mform->addElement('select', $this->dataobject->shortname, format_string($this->dataobject->name));
+        //$mform->setType($this->shortname, PARAM_TEXT);
+    }
+
+    public function set_data($data) {
+        $this->data = $data->charvalue;
     }
 }
