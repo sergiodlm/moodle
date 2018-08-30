@@ -81,11 +81,13 @@
     {{/categories}}
 </div>
 
-{{createnewcfield}}
+{{#categories}}
+    {{createnewcfield}}
 
-{{#singleselect}}
-    {{>core/single_select}}
-{{/singleselect}}
+    {{#singleselect}}
+        {{>core/single_select}}
+    {{/singleselect}}
+{{/categories}}
 
 {{#singlebutton}}
     {{{singlebutton}}}
