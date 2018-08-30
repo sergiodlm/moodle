@@ -41,6 +41,12 @@ class management implements renderable, templatable{
         global $OUTPUT;
         $data = (object) [];
 
+        $options = [
+                'text'      => 'Text Input',
+                'textarea'  => 'Text Area',
+                'select'    => 'Dropdown Menu'
+        ];
+
         $data->customfield = get_string('customfield', 'core_cfield');
         $data->type = get_string('type', 'core_cfield');
         $data->handler = get_class($this->handler);
@@ -53,6 +59,7 @@ class management implements renderable, templatable{
         $editicon = $OUTPUT->pix_icon('t/edit',get_string('edit'));
         $upicon = $OUTPUT->pix_icon('t/up', get_string('moveup'));
         $downicon = $OUTPUT->pix_icon('t/down', get_string('movedown'));
+        $spacericon = $OUTPUT->pix_icon('spacer', '');
 
         $categoriesarray = array();
 
@@ -62,15 +69,15 @@ class management implements renderable, templatable{
             $categoryarray['id'] =$category->get_id();
             $categoryarray['name'] = $category->get_name();
             $categoryarray['customfield'] = get_string('customfield', 'core_cfield');
+            $categoryarray['action'] = get_string('action', 'core_cfield');
             $categoryarray['deleteicon'] = $deleteicon;
             $categoryarray['editicon'] = $editicon;
 
             // Move up and down categories.
             $sortorder = $category->get_sortorder();
-            $categoriescount = $category->get_count_categories();
-            if($sortorder < $categoriescount)  $categoryarray['upiconcategory'] = $upicon;
+            if($sortorder < $category->get_count_categories() - 1)  $categoryarray['upiconcategory'] = $upicon;
             else $categoryarray['upiconcategory'] = '';
-            if($sortorder > 1)  $categoryarray['downiconcategory'] = $downicon;
+            if($sortorder > 0)  $categoryarray['downiconcategory'] = $downicon;
             else $categoryarray['downiconcategory'] = '';
 
             $categoryarray['deletecategoryurl'] = (string)new \moodle_url('/cfield/edit_category.php', [
@@ -86,7 +93,7 @@ class management implements renderable, templatable{
             foreach ($category->get_fields() as $field) {
                 global $OUTPUT;
 
-                $fieldarray['type'] = $field->get_type();
+                $fieldarray['type'] = $options[$field->get_type()];
                 $fieldarray['id'] = $field->get_id();
                 $fieldarray['name'] = $field->get_name();
                 $fieldarray['deleteicon'] = $deleteicon;
@@ -94,11 +101,10 @@ class management implements renderable, templatable{
 
                 // Move up and down fields.
                 $sortorder = $field->get_sortorder();
-                $fieldcount = $field->get_count_fields();
-                if($sortorder < $fieldcount)  $fieldarray['upiconfield'] = $upicon;
-                else $fieldarray['upiconfield'] = '';
-                if($sortorder > 1)  $fieldarray['downiconfield'] = $downicon;
-                else $fieldarray['downiconfield'] = '';
+                if($sortorder < $field->get_count_fields() - 1)  $fieldarray['upiconfield'] = $upicon;
+                else $fieldarray['upiconfield'] = $spacericon;
+                if($sortorder > 0)  $fieldarray['downiconfield'] = $downicon;
+                else $fieldarray['downiconfield'] = $spacericon;
 
                 $fieldarray['deletefieldurl'] = (string)new \moodle_url('/cfield/edit.php', [
                        'delete' => $fieldarray['id'],
@@ -121,13 +127,11 @@ class management implements renderable, templatable{
         $data->categories = $categoriesarray;
 
         // Create a new dropdown for types of fields.
-        $options = ['text' => 'Text Input', 'textarea' => 'Text Area', 'select' => 'Dropdown Menu'];
         $select = new \single_select($data->link, 'type', $options, '', array('' => get_string('choosedots')), 'newfieldform');
         $data->singleselect = $select->export_for_template($output);
 
         // Create a new category link.
-        $options = array('handler' => $data->handler);
-        $data->singlebutton = $OUTPUT->single_button(new \moodle_url('/cfield/edit_category.php', $options), get_string('createnewccategory', 'core_cfield'));
+        $data->singlebutton = $OUTPUT->single_button(new \moodle_url('/cfield/edit_category.php', array('handler' => $data->handler)), get_string('createnewccategory', 'core_cfield'));
 
         return $data;
     }

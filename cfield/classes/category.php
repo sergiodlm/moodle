@@ -115,15 +115,18 @@ class category {
             }
         }
 
-        $this::reorder(
-                [
-                        'component' => $this->get_component(),
-                        'area'      => $this->get_area(),
-                        'itemid'    => $this->get_itemid()
-                ]
-        );
+        if ($DB->delete_records(self::CLASS_TABLE, ['id' => $this->get_id()])) {
+            $this::reorder(
+                    [
+                            'component' => $this->get_component(),
+                            'area' => $this->get_area(),
+                            'itemid' => $this->get_itemid()
+                    ]
+            );
+            return true;
+        }
 
-        return $DB->delete_records(self::CLASS_TABLE, ['id' => $this->get_id()]);
+        return false;
     }
 
     private function insert() {
@@ -161,6 +164,7 @@ class category {
 
     public function save() {
         if (empty($this->get_id())) {
+            $this->insert();
             $this::reorder(
                     [
                             'component' => $this->get_component(),
@@ -168,7 +172,7 @@ class category {
                             'itemid'    => $this->get_itemid()
                     ]
             );
-            return $this->insert();
+            return $this;
         }
         return $this->update();
     }
