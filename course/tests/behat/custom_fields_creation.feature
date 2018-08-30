@@ -10,6 +10,6 @@ Feature: Managers can create course custom fields
     When I navigate to "Courses > Course custom fields" in site administration
     And I press "Create a new Category"
     And I set the following fields to these values:
-      | Category name | Test category |
+      | Category Name | Test category |
     And I press "Save changes"
     Then I should see "Test category" in the "#cfield_catlist" "css_element"
