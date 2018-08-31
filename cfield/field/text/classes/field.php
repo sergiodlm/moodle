@@ -42,11 +42,11 @@ class field extends \core_cfield\field {
         );
 
         // Max length.
-        $mform->addElement('text', 'configdata[maxlength]', get_string('maxlength', 'core_cfield'));
+        $mform->addElement('text', 'configdata[maxlength]', get_string('maxlength', 'core_cfield'), ['size' => self::SIZE]);
         $mform->setType('configdata[maxlength]', PARAM_INT);
 
         // Link.
-        $mform->addElement('text', 'configdata[link]', get_string('link', 'core_cfield'));
+        $mform->addElement('text', 'configdata[link]', get_string('link', 'core_cfield'), ['size' => self::SIZE]);
         $mform->setType('configdata[link]', PARAM_URL);
 
         // Link target.
@@ -69,7 +69,9 @@ class field extends \core_cfield\field {
     }
 
     public function get_data() {
-        return $this->dataobject->charvalue;
+        //var_dump($this->dataobject);die;
+        //return $this->dataobject->data;
+        return $this->dataobject;
     }
 
     public function display() {

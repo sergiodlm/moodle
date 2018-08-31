@@ -15,16 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   cfield_select
+ * @package   cfield_checkbox
  * @copyright 2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace cfield_select;
+namespace cfield_checkbox;
 
 class field extends \core_cfield\field{
 
-    const TYPE = 'select';
+    const TYPE = 'checkbox';
     const SIZE = 40;
 
     /**
@@ -34,24 +34,16 @@ class field extends \core_cfield\field{
     public static function add_field_to_edit_form( \MoodleQuickForm $mform) {
         //public static function add_fields_edit_form(\core_cfield\field $fielddefinition, \moodleform $form, \MoodleQuickForm $mform) {
 
-        $mform->addElement('textarea', 'configdata[options]', 'Menu options (one per line)');
-
-    }
+        $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_cfield'));    }
 
     /**
      * Add fields for editing a textarea field.
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-        $configdata = json_decode($this->dataobject->configdata);
 
-        if (isset($configdata->options)) {
-            $options = explode("\n", $configdata->options);
-        } else {
-            $options = array();
-        }
 
-        $mform->addElement('select', $this->dataobject->shortname, format_string($this->dataobject->name), $options);
+        $mform->addElement('checkbox', $this->dataobject->shortname, format_string($this->dataobject->name));
         //$mform->setType($this->shortname, PARAM_TEXT);
     }
 
