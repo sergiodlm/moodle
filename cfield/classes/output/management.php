@@ -52,7 +52,6 @@ class management implements renderable, templatable{
         $data->type = get_string('type', 'core_cfield');
         $data->handler = get_class($this->handler);
         $data->link = new \moodle_url('/cfield/edit.php', array('handler' => $data->handler, 'action' => 'editfield'));
-        $data->createnewcfield = get_string('createnewcfield', 'core_cfield');
 
         $categories = $this->handler->get_fields_definitions();
 
@@ -131,6 +130,7 @@ class management implements renderable, templatable{
 
         // Create a new dropdown for types of fields.
         $select = new \single_select($data->link, 'type', $options, '', array('' => get_string('choosedots')), 'newfieldform');
+        $select->set_label(get_string('createnewcfield', 'core_cfield'));
         $data->singleselect = $select->export_for_template($output);
 
         // Create a new category link.
