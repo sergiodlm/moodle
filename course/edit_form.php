@@ -433,8 +433,8 @@ class course_edit_form extends moodleform {
         }
 
         // Add the custom fields validation.
-        $handler  = new core_course\cfield\course_handler(null);
-        $errors += $handler->validate_data($mform, $data, $files);
+        //$handler  = new core_course\cfield\course_handler(null);
+        //$errors += $handler->validate_data($mform, $data, $files);
 
         return $errors;
     }

@@ -44,7 +44,8 @@ class management implements renderable, templatable{
         $options = [
                 'text'      => 'Text Input',
                 'textarea'  => 'Text Area',
-                'select'    => 'Dropdown Menu'
+                'select'    => 'Dropdown Menu',
+                'checkbox'  => 'CheckBox'
         ];
 
         $data->customfield = get_string('customfield', 'core_cfield');
@@ -120,6 +121,8 @@ class management implements renderable, templatable{
                 ]);
 
                 $categoryarray['fields'][] = $fieldarray;
+                //$fieldexporter = new \core_cfield\list_exporter($fieldarray);
+                //$categoryarray['fields'][] = $fieldexporter->export($output);
             }
             $categoriesarray[] = $categoryarray;
         }
