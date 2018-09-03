@@ -28,13 +28,17 @@ class core_cfield_external extends external_api {
 
     public static function delete_entry_parameters() {
         return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'Entry ID to delete', VALUE_REQUIRED))
+                array('id' => new external_value(PARAM_INT, 'Entry ID to delete', VALUE_REQUIRED),
+                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
         );
     }
 
-    public static function delete_entry($id) {
-        $record = \core_cfield\field_factory::load($id);
-        $record->delete();
+    public static function delete_entry($id, $handler) {
+        $handler1 = new $handler();
+        if( $handler1->can_edit() ) {
+            $record = \core_cfield\field_factory::load($id);
+            $record->delete();
+        }
     }
 
     public static function delete_entry_returns() {
@@ -99,13 +103,17 @@ class core_cfield_external extends external_api {
 
     public static function delete_category_parameters() {
         return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'category ID to delete', VALUE_REQUIRED))
+                array('id' => new external_value(PARAM_INT, 'category ID to delete', VALUE_REQUIRED),
+                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
         );
     }
 
-    public static function delete_category($id) {
-        $record = \core_cfield\category::load($id);
-        $record->delete();
+    public static function delete_category($id, $handler) {
+        $handler1 = new $handler();
+        if ($handler1->can_edit()) {
+            $record = \core_cfield\category::load($id);
+            $record->delete();
+        }
     }
 
     public static function delete_category_returns() {
@@ -113,13 +121,17 @@ class core_cfield_external extends external_api {
 
     public static function move_up_field_parameters() {
         return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'Entry ID to move up', VALUE_REQUIRED))
+                array('id' => new external_value(PARAM_INT, 'Entry ID to move up', VALUE_REQUIRED),
+                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
         );
     }
 
-    public static function move_up_field($id) {
-        $record = \core_cfield\field_factory::load($id);
-        $record->up();
+    public static function move_up_field($id, $handler) {
+        $handler1 = new $handler();
+        if ($handler1->can_configure($id)) {
+            $record = \core_cfield\field_factory::load($id);
+            $record->up();
+        }
     }
 
     public static function move_up_field_returns() {
@@ -127,13 +139,17 @@ class core_cfield_external extends external_api {
 
     public static function move_down_field_parameters() {
         return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'Entry ID to move down', VALUE_REQUIRED))
+                array('id' => new external_value(PARAM_INT, 'Entry ID to move down', VALUE_REQUIRED),
+                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
         );
     }
 
-    public static function move_down_field($id) {
-        $record = \core_cfield\field_factory::load($id);
-        $record->down();
+    public static function move_down_field($id, $handler) {
+        $handler1 = new $handler();
+        if ($handler1->can_configure()) {
+            $record = \core_cfield\field_factory::load($id);
+            $record->down();
+        }
     }
 
     public static function move_down_field_returns() {
@@ -141,13 +157,17 @@ class core_cfield_external extends external_api {
 
     public static function move_up_category_parameters() {
         return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'Entry ID to move up', VALUE_REQUIRED))
+                array('id' => new external_value(PARAM_INT, 'Entry ID to move up', VALUE_REQUIRED),
+                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
         );
     }
 
-    public static function move_up_category($id) {
-        $record = \core_cfield\category::load($id);
-        $record->up();
+    public static function move_up_category($id, $handler) {
+        $handler1 = new $handler();
+        if ($handler1->can_configure()) {
+            $record = \core_cfield\category::load($id);
+            $record->up();
+        }
     }
 
     public static function move_up_category_returns() {
@@ -155,13 +175,17 @@ class core_cfield_external extends external_api {
 
     public static function move_down_category_parameters() {
         return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'Entry ID to move down', VALUE_REQUIRED))
+                array('id' => new external_value(PARAM_INT, 'Entry ID to move down', VALUE_REQUIRED),
+                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
         );
     }
 
-    public static function move_down_category($id) {
-        $record = \core_cfield\category::load($id);
-        $record->down();
+    public static function move_down_category($id, $handler) {
+        $handler1 = new $handler();
+        if ($handler1->can_configure()) {
+            $record = \core_cfield\category::load($id);
+            $record->down();
+        }
     }
 
     public static function move_down_category_returns() {

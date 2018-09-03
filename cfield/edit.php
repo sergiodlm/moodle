@@ -27,6 +27,8 @@ $itemid = optional_param('itemid', 0, PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT);
 $type = optional_param('type', null, PARAM_NOTAGS);
 
+$handler = new $handlerparam(null);
+
 if ($id) {
     $record = \core_cfield\field_factory::load($id);
     $classfieldtype = '\cfield_'. $record->get_type().'\field';
@@ -63,7 +65,7 @@ $PAGE->set_pagelayout('report');
 $PAGE->set_title(get_string('customfields', 'core_cfield'));
 $PAGE->navbar->add(get_string('edit'), $url);
 
-$handler = new $handlerparam(null);
+//$handler = new $handlerparam(null);
 
 $categorylist = array();
 foreach ($handler->categories_list() as $category) {

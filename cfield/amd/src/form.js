@@ -17,7 +17,7 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                         break;
                 }
                 var promises = ajax.call([
-                    {methodname: func, args:{id: id}},
+                    {methodname: func, args:{id: id, handler: handler}},
                     {methodname: 'core_cfield_reload_template', args:{handler: handler}}
                 ]);
                 promises[1].done(function(response) {
@@ -49,7 +49,7 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                 break;
         }
         var promises = ajax.call([
-            {methodname: func, args:{id: id}},
+            {methodname: func, args:{id: id, handler: handler}},
             {methodname: 'core_cfield_reload_template', args:{handler: handler}}
         ]);
         promises[1].done(function(response) {

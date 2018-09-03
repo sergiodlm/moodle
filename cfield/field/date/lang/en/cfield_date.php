@@ -15,12 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   cfield_text
- * @copyright 2018, Special Projects Team <special@moodle.com>
+ * @package   cfield_date
+ * @copyright 2018 David Matamoros <special@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Text field';
+$string['pluginname'] = 'Date Field';
 

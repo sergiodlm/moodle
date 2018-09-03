@@ -45,7 +45,8 @@ class management implements renderable, templatable{
                 'text'      => 'Text Input',
                 'textarea'  => 'Text Area',
                 'select'    => 'Dropdown Menu',
-                'checkbox'  => 'CheckBox'
+                'checkbox'  => 'CheckBox',
+                'date'      => 'Date Time'
         ];
 
         $data->customfield = get_string('customfield', 'core_cfield');
