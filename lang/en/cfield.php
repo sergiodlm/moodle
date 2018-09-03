@@ -57,3 +57,5 @@ $string['no'] = 'No';
 $string['isdataunique'] = 'Should the data be unique?';
 $string['action'] = 'Action';
 $string['checkbydefault'] = 'Checked by default';
+$string['showdate'] = 'Show date';
+$string['includetime'] = 'Include time?';

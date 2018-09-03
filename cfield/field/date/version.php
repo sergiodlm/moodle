@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   cfield_text
+ * @package   cfield_date
  * @copyright 2018 Toni Barbera <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'cfield_radio';
+$plugin->component = 'cfield_date';
 $plugin->version   = 2018081301;
 $plugin->requires  = 2018050800;
 

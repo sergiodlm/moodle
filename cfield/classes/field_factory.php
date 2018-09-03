@@ -46,6 +46,9 @@ class field_factory {
             case \cfield_checkbox\field::TYPE:
                 return new \cfield_checkbox\field($field);
                 break;
+            case \cfield_date\field::TYPE:
+                return new \cfield_date\field($field);
+                break;
             default:
                 throw new Exception('Error: Type field not recognized.');
         }

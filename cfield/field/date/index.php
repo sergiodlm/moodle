@@ -16,6 +16,6 @@
 
 /**
  * @package   cfield_text
- * @copyright 2018, David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

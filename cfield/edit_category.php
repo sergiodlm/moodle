@@ -49,7 +49,7 @@ $mform->set_data($arrayform);
 // Process Form data.
 if ($mform->is_cancelled()) {
 
-    redirect($url);
+    redirect(new \moodle_url($handler->url));
 
 } else if ($data = $mform->get_data()) {
 
