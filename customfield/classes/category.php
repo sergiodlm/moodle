@@ -36,8 +36,12 @@ class category {
     public function __construct(\stdClass $categorydata) {
         global $DB;
 
-        if (empty($categorydata->name) || empty($categorydata->area) || empty($categorydata->component)) {
-            throw new Exception();
+        if (
+            empty($categorydata->name) ||
+            empty($categorydata->area) ||
+            empty($categorydata->component)
+        ) {
+            throw new \Exception();
         }
 
         $this->dataobject = $categorydata;

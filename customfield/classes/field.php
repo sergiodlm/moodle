@@ -22,6 +22,8 @@
 
 namespace core_customfield;
 
+use Phpml\Exception\DatasetException;
+
 defined('MOODLE_INTERNAL') || die;
 
 abstract class field {
@@ -37,8 +39,19 @@ abstract class field {
 
     public function __construct(\stdClass $fielddata) {
         global $DB;
-        $this->dataobject = $fielddata;
+
         $this->db = $DB;
+
+        $this->dataobject = $fielddata;
+
+        if (
+            empty($fielddata->name) ||
+            empty($fielddata->categoryid) ||
+            strpos($fielddata->shortname, ' ') !== false
+        ) {
+            throw new \ErrorException();
+        }
+
         return $this;
     }
 

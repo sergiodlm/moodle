@@ -22,6 +22,10 @@
 
 require_once(__DIR__ . '/../config.php');
 
+define('OTHERFIELDSNAME', 'Other Fields'); //Need becomes from lang file.
+define('OTHERFIELDSSHORTNAME', 'otherfields'); //Need becomes from lang file.
+
+
 $handlerparam = required_param('handler', PARAM_RAW);
 $itemid = optional_param('itemid', 0, PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT);
@@ -123,6 +127,19 @@ if ($mform->is_cancelled()) {
         }
 
     } else {
+
+    	if (empty($data->categoryid)) {
+			$defaultcategorydata            = new \stdClass();
+			$defaultcategorydata->name      = OTHERFIELDSNAME;
+			$defaultcategorydata->shortname = OTHERFIELDSSHORTNAME;
+			$defaultcategorydata->area      = $handler->get_area();
+			$defaultcategorydata->component = $handler->get_component();
+			$defaultcategory                = new \core_customfield\category($defaultcategorydata);
+			$defaultcategory->save();
+
+			$data->categoryid = $defaultcategory->get_id();
+		}
+
         // New.
         $fielddata = new \stdClass();
         $fielddata->name = $data->name;
