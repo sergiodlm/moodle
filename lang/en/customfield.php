@@ -59,3 +59,4 @@ $string['action'] = 'Action';
 $string['checkbydefault'] = 'Checked by default';
 $string['showdate'] = 'Show date';
 $string['includetime'] = 'Include time?';
+$string['shortname'] = 'Short Name';

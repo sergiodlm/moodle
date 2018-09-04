@@ -49,10 +49,11 @@ class management implements renderable, templatable{
                 'date'      => 'Date Time'
         ];
 
-        $data->customfield = get_string('customfield', 'core_customfield');
-        $data->type = get_string('type', 'core_customfield');
-        $data->handler = get_class($this->handler);
-        $data->link = new \moodle_url('/customfield/edit.php', array('handler' => $data->handler, 'action' => 'editfield'));
+		$data->customfield = get_string('customfield', 'core_customfield');
+		$data->shortname   = get_string('shortname', 'core_customfield');
+		$data->type        = get_string('type', 'core_customfield');
+		$data->handler     = get_class($this->handler);
+		$data->link        = new \moodle_url('/customfield/edit.php', array('handler' => $data->handler, 'action' => 'editfield'));
 
         $categories = $this->handler->get_fields_definitions();
 
@@ -96,7 +97,8 @@ class management implements renderable, templatable{
 
                 $fieldarray['type'] = $options[$field->get_type()];
                 $fieldarray['id'] = $field->get_id();
-                $fieldarray['name'] = $field->get_name();
+				$fieldarray['name'] = $field->get_name();
+				$fieldarray['shortname'] = $field->get_shortname();
                 $fieldarray['deleteicon'] = $deleteicon;
                 $fieldarray['editicon'] = $editicon;
 
@@ -135,7 +137,11 @@ class management implements renderable, templatable{
         $data->singleselect = $select->export_for_template($output);
 
         // Create a new category link.
-        $data->singlebutton = $OUTPUT->single_button(new \moodle_url('/customfield/edit_category.php', array('handler' => $data->handler)), get_string('createnewccategory', 'core_customfield'));
+        $data->singlebutton = $OUTPUT->single_button(
+        	new \moodle_url('/customfield/edit_category.php',
+			array('handler' => $data->handler)),
+			get_string('createnewccategory', 'core_customfield')
+		);
 
         return $data;
     }

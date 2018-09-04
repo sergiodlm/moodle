@@ -76,7 +76,12 @@ abstract class handler {
     }
 
     public function categories_list() {
-        $options = ['component' => $this->get_component(), 'area' => $this->get_area(), 'itemid' => $this->get_item_id()];
+        $options = [
+        	'component' => $this->get_component(),
+			'area' => $this->get_area(),
+			'itemid' => $this->get_item_id()
+		];
+
         return \core_customfield\category::list($options);
     }
 
