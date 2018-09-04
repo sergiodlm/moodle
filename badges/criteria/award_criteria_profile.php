@@ -61,10 +61,10 @@ class award_criteria_profile extends award_criteria {
                 ORDER BY ic.sortorder ASC, uf.sortorder ASC";
 
         // Get custom fields.
-        $cfields = $DB->get_records_sql($sql);
+        $customfield = $DB->get_records_sql($sql);
         $cfids = array_map(function($o) {
             return $o->fieldid;
-        }, $cfields);
+        }, $customfield);
 
         if ($this->id !== 0) {
             $existing = array_keys($this->params);
@@ -93,8 +93,8 @@ class award_criteria_profile extends award_criteria {
             }
         }
 
-        if (!empty($cfields)) {
-            foreach ($cfields as $field) {
+        if (!empty($customfield)) {
+            foreach ($customfield as $field) {
                 if (!isset($currentcat) || $currentcat != $field->categoryid) {
                     $currentcat = $field->categoryid;
                     $mform->addElement('header', 'category_' . $currentcat, format_string($field->categoryname));

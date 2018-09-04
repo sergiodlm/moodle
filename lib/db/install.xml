@@ -3860,7 +3860,7 @@
         <INDEX NAME="indexprioritytimerequested" UNIQUE="false" FIELDS="indexpriority, timerequested"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="cfield_field" COMMENT="Default comment for cfield_text, please edit me">
+    <TABLE NAME="customfield_field" COMMENT="Default comment for customfield_text, please edit me">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="shortname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
@@ -3882,7 +3882,7 @@
         <INDEX NAME="categoryid_shortname" UNIQUE="true" FIELDS="categoryid, shortname"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="cfield_category" COMMENT="cfield_category comment">
+    <TABLE NAME="customfield_category" COMMENT="customfield_category comment">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="name" TYPE="char" LENGTH="400" NOTNULL="true" SEQUENCE="false"/>
@@ -3904,7 +3904,7 @@
         <INDEX NAME="component_area_itemid_sortorder" UNIQUE="true" FIELDS="component, area, itemid, sortorder"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="cfield_data" COMMENT="cfield_data description">
+    <TABLE NAME="customfield_data" COMMENT="customfield_data description">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="fieldid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -3921,7 +3921,7 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="fieldid" TYPE="foreign" FIELDS="fieldid" REFTABLE="cfield_field" REFFIELDS="id"/>
+        <KEY NAME="fieldid" TYPE="foreign" FIELDS="fieldid" REFTABLE="customfield_field" REFFIELDS="id"/>
         <KEY NAME="contextid" TYPE="foreign" FIELDS="contextid" REFTABLE="context" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>

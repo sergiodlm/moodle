@@ -11,7 +11,7 @@ Feature: Managers can create course custom fields and categories
     And I set the following fields to these values:
       | Category Name | Test category |
     And I press "Save changes"
-    Then I should see "Test category" in the "#cfield_catlist" "css_element"
+    Then I should see "Test category" in the "#customfield_catlist" "css_element"
 
   Scenario: Edit a category for custom course fields
     Given I log in as "admin"
@@ -24,7 +24,7 @@ Feature: Managers can create course custom fields and categories
     And I set the following fields to these values:
       | Category Name | Edited category |
     And I press "Save changes"
-    Then I should see "Edited category" in the "#cfield_catlist" "css_element"
+    Then I should see "Edited category" in the "#customfield_catlist" "css_element"
 
   @javascript
   Scenario: Delete a category for custom course fields
@@ -38,7 +38,7 @@ Feature: Managers can create course custom fields and categories
     And I click on "Yes" "button" in the "Delete" "dialogue"
     And I wait until the page is ready
     And I wait until "Test category" "text" does not exist
-    Then I should not see "Test category" in the "#cfield_catlist" "css_element"
+    Then I should not see "Test category" in the "#customfield_catlist" "css_element"
 
   Scenario: Create a custom course field
     Given I log in as "admin"
@@ -52,7 +52,7 @@ Feature: Managers can create course custom fields and categories
       | Name | Test field |
       | Short Name | testfield |
     And I press "Save changes"
-    Then I should see "Test field" in the "#cfield_catlist" "css_element"
+    Then I should see "Test field" in the "#customfield_catlist" "css_element"
 
   Scenario: Edit a custom course field
     Given I log in as "admin"
@@ -70,7 +70,7 @@ Feature: Managers can create course custom fields and categories
     And I set the following fields to these values:
       | Name | Edited field |
     And I press "Save changes"
-    Then I should see "Edited field" in the "#cfield_catlist" "css_element"
+    Then I should see "Edited field" in the "#customfield_catlist" "css_element"
 
   @javascript
   Scenario: Delete a custom course field
@@ -89,4 +89,4 @@ Feature: Managers can create course custom fields and categories
     And I click on "Yes" "button" in the "Delete" "dialogue"
     And I wait until the page is ready
     And I wait until "Test field" "text" does not exist
-    Then I should not see "Test field" in the "#cfield_catlist" "css_element"
+    Then I should not see "Test field" in the "#customfield_catlist" "css_element"

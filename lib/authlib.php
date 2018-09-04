@@ -102,7 +102,7 @@ class auth_plugin_base {
      * The fields we can lock and update from/to external authentication backends
      * @var array
      */
-    var $userfields = \core_user::AUTHSYNCFIELDS;
+    var $userfields = \core_user::AUTHSYNCUSTOMFIELD;
 
     /**
      * Moodle custom fields to sync with.

@@ -2142,58 +2142,58 @@ $functions = array(
         'services'    => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
     ),
 
-    'core_cfield_delete_entry' => array(
-        'classname'   => 'core_cfield_external',
+    'core_customfield_delete_entry' => array(
+        'classname'   => 'core_customfield_external',
         'methodname'  => 'delete_entry',
-        'classpath'   => 'cfield/externallib.php',
+        'classpath'   => 'customfield/externallib.php',
         'description' => 'Deletes an entry',
         'type'        => 'write',
         'ajax'        => 'true'
     ),
-    'core_cfield_reload_template' => array(
-        'classname'   => 'core_cfield_external',
+    'core_customfield_reload_template' => array(
+        'classname'   => 'core_customfield_external',
         'methodname'  => 'reload_template',
-        'classpath'   => 'cfield/externallib.php',
+        'classpath'   => 'customfield/externallib.php',
         'description' => 'Reloads template',
         'type'        => 'read',
         'ajax'        => 'true'
     ),
-    'core_cfield_delete_category' => array(
-            'classname'   => 'core_cfield_external',
+    'core_customfield_delete_category' => array(
+            'classname'   => 'core_customfield_external',
             'methodname'  => 'delete_category',
-            'classpath'   => 'cfield/externallib.php',
+            'classpath'   => 'customfield/externallib.php',
             'description' => 'Deletes a category',
             'type'        => 'write',
             'ajax'        => 'true'
     ),
-    'core_cfield_move_up_field' => array(
-                'classname'   => 'core_cfield_external',
+    'core_customfield_move_up_field' => array(
+                'classname'   => 'core_customfield_external',
                 'methodname'  => 'move_up_field',
-                'classpath'   => 'cfield/externallib.php',
+                'classpath'   => 'customfield/externallib.php',
                 'description' => 'Moves up a field',
                 'type'        => 'write',
                 'ajax'        => 'true'
         ),
-        'core_cfield_move_down_field' => array(
-                'classname'   => 'core_cfield_external',
+        'core_customfield_move_down_field' => array(
+                'classname'   => 'core_customfield_external',
                 'methodname'  => 'move_down_field',
-                'classpath'   => 'cfield/externallib.php',
+                'classpath'   => 'customfield/externallib.php',
                 'description' => 'Moves down a field',
                 'type'        => 'write',
                 'ajax'        => 'true'
         ),
-        'core_cfield_move_up_category' => array(
-                'classname'   => 'core_cfield_external',
+        'core_customfield_move_up_category' => array(
+                'classname'   => 'core_customfield_external',
                 'methodname'  => 'move_up_category',
-                'classpath'   => 'cfield/externallib.php',
+                'classpath'   => 'customfield/externallib.php',
                 'description' => 'Moves up a category',
                 'type'        => 'write',
                 'ajax'        => 'true'
         ),
-        'core_cfield_move_down_category' => array(
-                'classname'   => 'core_cfield_external',
+        'core_customfield_move_down_category' => array(
+                'classname'   => 'core_customfield_external',
                 'methodname'  => 'move_down_category',
-                'classpath'   => 'cfield/externallib.php',
+                'classpath'   => 'customfield/externallib.php',
                 'description' => 'Moves down a category',
                 'type'        => 'write',
                 'ajax'        => 'true'

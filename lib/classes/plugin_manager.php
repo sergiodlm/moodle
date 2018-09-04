@@ -1739,7 +1739,7 @@ class core_plugin_manager {
                 'gregorian'
             ),
 
-            'cfield' => array(
+            'customfield' => array(
                 'text'
             ),
 

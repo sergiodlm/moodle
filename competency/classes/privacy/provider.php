@@ -703,11 +703,11 @@ class provider implements
         // Fetch all the records of competency proficiency in the course.
         $ffields = competency_framework::get_sql_fields('f', 'f_');
         $compfields = competency::get_sql_fields('c', 'c_');
-        $uccfields = user_competency_course::get_sql_fields('ucc', 'ucc_');
+        $uccustomfield = user_competency_course::get_sql_fields('ucc', 'ucc_');
         $ctxfields = context_helper::get_preload_record_columns_sql('ctx');
         list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
         $sql = "
-            SELECT $ffields, $compfields, $uccfields, $ctxfields
+            SELECT $ffields, $compfields, $uccustomfield, $ctxfields
               FROM {" . user_competency_course::TABLE . "} ucc
               JOIN {" . competency::TABLE . "} c
                 ON c.id = ucc.competencyid
@@ -766,11 +766,11 @@ class provider implements
         // Fetch all the records of competency proficiency in the course.
         $ffields = competency_framework::get_sql_fields('f', 'f_');
         $compfields = competency::get_sql_fields('c', 'c_');
-        $uccfields = user_competency_course::get_sql_fields('ucc', 'ucc_');
+        $uccustomfield = user_competency_course::get_sql_fields('ucc', 'ucc_');
         $ctxfields = context_helper::get_preload_record_columns_sql('ctx');
         list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
         $sql = "
-            SELECT $ffields, $compfields, $uccfields, $ctxfields
+            SELECT $ffields, $compfields, $uccustomfield, $ctxfields
               FROM {" . user_competency_course::TABLE . "} ucc
               JOIN {" . competency::TABLE . "} c
                 ON c.id = ucc.competencyid
@@ -825,11 +825,11 @@ class provider implements
 
         // Fetch all the courses with associations we created or modified.
         $compfields = competency::get_sql_fields('c', 'c_');
-        $ccfields = course_competency::get_sql_fields('cc', 'cc_');
+        $ccustomfield = course_competency::get_sql_fields('cc', 'cc_');
         $ctxfields = context_helper::get_preload_record_columns_sql('ctx');
         list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
         $sql = "
-            SELECT $compfields, $ccfields, $ctxfields
+            SELECT $compfields, $ccustomfield, $ctxfields
               FROM {" . course_competency::TABLE . "} cc
               JOIN {" . competency::TABLE . "} c
                 ON c.id = cc.competencyid
@@ -920,11 +920,11 @@ class provider implements
 
         // Fetch all the modules with associations we created or modified.
         $compfields = competency::get_sql_fields('c', 'c_');
-        $cmcfields = course_module_competency::get_sql_fields('cmc', 'cmc_');
+        $cmcustomfield = course_module_competency::get_sql_fields('cmc', 'cmc_');
         $ctxfields = context_helper::get_preload_record_columns_sql('ctx');
         list($insql, $inparams) = $DB->get_in_or_equal($cmids, SQL_PARAMS_NAMED);
         $sql = "
-            SELECT $compfields, $cmcfields, $ctxfields
+            SELECT $compfields, $cmcustomfield, $ctxfields
               FROM {" . course_module_competency::TABLE . "} cmc
               JOIN {" . competency::TABLE . "} c
                 ON c.id = cmc.competencyid
@@ -968,8 +968,8 @@ class provider implements
         $userid = $context->instanceid;
         $path = [get_string('competencies', 'core_competency'), get_string('competencies', 'core_competency')];
         $helper = new performance_helper();
-        $cfields = competency::get_sql_fields('c', 'c_');
-        $ucfields = user_competency::get_sql_fields('uc', 'uc_');
+        $customfield = competency::get_sql_fields('c', 'c_');
+        $ucustomfield = user_competency::get_sql_fields('uc', 'uc_');
         $efields = evidence::get_sql_fields('e', 'e_');
 
         $makecomppath = function($competencyid, $data) use ($path) {
@@ -977,7 +977,7 @@ class provider implements
         };
 
         $sql = "
-            SELECT $cfields, $ucfields, $efields
+            SELECT $customfield, $ucustomfield, $efields
               FROM {" . user_competency::TABLE . "} uc
               JOIN {" . competency::TABLE . "} c
                 ON c.id = uc.competencyid
@@ -1029,14 +1029,14 @@ class provider implements
         $path = [get_string('competencies', 'core_competency'), get_string('privacy:path:plans', 'core_competency')];
         $helper = new performance_helper();
         $pfields = plan::get_sql_fields('p', 'p_');
-        $pcfields = plan_competency::get_sql_fields('pc', 'pc_');
-        $cfields = competency::get_sql_fields('c', 'c_');
-        $ucfields = user_competency::get_sql_fields('uc', 'uc_');
+        $pcustomfield = plan_competency::get_sql_fields('pc', 'pc_');
+        $customfield = competency::get_sql_fields('c', 'c_');
+        $ucustomfield = user_competency::get_sql_fields('uc', 'uc_');
         $ucpfields = user_competency_plan::get_sql_fields('ucp', 'ucp_');
 
         // The user's learning plans.
         $sql = "
-            SELECT $pfields, $pcfields, $cfields, $ucfields, $ucpfields
+            SELECT $pfields, $pcustomfield, $customfield, $ucustomfield, $ucpfields
               FROM {" . plan::TABLE . "} p
          LEFT JOIN {" . plan_competency::TABLE . "} pc
                 ON p.id = pc.planid
@@ -1134,8 +1134,8 @@ class provider implements
         $plans = [];
         $helper = new performance_helper();
         $pfields = plan::get_sql_fields('p', 'p_');
-        $pcfields = plan_competency::get_sql_fields('pc', 'pc_');
-        $cfields = competency::get_sql_fields('c', 'c_');
+        $pcustomfield = plan_competency::get_sql_fields('pc', 'pc_');
+        $customfield = competency::get_sql_fields('c', 'c_');
         $ucpfields = user_competency_plan::get_sql_fields('ucp', 'ucp_');
 
         // Function to initialise a plan record.
@@ -1159,7 +1159,7 @@ class provider implements
 
         // Look for associations that were created.
         $sql = "
-            SELECT $pfields, $pcfields, $cfields
+            SELECT $pfields, $pcustomfield, $customfield
               FROM {" . plan_competency::TABLE . "} pc
               JOIN {" . plan::TABLE . "} p
                 ON p.id = pc.planid
@@ -1194,7 +1194,7 @@ class provider implements
 
         // Look for final grades that were given.
         $sql = "
-            SELECT $pfields, $ucpfields, $cfields
+            SELECT $pfields, $ucpfields, $customfield
               FROM {" . user_competency_plan::TABLE . "} ucp
               JOIN {" . plan::TABLE . "} p
                 ON p.id = ucp.planid
@@ -1294,8 +1294,8 @@ class provider implements
         ];
         $competencies = [];
         $helper = new performance_helper();
-        $cfields = competency::get_sql_fields('c', 'c_');
-        $ucfields = user_competency::get_sql_fields('uc', 'uc_');
+        $customfield = competency::get_sql_fields('c', 'c_');
+        $ucustomfield = user_competency::get_sql_fields('uc', 'uc_');
         $efields = evidence::get_sql_fields('e', 'e_');
 
         $initcompetency = function($record) use (&$competencies) {
@@ -1314,7 +1314,7 @@ class provider implements
 
         // Look for evidence.
         $sql = "
-            SELECT $efields, $ucfields, $cfields
+            SELECT $efields, $ucustomfield, $customfield
               FROM {" . evidence::TABLE . "} e
               JOIN {" . user_competency::TABLE . "} uc
                 ON uc.id = e.usercompetencyid
@@ -1357,7 +1357,7 @@ class provider implements
             list($insql, $inparams) = $DB->get_in_or_equal(array_keys($competencies), SQL_PARAMS_NAMED, 'param', false);
         }
         $sql = "
-            SELECT $ucfields, $cfields
+            SELECT $ucustomfield, $customfield
               FROM {" . user_competency::TABLE . "} uc
               JOIN {" . competency::TABLE . "} c
                 ON c.id = uc.competencyid
@@ -1423,8 +1423,8 @@ class provider implements
         ];
         $evidence = [];
         $helper = new performance_helper();
-        $cfields = competency::get_sql_fields('c', 'c_');
-        $uecfields = user_evidence_competency::get_sql_fields('uec', 'uec_');
+        $customfield = competency::get_sql_fields('c', 'c_');
+        $uecustomfield = user_evidence_competency::get_sql_fields('uec', 'uec_');
         $uefields = user_evidence::get_sql_fields('ue', 'ue_');
 
         $initevidence = function($record) use (&$evidence, $userid) {
@@ -1434,7 +1434,7 @@ class provider implements
 
         // Look for evidence.
         $sql = "
-            SELECT $uefields, $uecfields, $cfields
+            SELECT $uefields, $uecustomfield, $customfield
               FROM {" . user_evidence_competency::TABLE . "} uec
               JOIN {" . user_evidence::TABLE . "} ue
                 ON ue.id = uec.userevidenceid
@@ -1508,10 +1508,10 @@ class provider implements
         $userid = $context->instanceid;
         $path = [get_string('competencies', 'core_competency'), get_string('privacy:path:userevidence', 'core_competency')];
         $uefields = user_evidence::get_sql_fields('ue', 'ue_');
-        $cfields = competency::get_sql_fields('c', 'c_');
+        $customfield = competency::get_sql_fields('c', 'c_');
 
         $sql = "
-            SELECT $uefields, $cfields
+            SELECT $uefields, $customfield
               FROM {" . user_evidence::TABLE . "} ue
          LEFT JOIN {" . user_evidence_competency::TABLE . "} uec
                 ON uec.userevidenceid = ue.id
@@ -1552,9 +1552,9 @@ class provider implements
         global $DB;
 
         $ffields = competency_framework::get_sql_fields('f', 'f_');
-        $cfields = competency::get_sql_fields('c', 'c_');
+        $customfield = competency::get_sql_fields('c', 'c_');
         $c2fields = competency::get_sql_fields('c2', 'c2_');
-        $rcfields = related_competency::get_sql_fields('rc', 'rc_');
+        $rcustomfield = related_competency::get_sql_fields('rc', 'rc_');
 
         $frameworks = [];
         $initframework = function($record) use (&$frameworks, $userid) {
@@ -1579,7 +1579,7 @@ class provider implements
 
         // Start by looking for related competencies.
         $sql = "
-            SELECT $ffields, $cfields, $c2fields, $rcfields
+            SELECT $ffields, $customfield, $c2fields, $rcustomfield
               FROM {" . related_competency::TABLE . "} rc
               JOIN {" . competency::TABLE . "} c
                 ON c.id = rc.competencyid
@@ -1633,7 +1633,7 @@ class provider implements
             list($insql, $inparams) = $DB->get_in_or_equal($competencyids, SQL_PARAMS_NAMED, 'param', false);
         }
         $sql = "
-            SELECT $ffields, $cfields
+            SELECT $ffields, $customfield
               FROM {" . competency::TABLE . "} c
               JOIN {" . competency_framework::TABLE . "} f
                 ON f.id = c.competencyframeworkid
@@ -1700,8 +1700,8 @@ class provider implements
         global $DB;
 
         $tfields = template::get_sql_fields('t', 't_');
-        $cfields = competency::get_sql_fields('c', 'c_');
-        $tcfields = template_competency::get_sql_fields('tc', 'tc_');
+        $customfield = competency::get_sql_fields('c', 'c_');
+        $tcustomfield = template_competency::get_sql_fields('tc', 'tc_');
         $tchfields = template_cohort::get_sql_fields('tch', 'tch_');
 
         $templates = [];
@@ -1717,7 +1717,7 @@ class provider implements
 
         // Find the template competencies.
         $sql = "
-            SELECT $tfields, $cfields, $tcfields
+            SELECT $tfields, $customfield, $tcustomfield
               FROM {" . template_competency::TABLE . "} tc
               JOIN {" . template::TABLE . "} t
                 ON t.id = tc.templateid

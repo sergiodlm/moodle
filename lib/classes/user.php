@@ -61,7 +61,7 @@ class core_user {
     /**
      * List of fields that can be synched/locked during authentication.
      */
-    const AUTHSYNCFIELDS = [
+    const AUTHSYNCUSTOMFIELD = [
         'firstname',
         'lastname',
         'email',

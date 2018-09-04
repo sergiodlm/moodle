@@ -183,22 +183,22 @@ function uu_validate_user_upload_columns(csv_import_reader $cir, $stdfields, $pr
     $processed = array();
     foreach ($columns as $key=>$unused) {
         $field = $columns[$key];
-        $lcfield = core_text::strtolower($field);
-        if (in_array($field, $stdfields) or in_array($lcfield, $stdfields)) {
+        $lcustomfield = core_text::strtolower($field);
+        if (in_array($field, $stdfields) or in_array($lcustomfield, $stdfields)) {
             // standard fields are only lowercase
-            $newfield = $lcfield;
+            $newfield = $lcustomfield;
 
         } else if (in_array($field, $profilefields)) {
             // exact profile field name match - these are case sensitive
             $newfield = $field;
 
-        } else if (in_array($lcfield, $profilefields)) {
+        } else if (in_array($lcustomfield, $profilefields)) {
             // hack: somebody wrote uppercase in csv file, but the system knows only lowercase profile field
-            $newfield = $lcfield;
+            $newfield = $lcustomfield;
 
-        } else if (preg_match('/^(sysrole|cohort|course|group|type|role|enrolperiod|enrolstatus)\d+$/', $lcfield)) {
+        } else if (preg_match('/^(sysrole|cohort|course|group|type|role|enrolperiod|enrolstatus)\d+$/', $lcustomfield)) {
             // special fields for enrolments
-            $newfield = $lcfield;
+            $newfield = $lcustomfield;
 
         } else {
             $cir->close();

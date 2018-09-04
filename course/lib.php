@@ -2569,7 +2569,7 @@ function update_course($data, $editoroptions = NULL) {
         }
     }
 
-    $handler  = new core_course\cfield\course_handler(null);
+    $handler  = new core_course\customfield\course_handler(null);
     $handler->save_data($data);
 
     // Update with the new data

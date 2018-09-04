@@ -1332,7 +1332,7 @@ class api {
         }
 
         $capability = 'moodle/competency:usercompetencyreview';
-        $ucfields = user_competency::get_sql_fields('uc', 'uc_');
+        $ucustomfield = user_competency::get_sql_fields('uc', 'uc_');
         $compfields = competency::get_sql_fields('c', 'c_');
         $usercols = array('id') + get_user_fieldnames();
         $userfields = array();
@@ -1341,7 +1341,7 @@ class api {
         }
         $userfields = implode(',', $userfields);
 
-        $select = "SELECT $ucfields, $compfields, $userfields";
+        $select = "SELECT $ucustomfield, $compfields, $userfields";
         $countselect = "SELECT COUNT('x')";
         $sql = "  FROM {" . user_competency::TABLE . "} uc
                   JOIN {" . competency::TABLE . "} c

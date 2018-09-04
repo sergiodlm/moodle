@@ -1311,4 +1311,4 @@ $string['moodleorghubname'] = 'Moodle.net';
 $string['hubs'] = 'Hubs';
 $string['configloginhttps'] = 'Turning this on will make Moodle use a secure https connection just for the login page (providing a secure login), and then afterwards revert back to the normal http URL for general speed.  CAUTION: this setting REQUIRES https to be specifically enabled on the web server - if it is not then YOU COULD LOCK YOURSELF OUT OF YOUR SITE.';
 $string['loginhttps'] = 'Use HTTPS for logins';
-$string['course_cfields'] = 'Course custom fields';
+$string['course_customfield'] = 'Course custom fields';

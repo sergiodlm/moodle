@@ -1,0 +1,78 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   core_customfield
+ * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace core_course\customfield;
+
+class course_handler extends \core_customfield\handler {
+
+     public $url = '/course/customfield.php';
+
+     public function get_component() : string {
+         return 'core_course';
+     }
+
+     public function get_area() : string {
+         return 'course';
+     }
+
+     public function can_configure($itemid = null) : bool {
+         return has_capability('moodle/category:manage', \context_system::instance());
+     }
+
+     public function can_edit($recordid = null, $itemid = null) : bool {
+         if ($recordid) {
+             return has_capability('moodle/course:edit', \context_course::instance($recordid));
+         } else {
+             //guess_if_creator_will_have_course_capability()
+             return true; //TODO
+         }
+     }
+
+    /**
+     * Adds custom fields to edit forms.
+     * @param moodleform $mform
+     */
+    public function display_fields($courseid) {
+
+        $categories = $this->get_fields_definitions();
+        $content = '';
+        foreach ($categories as $category) {
+            // Check first if *any* fields will be displayed.
+            $fieldstodisplay = [];
+            foreach ($category->get_fields() as $formfield) {
+                if ($formfield->is_editable()) {
+                    $fieldstodisplay[] = $formfield;
+                }
+            }
+            if (empty($fieldstodisplay)) {
+                continue;
+            }
+            $content .= \html_writer::tag('h5', format_string($category->get_name()));
+
+            // Display the header and the fields.
+            foreach ($fieldstodisplay as $formfield) {
+                $content .= $formfield->display();
+            }
+        }
+        return $content;
+    }
+}
