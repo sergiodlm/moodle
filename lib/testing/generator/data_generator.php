@@ -1165,6 +1165,20 @@ EOD;
     }
 
     /**
+     * Create a new course custom field category with the given name.
+     *
+     * @param   array $data Array with 'name' of category
+     * @return  \stdClass   The created category
+     */
+    public function create_custom_field_category($data) {
+        $handler = new \core_course\customfield\course_handler();
+        $category = $handler->new_category($data['name']);
+        $category->save();
+        return $category;
+    }
+
+
+    /**
      * Create a new user, and enrol them in the specified course as the supplied role.
      *
      * @param   \stdClass   $course The course to enrol in
