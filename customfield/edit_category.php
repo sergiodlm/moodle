@@ -64,10 +64,11 @@ if ($mform->is_cancelled()) {
 
     try {
         $category->save();
+
         $notification = 'success';
         redirect(new moodle_url($handler->url));
     } catch (\dml_write_exception $exception) {
-        $notification = 'error';
+        $notification = 'error: ' . $exception;
     }
 }
 

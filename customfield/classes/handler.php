@@ -22,6 +22,8 @@
 
 namespace core_customfield;
 
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die;
 
 abstract class handler {
@@ -29,9 +31,9 @@ abstract class handler {
     protected $itemid;
 
     public function __construct($itemid = null, $component = null, $area = null) {
-        $this->itemid    = $itemid;
+        $this->itemid = $itemid;
         $this->component = $component;
-        $this->area      = $area;
+        $this->area = $area;
     }
 
     public function get_component() {
@@ -46,29 +48,32 @@ abstract class handler {
         return $this->itemid;
     }
 
-    public function uses_item_id() : bool {
+    public function uses_item_id(): bool {
         return false;
     }
 
-    public function uses_categories() : bool {
+    public function uses_categories(): bool {
         return true;
     }
 
-    public function get_category_config_form($handler) : \core_customfield\category_config_form {
+    public function get_category_config_form($handler): \core_customfield\category_config_form {
         return new \core_customfield\category_config_form(null, ['handler' => $handler]);
     }
 
-    public function get_field_config_form($args) : \core_customfield\field_config_form {
+    public function get_field_config_form($args): \core_customfield\field_config_form {
         return new \core_customfield\field_config_form(null, $args);
     }
 
     public function new_category($name) {
-        $categorydata = new \stdClass();
+        $categorydata = new stdClass();
         $categorydata->name = $name;
         $categorydata->component = $this->get_component();
         $categorydata->area = $this->get_area();
         $categorydata->itemid = $this->get_item_id();
-        return new category($categorydata);
+
+        $category = new category(0, $categorydata);
+
+        return $category;
     }
 
     public function load_category($id) {
@@ -77,19 +82,19 @@ abstract class handler {
 
     public function categories_list() {
         $options = [
-        	'component' => $this->get_component(),
-			'area' => $this->get_area(),
-			'itemid' => $this->get_item_id()
-		];
+                'component' => $this->get_component(),
+                'area' => $this->get_area(),
+                'itemid' => $this->get_item_id()
+        ];
 
         return \core_customfield\category::list($options);
     }
 
-    abstract public function can_configure($itemid = null) : bool;
+    abstract public function can_configure($itemid = null): bool;
 
-    abstract public function can_edit($recordid = null, $itemid = null) : bool;
+    abstract public function can_edit($recordid = null, $itemid = null): bool;
 
-    public function is_field_supported(\core_customfield\field $field) : bool {
+    public function is_field_supported(\core_customfield\field $field): bool {
         // Placeholder for now to allow in the future components to decide that they don't want to support some field types.
         return true;
     }
@@ -110,6 +115,7 @@ abstract class handler {
 
     /**
      * Custom fields definition after data
+     *
      * @param moodleform $mform
      * @param int $userid
      */
@@ -138,7 +144,6 @@ abstract class handler {
         }
     }
 
-
     public function save_data($data) {
         $fields = $this->get_fields_with_data($data->id);
         foreach ($fields as $formfield) {
@@ -148,6 +153,7 @@ abstract class handler {
 
     /**
      * Adds custom fields to edit forms.
+     *
      * @param moodleform $mform
      */
     public function add_custom_fields($mform) {
@@ -167,7 +173,7 @@ abstract class handler {
             }
 
             // Display the header and the fields.
-            $mform->addElement('header', 'category_'.$category->get_id(), format_string($category->get_name()));
+            $mform->addElement('header', 'category_' . $category->get_id(), format_string($category->get_name()));
             foreach ($fieldstodisplay as $formfield) {
                 $formfield->edit_field($mform);
             }

@@ -28,7 +28,7 @@ use renderer_base;
 
 defined('MOODLE_INTERNAL') || die;
 
-class management implements renderable, templatable{
+class management implements renderable, templatable {
 
     protected $handler;
     protected $categoryid;
@@ -42,23 +42,23 @@ class management implements renderable, templatable{
         $data = (object) [];
 
         $options = [
-                'text'      => 'Text Input',
-                'textarea'  => 'Text Area',
-                'select'    => 'Dropdown Menu',
-                'checkbox'  => 'CheckBox',
-                'date'      => 'Date Time'
+                'text' => 'Text Input',
+                'textarea' => 'Text Area',
+                'select' => 'Dropdown Menu',
+                'checkbox' => 'CheckBox',
+                'date' => 'Date Time'
         ];
 
-		$data->customfield = get_string('customfield', 'core_customfield');
-		$data->shortname   = get_string('shortname', 'core_customfield');
-		$data->type        = get_string('type', 'core_customfield');
-		$data->handler     = get_class($this->handler);
-		$data->link        = new \moodle_url('/customfield/edit.php', array('handler' => $data->handler, 'action' => 'editfield'));
+        $data->customfield = get_string('customfield', 'core_customfield');
+        $data->shortname = get_string('shortname', 'core_customfield');
+        $data->type = get_string('type', 'core_customfield');
+        $data->handler = get_class($this->handler);
+        $data->link = new \moodle_url('/customfield/edit.php', array('handler' => $data->handler, 'action' => 'editfield'));
 
         $categories = $this->handler->get_fields_definitions();
 
-        $deleteicon = $OUTPUT->pix_icon('t/delete',get_string('delete'));
-        $editicon = $OUTPUT->pix_icon('t/edit',get_string('edit'));
+        $deleteicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
+        $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'));
         $upicon = $OUTPUT->pix_icon('t/up', get_string('moveup'));
         $downicon = $OUTPUT->pix_icon('t/down', get_string('movedown'));
         $spacericon = $OUTPUT->pix_icon('spacer', '');
@@ -68,55 +68,67 @@ class management implements renderable, templatable{
         foreach ($categories as $category) {
 
             $categoryarray = array();
-            $categoryarray['id'] =$category->get_id();
-            $categoryarray['name'] = $category->get_name();
+            $categoryarray['id'] = $category->id();
+            $categoryarray['name'] = $category->name();
             $categoryarray['customfield'] = get_string('customfield', 'core_customfield');
             $categoryarray['action'] = get_string('action', 'core_customfield');
             $categoryarray['deleteicon'] = $deleteicon;
             $categoryarray['editicon'] = $editicon;
 
             // Move up and down categories.
-            $sortorder = $category->get_sortorder();
-            if($sortorder < $category->get_count_categories() - 1)  $categoryarray['upiconcategory'] = $upicon;
-            else $categoryarray['upiconcategory'] = '';
-            if($sortorder > 0)  $categoryarray['downiconcategory'] = $downicon;
-            else $categoryarray['downiconcategory'] = '';
+            $sortorder = $category->sortorder();
+            if ($sortorder < $category->get_count_categories() - 1) {
+                $categoryarray['upiconcategory'] = $upicon;
+            } else {
+                $categoryarray['upiconcategory'] = '';
+            }
+            if ($sortorder > 0) {
+                $categoryarray['downiconcategory'] = $downicon;
+            } else {
+                $categoryarray['downiconcategory'] = '';
+            }
 
-            $categoryarray['deletecategoryurl'] = (string)new \moodle_url('/customfield/edit_category.php', [
+            $categoryarray['deletecategoryurl'] = (string) new \moodle_url('/customfield/edit_category.php', [
                     'deletecategory' => $categoryarray['id'],
                     'handler' => $data->handler,
                     'sesskey' => sesskey()
             ]);
 
-            $categoryarray['editcategoryurl'] = (string)new \moodle_url('/customfield/edit_category.php', [
+            $categoryarray['editcategoryurl'] = (string) new \moodle_url('/customfield/edit_category.php', [
                     'id' => $categoryarray['id'], 'handler' => $data->handler,
             ]);
 
-            foreach ($category->get_fields() as $field) {
+            foreach ($category->fields() as $field) {
                 global $OUTPUT;
 
                 $fieldarray['type'] = $options[$field->get_type()];
                 $fieldarray['id'] = $field->get_id();
-				$fieldarray['name'] = $field->get_name();
-				$fieldarray['shortname'] = $field->get_shortname();
+                $fieldarray['name'] = $field->get_name();
+                $fieldarray['shortname'] = $field->get_shortname();
                 $fieldarray['deleteicon'] = $deleteicon;
                 $fieldarray['editicon'] = $editicon;
 
                 // Move up and down fields.
                 $sortorder = $field->get_sortorder();
-                if($sortorder < $field->get_count_fields() - 1)  $fieldarray['upiconfield'] = $upicon;
-                else $fieldarray['upiconfield'] = $spacericon;
-                if($sortorder > 0)  $fieldarray['downiconfield'] = $downicon;
-                else $fieldarray['downiconfield'] = $spacericon;
+                if ($sortorder < $field->get_count_fields() - 1) {
+                    $fieldarray['upiconfield'] = $upicon;
+                } else {
+                    $fieldarray['upiconfield'] = $spacericon;
+                }
+                if ($sortorder > 0) {
+                    $fieldarray['downiconfield'] = $downicon;
+                } else {
+                    $fieldarray['downiconfield'] = $spacericon;
+                }
 
-                $fieldarray['deletefieldurl'] = (string)new \moodle_url('/customfield/edit.php', [
-                       'delete' => $fieldarray['id'],
-                       'handler' => $data->handler,
-                       'type' => $fieldarray['type'],
-                       'sesskey' => sesskey()
-               ]);
+                $fieldarray['deletefieldurl'] = (string) new \moodle_url('/customfield/edit.php', [
+                        'delete' => $fieldarray['id'],
+                        'handler' => $data->handler,
+                        'type' => $fieldarray['type'],
+                        'sesskey' => sesskey()
+                ]);
 
-                $fieldarray['editfieldurl'] = (string)new \moodle_url('/customfield/edit.php', [
+                $fieldarray['editfieldurl'] = (string) new \moodle_url('/customfield/edit.php', [
                         'id' => $fieldarray['id'],
                         'handler' => $data->handler,
                         'type' => $fieldarray['type'],
@@ -138,10 +150,10 @@ class management implements renderable, templatable{
 
         // Create a new category link.
         $data->singlebutton = $OUTPUT->single_button(
-        	new \moodle_url('/customfield/edit_category.php',
-			array('handler' => $data->handler)),
-			get_string('createnewccategory', 'core_customfield')
-		);
+                new \moodle_url('/customfield/edit_category.php',
+                        array('handler' => $data->handler)),
+                get_string('createnewccategory', 'core_customfield')
+        );
 
         return $data;
     }
