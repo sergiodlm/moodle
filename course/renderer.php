@@ -1212,7 +1212,7 @@ class core_course_renderer extends plugin_renderer_base {
 
         // Display custom fields.
         $handler = new \core_course\customfield\course_handler();
-        $content .= $handler->display_fields($course->id);
+        #$content .= $handler->display_fields($course->id);
 
         // display course category if necessary (for example in search results)
         if ($chelper->get_show_courses() == self::COURSECAT_SHOW_COURSES_EXPANDED_WITH_CAT) {

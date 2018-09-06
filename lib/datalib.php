@@ -760,9 +760,18 @@ function get_courses_search($searchterms, $sort, $page, $recordsperpage, &$total
     // Thanks Oracle for your non-ansi concat and type limits in coalesce. MDL-29912
     if ($DB->get_dbfamily() == 'oracle') {
         $concat = "(c.summary|| ' ' || c.fullname || ' ' || c.idnumber || ' ' || c.shortname)";
+        $cfconcat = "(cfd.value || ' ' || cfd.intvalue || cfd.decvalue || cfd.shortcharvalue || ' ' || cfd.charvalue)";
     } else {
         $concat = $DB->sql_concat("COALESCE(c.summary, '')", "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname');
+        $cfconcat = $DB->sql_concat('COALESCE(cfd.value, "")', "' '",
+                                    'COALESCE(cfd.intvalue, "")', "' '",
+                                    'COALESCE(cfd.decvalue, "")', "' '",
+                                    'COALESCE(cfd.shortcharvalue, "")', "' '",
+                                    'COALESCE(cfd.charvalue, "")');
     }
+
+    // Custom fields condition.
+    $cfsearchcond = [];
 
     foreach ($searchterms as $searchterm) {
         $i++;
@@ -785,25 +794,43 @@ function get_courses_search($searchterms, $sort, $page, $recordsperpage, &$total
             $searchterm = trim($searchterm, '+-');
             $searchterm = preg_quote($searchterm, '|');
             $searchcond[] = "$concat $REGEXP :ss$i";
+            $cfsearchcond[] = "$cfconcat $REGEXP :ss$i";
             $params['ss'.$i] = "(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)";
+            $params['cfss'.$i] = "(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)";
 
         } else if ((substr($searchterm,0,1) == "-") && (core_text::strlen($searchterm) > 1)) {
             $searchterm = trim($searchterm, '+-');
             $searchterm = preg_quote($searchterm, '|');
             $searchcond[] = "$concat $NOTREGEXP :ss$i";
+            $cfsearchcond[] = "$cfconcat $NOTREGEXP :ss$i";
             $params['ss'.$i] = "(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)";
+            $params['cfss'.$i] = "(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)";
 
         } else {
-            $searchcond[] = $DB->sql_like($concat,":ss$i", false, true, $NOT);
+            $searchcond[] = $DB->sql_like($concat, ":ss$i", false, true, $NOT);
+            $cfsearchcond[] = $DB->sql_like($cfconcat, ":cfss$i", false, true, $NOT);
             $params['ss'.$i] = "%$searchterm%";
+            $params['cfss'.$i] = "%$searchterm%";
         }
     }
 
     if (empty($searchcond)) {
         $searchcond = array('1 = 1');
+        $cfsearchcond = '';
+        $cfjoin = '';
+    } else {
+        $cfsearchcond = 'OR '. implode(" OR ", $cfsearchcond);
+        $cfjoin = 'LEFT JOIN {customfield_data} cfd
+                          ON (cfd.recordid = c.id)
+                   LEFT JOIN {customfield_field} cff
+                          ON (cff.id = cfd.fieldid)
+                   LEFT JOIN {customfield_category} cfc
+                          ON (cfc.id = cff.categoryid AND
+                              cfc.component = "core_course" AND
+                              area = "course")';
     }
 
-    $searchcond = implode(" AND ", $searchcond);
+    $searchcond = implode(" OR ", $searchcond);
 
     $courses = array();
     $c = 0; // counts how many visible courses we've seen
@@ -812,15 +839,19 @@ function get_courses_search($searchterms, $sort, $page, $recordsperpage, &$total
     $limitfrom = $page * $recordsperpage;
     $limitto   = $limitfrom + $recordsperpage;
 
-    $ccselect = ', ' . context_helper::get_preload_record_columns_sql('ctx');
+    $ccselect = context_helper::get_preload_record_columns_sql('ctx');
     $ccjoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
     $params['contextlevel'] = CONTEXT_COURSE;
 
-    $sql = "SELECT c.* $ccselect
+
+    $sql = "SELECT c.*, {$ccselect}
               FROM {course} c
-           $ccjoin
-             WHERE $searchcond AND c.id <> ".SITEID."
-          ORDER BY $sort";
+         {$ccjoin}
+         {$cfjoin}
+             WHERE {$searchcond}
+                {$cfsearchcond}
+               AND c.id <> ".SITEID."
+          ORDER BY {$sort}";
 
     $rs = $DB->get_recordset_sql($sql, $params);
     foreach($rs as $course) {

@@ -92,6 +92,11 @@ class behat_data_generators extends behat_base {
             'required' => array('user', 'course', 'role'),
             'switchids' => array('user' => 'userid', 'course' => 'courseid', 'role' => 'roleid')
         ),
+        'course custom field categories' => array(
+            'datagenerator' => 'custom_field_category',
+            'required' => array('name'),
+            'switchids' => array()
+        ),
         'permission overrides' => array(
             'datagenerator' => 'permission_override',
             'required' => array('capability', 'permission', 'role', 'contextlevel', 'reference'),
