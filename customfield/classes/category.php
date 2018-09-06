@@ -16,18 +16,21 @@
 
 /**
  * @package   core_customfield
- * @copyright 2018, David Matamoros <davidmc@moodle.com>
+ * @copyright 2018, Toni Barbera <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace core_customfield;
 
 use core\persistent;
-use stdClass;
-use ArrayObject;
 
 defined('MOODLE_INTERNAL') || die;
 
+/**
+ * Class category
+ *
+ * @package core_customfield
+ */
 class category extends persistent {
     /**
      * Database table.
@@ -39,7 +42,7 @@ class category extends persistent {
      *
      * @return array
      */
-    protected static function define_properties() {
+    protected static function define_properties(): array {
         return array(
                 'name' => [
                         'type' => PARAM_TEXT,
@@ -84,7 +87,7 @@ class category extends persistent {
      * @return int
      * @throws \coding_exception
      */
-    public function id() {
+    public function id(): ?int {
         return $this->get('id');
     }
 
@@ -92,23 +95,42 @@ class category extends persistent {
      * @return string
      * @throws \coding_exception
      */
-    public function name() {
+    public function name(? string $name = null): string {
+        if (isset($name)) {
+            $this->set('name', $name);
+        }
+
         return $this->get('name');
     }
 
-    public function sortorder($value = null): int {
+    /**
+     * @param int|null $value
+     * @return int
+     * @throws \coding_exception
+     */
+    public function sortorder(? int $value = null): int {
         if (!is_null($value)) {
             $this->set('sortorder', $value);
         }
         return $this->get('sortorder');
     }
 
-    public function fields() {
-        return $this->fields;
+    /**
+     * @return array|null
+     * @throws \coding_exception
+     */
+    public function fields(): ?array {
+        return field_factory::get_fiedls_from_category_array($this->get('id'));
     }
 
-    private static function static_reorder($options): bool {
-        $categoryneighbours = self::load_array($options);
+    /**
+     * @param $options
+     * @return bool
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    protected static function static_reorder($options): bool {
+        $categoryneighbours = self::list($options);
 
         $neworder = count($categoryneighbours);
 
@@ -120,7 +142,12 @@ class category extends persistent {
         return true;
     }
 
-    protected function reorder() {
+    /**
+     * @return bool
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    protected function reorder(): bool {
         $this::static_reorder(
                 [
                         'component' => $this->get('component'),
@@ -132,11 +159,38 @@ class category extends persistent {
         return true;
     }
 
-    protected function after_create() {
+    /**
+     * @return bool
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    protected function after_create() : bool {
         return $this->reorder();
     }
 
-    protected function after_delete($result) {
+    /**
+     * @param $result
+     * @return bool
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    protected function before_delete() : bool {
+        foreach ( $this->fields() as $field ) {
+            if ( ! $field->delete() ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param bool $result
+     * @return bool
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    protected function after_delete($result) :bool  {
         return $this->reorder();
     }
 
@@ -145,7 +199,7 @@ class category extends persistent {
      * @throws \dml_exception
      * @throws \coding_exception
      */
-    public function get_count_categories() {
+    public function get_count_categories(): int {
         global $DB;
         return $DB->count_records('customfield_category',
                 [
@@ -156,58 +210,13 @@ class category extends persistent {
     }
 
     /**
-     * Returns a list of categories.
-     *
-     * @param array $options
-     * @return array
-     * @throws \dml_exception
-     */
-    public static function list(array $options) {
-        global $DB;
-
-        return $DB->get_records(self::TABLE, $options, 'sortorder DESC');
-    }
-
-    /**
-     * Returns a list of categories with their related fields.
-     *
-     * @param array $options
-     * @return category[]
-     * @throws \dml_exception
+     * @param int $position
+     * @return category
      * @throws \coding_exception
+     * @throws \dml_exception
      */
-    public static function load_array(array $options) {
-        $categories = self::list($options);
-
-        $categories_array = array();
-        $categories_list = array();
-        foreach ($categories as $category) {
-            $categories_list[] = $category->id;
-        }
-
-        $fields = field::return_fields_from_categories($categories_list);
-
-        foreach ($categories as $category) {
-            $categoryobject = new category(0, $category);
-
-            foreach ($fields as $field) {
-                $categoryobject->fields = array();
-                if ($field->get_categoryid() == $categoryobject->get('id')) {
-                    $categoryobject->fields[] = field_factory::load($field->get_id());
-                }
-            }
-            $categories_array[] = $categoryobject;
-        }
-
-        return $categories_array;
-    }
-
-    public static function load(int $id) {
-        return new category($id);
-    }
-
     private function move(int $position): self {
-        $previuscategory = self::load_array(
+        $previuscategory = self::list(
                 [
                         'sortorder' => $this->get('sortorder') + $position,
                         'component' => $this->get('component'),
@@ -226,12 +235,42 @@ class category extends persistent {
         return $this;
     }
 
+    /**
+     * @return category
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public function up(): self {
         return $this->move(1);
     }
 
+    /**
+     * @return category
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public function down(): self {
         return $this->move(-1);
+    }
+
+    /**
+     * Returns a list of categories with their related fields.
+     *
+     * @param array $options
+     * @return category[]
+     * @throws \dml_exception
+     * @throws \coding_exception
+     */
+    public static function list(array $options): array {
+        global $DB;
+
+        $categories = array();
+
+        foreach ($DB->get_records(self::TABLE, $options, 'sortorder DESC') as $categorydata) {
+            $categories[] = new self($categorydata->id);
+        }
+
+        return $categories;
     }
 
 }

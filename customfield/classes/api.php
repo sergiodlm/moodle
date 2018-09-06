@@ -28,7 +28,7 @@ class api {
 
     // Returns array of categories, each of them contains a list of fields definitions.
     public static function get_fields_definitions($component, $area = null, $itemid = null) {
-         return category::load_array([
+         return category::list([
                 'component' => $component,
                 'area' => $area,
                 'itemid' => $itemid

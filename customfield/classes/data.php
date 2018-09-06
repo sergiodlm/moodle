@@ -69,7 +69,7 @@ class data {
     public static function load_recordid_data($component, $area, $recordid) {
         global $DB;
 
-        $categories = category::load_array(
+        $categories = category::list(
                 [
                         'component' => $component,
                         'area'      => $area

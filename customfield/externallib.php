@@ -111,7 +111,7 @@ class core_customfield_external extends external_api {
     public static function delete_category($id, $handler) {
         $handler1 = new $handler();
         if ($handler1->can_edit()) {
-            $record = \core_customfield\category::load($id);
+            $record = new \core_customfield\category($id);
             $record->delete();
         }
     }
@@ -165,7 +165,7 @@ class core_customfield_external extends external_api {
     public static function move_up_category($id, $handler) {
         $handler1 = new $handler();
         if ($handler1->can_configure()) {
-            $record = \core_customfield\category::load($id);
+            $record = new \core_customfield\category($id);
             $record->up();
         }
     }
@@ -183,7 +183,7 @@ class core_customfield_external extends external_api {
     public static function move_down_category($id, $handler) {
         $handler1 = new $handler();
         if ($handler1->can_configure()) {
-            $record = \core_customfield\category::load($id);
+            $record = new \core_customfield\category($id);
             $record->down();
         }
     }

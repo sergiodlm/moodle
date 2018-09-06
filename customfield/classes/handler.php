@@ -77,7 +77,7 @@ abstract class handler {
     }
 
     public function load_category($id) {
-        return \core_customfield\category::load($id);
+        return new \core_customfield\category($id);
     }
 
     public function categories_list() {

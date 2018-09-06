@@ -54,6 +54,17 @@ class field_factory {
         }
     }
 
+    public static function get_fiedls_from_category_array(int $categoryid) :array {
+        global $DB;
+
+        $fields = array();
+        foreach ( $DB->get_records(self::CUSTOMFIELD_TABLE, ['categoryid' => $categoryid]) as $fielddata) {
+            $fields[] = self::load($fielddata->id);
+        }
+
+        return $fields;
+    }
+
     public static function bulk_delete(array $ids) {
         global $DB;
 

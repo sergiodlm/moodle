@@ -29,7 +29,7 @@ $handler = new $handlerparam(null);
 
 if ($id) {
     $record = $handler->load_category($id);
-    $arrayform = ['name' => $record->get_name(), 'id' => $id];
+    $arrayform = ['name' => $record->name(), 'id' => $id];
 } else {
     $arrayform = null;
 }
@@ -56,7 +56,7 @@ if ($mform->is_cancelled()) {
     if (!empty($data->id)) {
         // Update.
         $category = $handler->load_category($id);
-        $category->set_name($data->name);
+        $category->name($data->name);
     } else {
         // New.
         $category = $handler->new_category($data->name);

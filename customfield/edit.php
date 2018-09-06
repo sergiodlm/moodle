@@ -73,7 +73,7 @@ $PAGE->navbar->add(get_string('edit'), $url);
 
 $categorylist = array();
 foreach ($handler->categories_list() as $category) {
-    $categorylist[$category->id] = $category->name;
+    $categorylist[$category->id()] = $category->name();
 }
 
 $args = ['handler' => $handlerparam, 'classfieldtype' => $classfieldtype, 'categorylist' => $categorylist];
