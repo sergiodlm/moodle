@@ -87,7 +87,7 @@ class category extends persistent {
      * @return int
      * @throws \coding_exception
      */
-    public function id(): ?int {
+    public function id(): ? int {
         return $this->get('id');
     }
 
@@ -216,7 +216,7 @@ class category extends persistent {
      * @throws \dml_exception
      */
     private function move(int $position): self {
-        $previuscategory = self::list(
+        $nextcategory = self::list(
                 [
                         'sortorder' => $this->get('sortorder') + $position,
                         'component' => $this->get('component'),
@@ -225,9 +225,9 @@ class category extends persistent {
                 ]
         )[0];
 
-        if (!empty($previuscategory)) {
-            $previuscategory->sortorder($this->get('sortorder'));
-            $previuscategory->save();
+        if (!empty($nextcategory)) {
+            $nextcategory->sortorder($this->get('sortorder'));
+            $nextcategory->save();
             $this->sortorder($this->get('sortorder') + $position);
             $this->save();
         }

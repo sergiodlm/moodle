@@ -35,30 +35,37 @@ class field_factory {
 
         switch ($field->type) {
             case \customfield_text\field::TYPE:
-                return new \customfield_text\field($field);
+                return new \customfield_text\field($field->id);
                 break;
             case \customfield_textarea\field::TYPE:
-                return new \customfield_textarea\field($field);
+                return new \customfield_textarea\field($field->id);
                 break;
             case \customfield_select\field::TYPE:
-                return new \customfield_select\field($field);
+                return new \customfield_select\field($field->id);
                 break;
             case \customfield_checkbox\field::TYPE:
-                return new \customfield_checkbox\field($field);
+                return new \customfield_checkbox\field($field->id);
                 break;
             case \customfield_date\field::TYPE:
-                return new \customfield_date\field($field);
+                return new \customfield_date\field($field->id);
                 break;
             default:
-                throw new Exception('Error: Type field not recognized.');
+                throw new Exception('');
         }
+
     }
 
     public static function get_fiedls_from_category_array(int $categoryid) :array {
         global $DB;
 
         $fields = array();
-        foreach ( $DB->get_records(self::CUSTOMFIELD_TABLE, ['categoryid' => $categoryid]) as $fielddata) {
+        foreach ( $DB->get_records(
+                self::CUSTOMFIELD_TABLE,
+                [
+                        'categoryid' => $categoryid
+                ],
+                'sortorder DESC'
+        ) as $fielddata) {
             $fields[] = self::load($fielddata->id);
         }
 

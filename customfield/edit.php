@@ -22,9 +22,7 @@
 
 require_once(__DIR__ . '/../config.php');
 
-define('OTHERFIELDSNAME', 'Other Fields'); //Need becomes from lang file.
-define('OTHERFIELDSSHORTNAME', 'otherfields'); //Need becomes from lang file.
-
+define('OTHERFIELDSNAME', get_string('otherfields', 'core_customfield'));
 
 $handlerparam = required_param('handler', PARAM_RAW);
 $itemid = optional_param('itemid', 0, PARAM_INT);
@@ -35,16 +33,16 @@ $handler = new $handlerparam(null);
 
 if ($id) {
     $record = \core_customfield\field_factory::load($id);
-    $classfieldtype = '\customfield_'. $record->get_type().'\field';
-    $configdata = json_decode( $record->get_configdata() );
+    $classfieldtype = '\customfield_'. $record->type().'\field';
+    $configdata = json_decode( $record->configdata() );
     $arrayform = (object)[
             'id'                => $id,
-            'name'              => $record->get_name(),
-            'shortname'         => $record->get_shortname(),
-            'type'              => $record->get_type(),
-            'categoryid'        => $record->get_categoryid(),
-            'description'       => $record->get_description(),
-            'descriptionformat' => $record->get_descriptionformat(),
+            'name'              => $record->name(),
+            'shortname'         => $record->shortname(),
+            'type'              => $record->type(),
+            'categoryid'        => $record->categoryid(),
+            'description'       => $record->description(),
+            'descriptionformat' => $record->descriptionformat(),
     ];
 
     // We format configdata fields.
@@ -118,12 +116,12 @@ if ($mform->is_cancelled()) {
             $fielddata->descriptionformat = $data->descriptionformat;
         }
 
-        $field = new $classfieldtype($fielddata);
+        $field = new $classfieldtype(0, $fielddata);
         try {
             $field->save();
             redirect(new moodle_url($handler->url));
         } catch (\dml_write_exception $exception) {
-            $notification = 'error';
+            $notification = $exception->error;
         }
 
     } else {
@@ -131,14 +129,16 @@ if ($mform->is_cancelled()) {
     	if (empty($data->categoryid)) {
 			$defaultcategorydata            = new \stdClass();
 			$defaultcategorydata->name      = OTHERFIELDSNAME;
-			$defaultcategorydata->shortname = OTHERFIELDSSHORTNAME;
 			$defaultcategorydata->area      = $handler->get_area();
 			$defaultcategorydata->component = $handler->get_component();
-			$defaultcategory                = new \core_customfield\category($defaultcategorydata);
+
+			$defaultcategory                = new \core_customfield\category(0, $defaultcategorydata);
 			$defaultcategory->save();
 
-			$data->categoryid = $defaultcategory->get_id();
+			$data->categoryid = $defaultcategory->id();
 		}
+
+
 
         // New.
         $fielddata = new \stdClass();
@@ -147,10 +147,12 @@ if ($mform->is_cancelled()) {
         $fielddata->categoryid = $data->categoryid;
         $fielddata->type = $type;
 
-        $field = new $classfieldtype($fielddata);
+        $field = new $classfieldtype(0, $fielddata);
+        $field->save();
+
         try {
-            $savedfield = $field->save();
-            $insertid = $savedfield->get_id();
+            $field->save();
+            $insertid = $field->id();
 
             if (isset($data->description_editor)) {
 
@@ -167,10 +169,9 @@ if ($mform->is_cancelled()) {
                 $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context, 'core_customfield',
                                                         'description', $insertid);
 
-                $savedfield->set_description($data->description);
-                $savedfield->set_descriptionformat($data->descriptionformat);
-                $savedfield->set_id($insertid);
-                $savedfield->save();
+                $field->description($data->description);
+                $field->descriptionformat($data->descriptionformat);
+                $field->save();
             }
             $notification = 'success';
             redirect(new moodle_url($handler->url));

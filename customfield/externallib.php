@@ -67,7 +67,9 @@ class core_customfield_external extends external_api {
             array(
                 'handler' => new external_value(PARAM_RAW, 'handler'),
                 'customfield' => new external_value(PARAM_RAW, 'customfield'),
+                'shortname' => new external_value(PARAM_RAW, 'shortname'),
                 'type' => new external_value(PARAM_RAW, 'type'),
+                'action' => new external_value(PARAM_RAW, 'action'),
                 'categories' => new external_multiple_structure(
                     new external_single_structure(
                         array(
@@ -83,6 +85,7 @@ class core_customfield_external extends external_api {
                                 new external_single_structure(
                                     array(
                                         'name' => new external_value(PARAM_RAW, 'name'),
+                                        'shortname' => new external_value(PARAM_RAW, 'shortname'),
                                         'type' => new external_value(PARAM_RAW, 'type'),
                                         'editfieldurl' => new external_value(PARAM_NOTAGS, 'edit field url'),
                                         'editicon' => new external_value(PARAM_RAW, 'edit icon'),

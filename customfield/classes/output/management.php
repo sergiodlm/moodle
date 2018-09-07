@@ -50,6 +50,7 @@ class management implements renderable, templatable {
         ];
 
         $data->customfield = get_string('customfield', 'core_customfield');
+        $data->action = get_string('action', 'core_customfield');
         $data->shortname = get_string('shortname', 'core_customfield');
         $data->type = get_string('type', 'core_customfield');
         $data->handler = get_class($this->handler);
@@ -101,15 +102,15 @@ class management implements renderable, templatable {
             foreach ($category->fields() as $field) {
                 global $OUTPUT;
 
-                $fieldarray['type'] = $options[$field->get_type()];
-                $fieldarray['id'] = $field->get_id();
-                $fieldarray['name'] = $field->get_name();
-                $fieldarray['shortname'] = $field->get_shortname();
+                $fieldarray['type'] = $options[$field->type()];
+                $fieldarray['id'] = $field->id();
+                $fieldarray['name'] = $field->name();
+                $fieldarray['shortname'] = $field->shortname();
                 $fieldarray['deleteicon'] = $deleteicon;
                 $fieldarray['editicon'] = $editicon;
 
                 // Move up and down fields.
-                $sortorder = $field->get_sortorder();
+                $sortorder = $field->sortorder();
                 if ($sortorder < $field->get_count_fields() - 1) {
                     $fieldarray['upiconfield'] = $upicon;
                 } else {

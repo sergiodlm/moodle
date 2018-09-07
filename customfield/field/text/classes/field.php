@@ -65,7 +65,7 @@ class field extends \core_customfield\field {
     }
 
     public function set_data($data) {
-        $this->data = $data->charvalue;
+        $this->set('data', $data->charvalue);
     }
 
     public function get_data() {

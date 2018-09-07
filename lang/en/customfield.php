@@ -60,3 +60,5 @@ $string['checkbydefault'] = 'Checked by default';
 $string['showdate'] = 'Show date';
 $string['includetime'] = 'Include time?';
 $string['shortname'] = 'Short Name';
+$string['invalidshortnameerror'] = 'Short Name can\'t contains white spaces';
+$string['otherfields'] = 'Other Fields';

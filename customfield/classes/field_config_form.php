@@ -91,6 +91,11 @@ class field_config_form extends \moodleform {
 
         $errors = array();
 
+        //If we need create Other Fields.
+        if (! isset( $data['categoryid'] ) ) {
+            $data['categoryid'] = 0;
+        }
+
         if (!empty($data['id'])) {
             if ( $DB->record_exists_select('customfield_field', 'shortname = ? AND id <> ? AND categoryid = ?', array($data['shortname'], $data['id'], $data['categoryid']) )) {
                 $errors['shortname'] = get_string('formfieldcheckshortname', 'core_customfield');
