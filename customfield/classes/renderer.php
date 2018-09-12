@@ -36,6 +36,10 @@ class core_customfield_renderer extends plugin_renderer_base {
             $data->alert = $render->notification(base64_decode($data->error), 'error');
         }
 
+        $data->pagetitle = (empty($pagetitle)) ?
+                get_string('customfields', 'core_customfield') :
+                $pagetitle;
+
         return $this->render_from_template('core_customfield/customfield', $data);
     }
 

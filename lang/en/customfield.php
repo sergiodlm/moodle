@@ -34,7 +34,7 @@ $string['type'] = 'Type';
 $string['category'] = 'Category';
 $string['categoryname'] = 'Category Name';
 $string['confirmdelete'] = 'Are you sure?';
-$string['createnewcustomfield'] = 'Create a new custom field:';
+$string['createnewcustomfield'] = 'Add a new custom field:';
 $string['createnewccategory'] = 'Create a new Category';
 $string['confirmdeletecategory'] = 'Are you sure? (All fields inside this category will be ERASED!)';
 $string['formcategorycheckname'] = 'Category name already exists';
@@ -62,3 +62,10 @@ $string['includetime'] = 'Include time?';
 $string['shortname'] = 'Short Name';
 $string['invalidshortnameerror'] = 'Short Name can\'t contains white spaces';
 $string['otherfields'] = 'Other Fields';
+$string['errorfieldtypenotfound'] = 'Field Type not found';
+$string['coursecustomfields'] = 'Course custom fields';
+$string['creatingnewcategory'] = 'Creating new category';
+$string['addingnewcustomfield'] = 'Adding a new custom field';
+
+
+

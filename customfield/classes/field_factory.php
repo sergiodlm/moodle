@@ -22,6 +22,8 @@
 
 namespace core_customfield;
 
+use Horde\Socket\Client\Exception;
+
 defined('MOODLE_INTERNAL') || die;
 
 class field_factory {
@@ -33,24 +35,11 @@ class field_factory {
 
         $field = $DB->get_record(self::CUSTOMFIELD_TABLE, ['id' => $id]);
 
-        switch ($field->type) {
-            case \customfield_text\field::TYPE:
-                return new \customfield_text\field($field->id);
-                break;
-            case \customfield_textarea\field::TYPE:
-                return new \customfield_textarea\field($field->id);
-                break;
-            case \customfield_select\field::TYPE:
-                return new \customfield_select\field($field->id);
-                break;
-            case \customfield_checkbox\field::TYPE:
-                return new \customfield_checkbox\field($field->id);
-                break;
-            case \customfield_date\field::TYPE:
-                return new \customfield_date\field($field->id);
-                break;
-            default:
-                throw new Exception('');
+        try {
+            $customfieldtype = "\\customfield_{$field->type}\\field";
+            return new $customfieldtype($field->id);
+        } catch (Exception $e) {
+            throw new Exception( get_string('errorfieldtypenotfound', 'core_customfield') );
         }
 
     }

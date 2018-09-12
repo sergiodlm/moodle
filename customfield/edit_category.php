@@ -75,9 +75,15 @@ if ($mform->is_cancelled()) {
 echo $OUTPUT->header();
 $render = new \core_renderer($PAGE, 'customfield');
 
+echo "<h2>".get_string('creatingnewcategory', 'core_customfield')."</h2>";
+
 if (isset($notification)) {
     echo $render->notification($notification, $notification);
 }
+
+echo "<h3>".get_string('commonsettings', 'core_customfield')."</h3>";
+
+
 
 $mform->display();
 

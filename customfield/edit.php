@@ -183,6 +183,8 @@ if ($mform->is_cancelled()) {
 
 echo $OUTPUT->header();
 
+echo "<h2>".get_string('addingnewcustomfield', 'core_customfield')."</h2>";
+
 if (isset($notification)) {
     $renderer = new \core_renderer($PAGE, 'customfield');
     echo $renderer->notification($notification, $notification);

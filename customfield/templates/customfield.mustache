@@ -37,9 +37,15 @@
   }
 }}
 
+<h2>{{pagetitle}}</h2>
+
 {{{alert}}}
 
 <div data-region="list-page" id="customfield_catlist" data-handler="{{{handler}}}">
+    {{^categories.length}}
+        <p>There are no custom fields.</p>
+    {{/categories.length}}
+
     {{#categories}}
         <p>
             <h3>{{name}}</h3>
@@ -88,6 +94,8 @@
 {{#singleselect}}
     {{>core/single_select}}
 {{/singleselect}}
+
+OR
 
 {{#singlebutton}}
     {{{singlebutton}}}
