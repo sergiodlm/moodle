@@ -43,7 +43,7 @@ class field extends \core_customfield\field{
     public function edit_field_add($mform) {
 
 
-        $mform->addElement('checkbox', $this->dataobject->shortname, format_string($this->dataobject->name));
+        $mform->addElement('checkbox', $this->get('shortname'), format_string($this->get('name')));
         //$mform->setType($this->shortname, PARAM_TEXT);
     }
 

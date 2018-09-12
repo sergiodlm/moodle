@@ -43,7 +43,7 @@ class field extends \core_customfield\field{
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-        $configdata = json_decode($this->dataobject->configdata);
+        $configdata = json_decode($this->get('configdata'));
 
         if (isset($configdata->options)) {
             $options = explode("\n", $configdata->options);
@@ -51,7 +51,7 @@ class field extends \core_customfield\field{
             $options = array();
         }
 
-        $mform->addElement('select', $this->dataobject->shortname, format_string($this->dataobject->name), $options);
+        $mform->addElement('select', $this->get('shortname'), format_string($this->get('name')), $options);
         //$mform->setType($this->shortname, PARAM_TEXT);
     }
 

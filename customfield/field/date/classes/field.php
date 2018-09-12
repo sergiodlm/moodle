@@ -43,7 +43,7 @@ class field extends \core_customfield\field{
     public function edit_field_add($mform) {
 
 
-        $mform->addElement('date_selector', $this->dataobject->shortname, format_string($this->dataobject->name));
+        $mform->addElement('date_selector', $this->get('shortname'), format_string($this->get('name')));
         $mform->addElement('checkbox', 'configdata[showdate]', get_string('showdate', 'core_customfield'));
         //$mform->setType($this->shortname, PARAM_TEXT);
     }

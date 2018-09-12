@@ -229,8 +229,8 @@ abstract class field extends persistent {
      * @throws \coding_exception
      */
     protected function before_delete() : bool {
-        if (!data::bulk_delete_from_fields([$this->id()])) {
-            return false;
+        foreach ($this->data() as $data) {
+            $data->delete();
         }
         return true;
     }
@@ -393,7 +393,10 @@ abstract class field extends persistent {
         }
     }
 
-
+    public function set_datarecord($data) {
+        //$this->datarecord = $data;
+        //$this->set_data($data);
+    }
 
 }
 

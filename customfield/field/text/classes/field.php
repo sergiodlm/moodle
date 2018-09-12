@@ -58,20 +58,12 @@ class field extends \core_customfield\field {
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-        //$mform->addElement(self::TYPE, $this->shortname, format_string($this->name), 'size="'.self::SIZE.'" ');
-        //var_dump($this->dataobject->shortname);die;
-        $mform->addElement(self::TYPE, $this->dataobject->shortname, format_string($this->dataobject->name), 'size="'.self::SIZE.'" ');
-        $mform->setType($this->dataobject->shortname, PARAM_TEXT);
+        $mform->addElement(self::TYPE, $this->get('shortname'), format_string($this->get('name')), 'size="'.self::SIZE.'" ');
+        $mform->setType($this->get('shortname'), PARAM_TEXT);
     }
 
     public function set_data($data) {
         $this->set('data', $data->charvalue);
-    }
-
-    public function get_data() {
-        //var_dump($this->dataobject);die;
-        //return $this->dataobject->data;
-        return $this->dataobject;
     }
 
     public function display() {
