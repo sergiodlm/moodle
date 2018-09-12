@@ -139,6 +139,7 @@ abstract class handler {
 
     public function load_data($data) {
         $fields = $this->get_fields_with_data($data->id);
+
         foreach ($fields as $formfield) {
             $formfield->edit_load_data($data);
         }

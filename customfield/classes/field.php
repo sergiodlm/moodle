@@ -182,7 +182,7 @@ abstract class field extends persistent {
      * @throws \coding_exception
      */
     public function data(): ?data {
-        return data::load($this->get('id'));
+        return data::fieldload($this->get('id'));
     }
 
     /**
@@ -229,8 +229,8 @@ abstract class field extends persistent {
      * @throws \coding_exception
      */
     protected function before_delete() : bool {
-        foreach ($this->data() as $data) {
-            $data->delete();
+        if (!$this->data()->delete()) {
+            return false;
         }
         return true;
     }
@@ -389,13 +389,21 @@ abstract class field extends persistent {
      */
     public function edit_load_data($data) {
         if ($this->data() !== null) {
-            $data->{$this->get('shortname')} = $this->data();
+           $data->{$this->get('shortname')} = $this->data()->value();
         }
     }
 
-    public function set_datarecord($data) {
-        //$this->datarecord = $data;
-        //$this->set_data($data);
+    public function set_datarecord($datavalues) {
+        $data = data::load($datavalues->recordid, $datavalues->fieldid);
+
+        $data->intvalue($datavalues->intvalue);
+        $data->decvalue($datavalues->decvalue);
+        $data->shortcharvalue($datavalues->shortcharvalue);
+        $data->charvalue($datavalues->charvalue);
+        $data->value($datavalues->value);
+        $data->valueformat($datavalues->valueformat);
+        $data->contextid($datavalues->contextid);
+        $data->save();
     }
 
 }

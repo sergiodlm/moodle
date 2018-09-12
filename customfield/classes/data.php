@@ -54,38 +54,134 @@ class data extends persistent {
                 ],
                 'intvalue' => [
                         'type' => PARAM_TEXT,
+                        'optional' => true,
+                        'default' => null,
+                        'null' => NULL_ALLOWED
                 ],
                 'decvalue' => [
                         'type' => PARAM_TEXT,
+                        'optional' => true,
+                        'default' => null,
+                        'null' => NULL_ALLOWED
                 ],
-                'shotcharvalue' => [
+                'charvalue' => [
                         'type' => PARAM_TEXT,
+                        'optional' => true,
+                        'default' => null,
+                        'null' => NULL_ALLOWED
+                ],
+                'shortcharvalue' => [
+                        'type' => PARAM_TEXT,
+                        'optional' => true,
+                        'default' => null,
+                        'null' => NULL_ALLOWED
                 ],
                 'value' => [
                         'type' => PARAM_TEXT,
+                        'optional' => true,
+                        'default' => null,
+                        'null' => NULL_ALLOWED
                 ],
                 'valueformat' => [
                         'type' => PARAM_TEXT,
+                        'optional' => true,
+                        'default' => null,
+                        'null' => NULL_ALLOWED
                 ],
                 'contextid' => [
                         'type' => PARAM_TEXT,
+                        'optional' => true,
+                        'default' => null,
+                        'null' => NULL_ALLOWED
                 ]
         );
     }
 
     /**
      * @param int $fieldid
+     * @param int $recordid
      * @return data|null
      * @throws \coding_exception
+     * @throws \dml_exception
      */
-    public static function load(int $fieldid) : ? self {
+    public static function load(int $recordid, int $fieldid) : ? self {
+        global $DB;
+
+        $dbdata = $DB->get_record(self::TABLE, ['fieldid' => $fieldid, 'recordid' => $recordid]);
+
+        return new self($dbdata->id);
+    }
+
+    public static function fieldload(int $fieldid) : ? self {
         global $DB;
 
         $dbdata = $DB->get_record(self::TABLE, ['fieldid' => $fieldid]);
 
-        return new self($dbdata);
+        return new self($dbdata->id);
     }
 
+    public function fieldid(?string $value = null) : ?string {
+        if (! is_null($value)) {
+            $this->set('fieldid', $value);
+        }
+        return $this->get('fieldid');
+    }
+
+    public function recordid(?string $value = null) : ?string {
+        if (! is_null($value)) {
+            $this->set('recordid', $value);
+        }
+        return $this->get('recordid');
+    }
+
+    public function intvalue(?string $value = null) : ?string {
+        if (! is_null($value)) {
+            $this->set('intvalue', $value);
+        }
+        return $this->get('intvalue');
+    }
+
+    public function decvalue(?string $value = null) : ?string {
+        if (! is_null($value)) {
+            $this->set('decvalue', $value);
+        }
+        return $this->get('decvalue');
+    }
+
+    public function shortcharvalue(?string $value = null) : ?string {
+        if (! is_null($value)) {
+            $this->set('shortcharvalue', $value);
+        }
+        return $this->get('shortcharvalue');
+    }
+
+    public function charvalue(?string $value = null) : ?string {
+        if (! is_null($value)) {
+            $this->set('charvalue', $value);
+        }
+        return $this->get('charvalue');
+    }
+
+    public function value(?string $value = null) : ?string {
+        if (! is_null($value)) {
+            $this->set('value', $value);
+        }
+        return $this->get('value');
+    }
+
+    public function valueformat(?string $value = null) : ?string {
+        if (! is_null($value)) {
+            $this->set('valueformat', $value);
+        }
+        return $this->get('valueformat');
+    }
+
+    public function contextid(?string $value = null) : ?string {
+        if (! is_null($value)) {
+            $this->set('contextid', $value);
+        }
+        return $this->get('contextid');
+    }
 
 }
 
