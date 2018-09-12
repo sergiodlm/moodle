@@ -40,36 +40,37 @@ class api {
     }
 
     public static function get_fields_with_data($component, $area, $recordid) {
+        global $DB;
+        $sql = 'SELECT f.id as field_id, f.shortname, d.*, f.type
+                  FROM {customfield_category} c
+                  JOIN {customfield_field} f
+                    ON (c.id = f.categoryid)
+             LEFT JOIN {customfield_data} d
+                    ON (f.id = d.fieldid AND d.recordid = :recordid)
+                 WHERE c.component = :component
+                   AND c.area = :area';
+        $where = ['component' => $component, 'area' => $area, 'recordid' => $recordid];
+        $fieldsdata = $DB->get_records_sql($sql, $where);
 
-        return data::load_recordid_data($component, $area, $recordid);
+        $formfields = [];
+        foreach($fieldsdata as $data) {
+            // Assuming data->type is safe already.
+            $classname = "\\customfield_".$data->type."\\field";
+            //$field = new \stdclass();
+            //$field->id = $data->field_id;
+            //$field->shortname = $data->shortname;
+            //$formfield = new $classname($field);
+            //
+            //if ($data->id == null) {
+            //    $data->fieldid = $data->field_id;
+            //    $data->recordid = $recordid;
+            //}
+            //$formfield->set_datarecord($data);
+            //$formfields[] = $formfield;
+            $formfields[] = field_factory::load($data->field_id);
+        }
 
-        //global $DB;
-        //$sql = 'SELECT f.id as field_id, f.shortname, d.*, f.type
-        //          FROM {customfield_category} c
-        //          JOIN {customfield_field} f
-        //            ON (c.id = f.categoryid)
-        //     LEFT JOIN {customfield_data} d
-        //            ON (f.id = d.fieldid AND d.recordid = :recordid)
-        //         WHERE c.component = :component
-        //           AND c.area = :area';
-        //$where = ['component' => $component, 'area' => $area, 'recordid' => $recordid];
-        //$fieldsdata = $DB->get_records_sql($sql, $where);
-        //$formfields = [];
-        //foreach($fieldsdata as $data) {
-        //    // Assuming data->type is safe already.
-        //    $classname = "\\customfield_".$data->type."\\field";
-        //    $field = new \stdclass();
-        //    $field->id = $data->field_id;
-        //    $field->shortname = $data->shortname;
-        //    $formfield = new $classname($field);
-        //    if ($data->id == null) {
-        //        $data->fieldid = $data->field_id;
-        //        $data->recordid = $recordid;
-        //    }
-        //    $formfield->set_datarecord($data);
-        //    $formfields[] = $formfield;
-        //}
-        //return $formfields;
+        return $formfields;
     }
 
 }

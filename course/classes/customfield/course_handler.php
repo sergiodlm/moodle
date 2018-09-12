@@ -52,7 +52,6 @@ class course_handler extends \core_customfield\handler {
      * @param moodleform $mform
      */
     public function display_fields($courseid) {
-
         $categories = $this->get_fields_definitions();
         $content = '';
         foreach ($categories as $category) {

@@ -123,13 +123,13 @@ abstract class handler {
         global $CFG;
 
         $fields = $this->get_fields_with_data($recordid);
+
         foreach ($fields as $formfield) {
             $formfield->edit_after_data($mform);
         }
     }
 
     public function validate_data($mform, $data, $files) {
-        $errors = [];
         $fields = $this->get_fields_with_data($data['id']);
         foreach ($fields as $formfield) {
             $errors += $formfield->edit_validate_field($data, $files);

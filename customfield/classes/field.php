@@ -178,6 +178,14 @@ abstract class field extends persistent {
     }
 
     /**
+     * @return data|null
+     * @throws \coding_exception
+     */
+    public function data(): ?data {
+        return data::load($this->get('id'));
+    }
+
+    /**
      * @param string|null $value
      * @return string|null
      * @throws \coding_exception
@@ -329,6 +337,63 @@ abstract class field extends persistent {
     public function down(): self {
         return $this->move(-1);
     }
+
+    /**
+     * Tweaks the edit form.
+     * @param moodleform $mform instance of the moodleform class
+     * @return bool
+     */
+    public function edit_after_data($mform) {
+        if (!$this->is_editable()) {
+            return false;
+        }
+        $this->edit_field_set_locked($mform);
+        return true;
+    }
+
+    /**
+     * TODO: check capabilities.
+     *
+     * @return field
+     */
+    public function is_editable() {
+        return true;
+    }
+
+    /**
+     * TODO: check locked status.
+     *
+     * @return field
+     */
+    public function is_locked() {
+        return false;
+    }
+
+    /**
+     * HardFreeze the field if locked.
+     * @param moodleform $mform instance of the moodleform class
+     */
+    public function edit_field_set_locked($mform) {
+        if (!$mform->elementExists($this->get('shortname'))) {
+            return;
+        }
+        if ($this->is_locked() and !has_capability('moodle/course:update', context_course::instance($this->get('courseid')))) {
+            $mform->hardFreeze($this->get('shortname'));
+            $mform->setConstant($this->get('shortname'), $this->get('data'));
+        }
+    }
+
+    /**
+     * Loads an object with data for this field.
+     * @param stdClass $user a user object
+     */
+    public function edit_load_data($data) {
+        if ($this->data() !== null) {
+            $data->{$this->get('shortname')} = $this->data();
+        }
+    }
+
+
 
 }
 

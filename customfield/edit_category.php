@@ -83,8 +83,6 @@ if (isset($notification)) {
 
 echo "<h3>".get_string('commonsettings', 'core_customfield')."</h3>";
 
-
-
 $mform->display();
 
 echo $OUTPUT->footer();
