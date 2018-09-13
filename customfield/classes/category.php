@@ -87,7 +87,7 @@ class category extends persistent {
      * @return int
      * @throws \coding_exception
      */
-    public function id(): ? int {
+    public function id(){
         return $this->get('id');
     }
 
@@ -95,7 +95,7 @@ class category extends persistent {
      * @return string
      * @throws \coding_exception
      */
-    public function name(? string $name = null): string {
+    public function name(string $name = null): string {
         if (isset($name)) {
             $this->set('name', $name);
         }
@@ -108,7 +108,7 @@ class category extends persistent {
      * @return int
      * @throws \coding_exception
      */
-    public function sortorder(? int $value = null): int {
+    public function sortorder(int $value = null): int {
         if (!is_null($value)) {
             $this->set('sortorder', $value);
         }
@@ -119,7 +119,7 @@ class category extends persistent {
      * @return array|null
      * @throws \coding_exception
      */
-    public function fields(): ?array {
+    public function fields() {
         return field_factory::get_fiedls_from_category_array($this->get('id'));
     }
 
