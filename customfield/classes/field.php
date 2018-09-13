@@ -103,7 +103,7 @@ abstract class field extends persistent {
      * @return int
      * @throws \coding_exception
      */
-    public function id(?int $value = null): ?int {
+    public function id(int $value = null): int {
         if (! is_null($value)) {
             $this->set('id', $value);
         }
@@ -139,7 +139,7 @@ abstract class field extends persistent {
      * @return string|null
      * @throws \coding_exception
      */
-    public function description(?string $value = null): ?string {
+    public function description(string $value = null): string {
         if (! is_null($value)) {
             $this->set('description', $value);
         }
@@ -151,7 +151,7 @@ abstract class field extends persistent {
      * @return string|null
      * @throws \coding_exception
      */
-    public function descriptionformat(?string $value = null): ?string {
+    public function descriptionformat(string $value = null): string {
         if (! is_null($value)) {
             $this->set('descriptionformat', $value);
         }
@@ -162,7 +162,7 @@ abstract class field extends persistent {
      * @return int
      * @throws \coding_exception
      */
-    public function sortorder(?int $value = null): int {
+    public function sortorder(int $value = null): int {
         if (! is_null($value)) {
             $this->set('sortorder', $value);
         }
@@ -181,7 +181,7 @@ abstract class field extends persistent {
      * @return data|null
      * @throws \coding_exception
      */
-    public function data(): ?data {
+    public function data(): data {
         return data::fieldload($this->get('id'));
     }
 
@@ -190,7 +190,7 @@ abstract class field extends persistent {
      * @return string|null
      * @throws \coding_exception
      */
-    public function configdata(?string $value = null): ?string {
+    public function configdata(string $value = null): string {
         if (! is_null($value)) {
             $this->set('configdata', $value);
         }

@@ -104,7 +104,7 @@ class data extends persistent {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function load(int $recordid, int $fieldid) : ? self {
+    public static function load(int $recordid, int $fieldid) : self {
         global $DB;
 
         $dbdata = $DB->get_record(self::TABLE, ['fieldid' => $fieldid, 'recordid' => $recordid]);
@@ -112,7 +112,7 @@ class data extends persistent {
         return new self($dbdata->id);
     }
 
-    public static function fieldload(int $fieldid) : ? self {
+    public static function fieldload(int $fieldid) : self {
         global $DB;
 
         $dbdata = $DB->get_record(self::TABLE, ['fieldid' => $fieldid]);
@@ -120,63 +120,63 @@ class data extends persistent {
         return new self($dbdata->id);
     }
 
-    public function fieldid(?string $value = null) : ?string {
+    public function fieldid(string $value = null) {
         if (! is_null($value)) {
             $this->set('fieldid', $value);
         }
         return $this->get('fieldid');
     }
 
-    public function recordid(?string $value = null) : ?string {
+    public function recordid(string $value = null) {
         if (! is_null($value)) {
             $this->set('recordid', $value);
         }
         return $this->get('recordid');
     }
 
-    public function intvalue(?string $value = null) : ?string {
+    public function intvalue(int $value = null) {
         if (! is_null($value)) {
             $this->set('intvalue', $value);
         }
         return $this->get('intvalue');
     }
 
-    public function decvalue(?string $value = null) : ?string {
+    public function decvalue(string $value = null) {
         if (! is_null($value)) {
             $this->set('decvalue', $value);
         }
         return $this->get('decvalue');
     }
 
-    public function shortcharvalue(?string $value = null) : ?string {
+    public function shortcharvalue(string $value = null) {
         if (! is_null($value)) {
             $this->set('shortcharvalue', $value);
         }
         return $this->get('shortcharvalue');
     }
 
-    public function charvalue(?string $value = null) : ?string {
+    public function charvalue(string $value = null) {
         if (! is_null($value)) {
             $this->set('charvalue', $value);
         }
         return $this->get('charvalue');
     }
 
-    public function value(?string $value = null) : ?string {
+    public function value(string $value = null) {
         if (! is_null($value)) {
             $this->set('value', $value);
         }
         return $this->get('value');
     }
 
-    public function valueformat(?string $value = null) : ?string {
+    public function valueformat(string $value = null) {
         if (! is_null($value)) {
             $this->set('valueformat', $value);
         }
         return $this->get('valueformat');
     }
 
-    public function contextid(?string $value = null) : ?string {
+    public function contextid(string $value = null) {
         if (! is_null($value)) {
             $this->set('contextid', $value);
         }
@@ -451,14 +451,14 @@ class data extends persistent {
 //    /**
 //     * @return int
 //     */
-//    public function get_timecreated(): int {
+//    public function get_timecreated(){
 //        return $this->timecreated;
 //    }
 //
 //    /**
 //     * @return int
 //     */
-//    public function get_timemodified(): int {
+//    public function get_timemodified(){
 //        return $this->timemodified;
 //    }
 //
@@ -483,7 +483,7 @@ class data extends persistent {
 //     * @param field $field
 //     * @return data
 //     */
-//    public function set_field(field $field) : data {
+//    public function set_field(field $field) {
 //    $this->field = $field;
 //    return $this;
 //}
@@ -491,7 +491,7 @@ class data extends persistent {
 //    /**
 //     * @return field
 //     */
-//    public function get_field() : field {
+//    public function get_field() {
 //        return $this->field;
 //    }
 //
@@ -499,7 +499,7 @@ class data extends persistent {
 //     * @param category $category
 //     * @return data
 //     */
-//    public function set_category(category $category) : data {
+//    public function set_category(category $category) {
 //        $this->category = $category;
 //        return $this;
 //    }
@@ -507,7 +507,7 @@ class data extends persistent {
 //    /**
 //     * @return category
 //     */
-//    public function get_category() : category {
+//    public function get_category() {
 //        return $this->category;
 //    }
 //
