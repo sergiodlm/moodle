@@ -38,7 +38,7 @@
 }}
 
 <div class="row">
-     <div class="col-10">
+    <div class="col-10">
         <h2>{{pagetitle}}</h2>
     </div>
     <div class="col-2">
@@ -56,13 +56,17 @@
     {{/categories}}
 
     {{#categories}}
-        <p>
-            <h3>{{name}}</h3>
-            <a href="{{{editcategoryurl}}}" data-role="editcategory" data-id="{{id}}">{{{editicon}}}</a>
-            <a href="{{{deletecategoryurl}}}" class="confirm_delete_category" data-role="deletecategory" data-id="{{id}}">{{{deleteicon}}}</a>
-            <a href="" class="move_up_category" data-id="{{id}}">{{{upiconcategory}}}</a>
-            <a href="" class="move_down_category" data-id="{{id}}">{{{downiconcategory}}}</a>
-        </p>
+        <div class="row align-items-start">
+            <div class="col-auto">
+                <h3>{{name}}</h3>
+            </div>
+            <div class="col-4">
+                <a href="{{{editcategoryurl}}}" data-role="editcategory" data-id="{{id}}">{{{editicon}}}</a>
+                <a href="{{{deletecategoryurl}}}" class="confirm_delete_category" data-role="deletecategory" data-id="{{id}}">{{{deleteicon}}}</a>
+                <a href="" class="move_up_category" data-id="{{id}}">{{{upiconcategory}}}</a>
+                <a href="" class="move_down_category" data-id="{{id}}">{{{downiconcategory}}}</a>
+            </div>
+        </div>
         <div>
             <table id="core_customfield-managefields-wrapper" class="generaltable fullwidth">
                 <thead>
@@ -92,6 +96,9 @@
                                 <a href="" class="move_down_field" data-id="{{id}}">{{{downiconfield}}}</a>
                             </td>
                         </tr>
+                    {{/fields}}
+                    {{^fields}}
+                        <td colspan="4">There are no fields on this category.</td>
                     {{/fields}}
                 </tbody>
             </table>
