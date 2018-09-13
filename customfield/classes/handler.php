@@ -164,7 +164,7 @@ abstract class handler {
             // Check first if *any* fields will be displayed.
             $fieldstodisplay = [];
 
-            foreach ($category->get_fields() as $formfield) {
+            foreach ($category->fields() as $formfield) {
                 if ($formfield->is_editable()) {
                     $fieldstodisplay[] = $formfield;
                 }

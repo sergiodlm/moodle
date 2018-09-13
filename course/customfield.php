@@ -20,12 +20,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-global $OUTPUT, $PAGE, $CFG;
-
 require_once('../config.php');
 require_once($CFG->libdir.'/adminlib.php');
-
-global $PAGE;
 
 admin_externalpage_setup('course_customfield');
 

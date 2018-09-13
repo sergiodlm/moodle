@@ -28,6 +28,7 @@ $string['add'] = 'Add';
 $string['modify'] = 'Modify';
 $string['customfield'] = 'Custom Field';
 $string['edit'] = 'Edit';
+$string['editingcategory'] = 'Editing category';
 $string['delete'] = 'Delete';
 $string['actions'] = 'Actions';
 $string['type'] = 'Type';
@@ -64,8 +65,5 @@ $string['invalidshortnameerror'] = 'Short Name can\'t contains white spaces';
 $string['otherfields'] = 'Other Fields';
 $string['errorfieldtypenotfound'] = 'Field Type not found';
 $string['coursecustomfields'] = 'Course custom fields';
-$string['creatingnewcategory'] = 'Creating new category';
+$string['addingnewcategory'] = 'Adding a new category';
 $string['addingnewcustomfield'] = 'Adding a new custom field';
-
-
-
