@@ -190,7 +190,7 @@ abstract class field extends persistent {
      * @return string|null
      * @throws \coding_exception
      */
-    public function configdata(string $value = null): string {
+    public function configdata(string $value = null) {
         if (! is_null($value)) {
             $this->set('configdata', $value);
         }

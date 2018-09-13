@@ -12,7 +12,7 @@ Feature: Managers can manage course custom fields
     And I navigate to "Courses > Course custom fields" in site administration
 
   Scenario: Create a custom course field
-    When I select "Text Input" from the "Create a new custom field" singleselect
+    When I select "Text Input" from the "Add a new custom field" singleselect
     And I set the following fields to these values:
       | Name | Test field |
       | Short Name | testfield |
@@ -20,7 +20,7 @@ Feature: Managers can manage course custom fields
     Then I should see "Test field" in the "#customfield_catlist" "css_element"
 
   Scenario: Edit a custom course field
-    When I select "Text Input" from the "Create a new custom field" singleselect
+    When I select "Text Input" from the "Add a new custom field" singleselect
     And I set the following fields to these values:
       | Name | Test field |
       | Short Name | testfield |
@@ -33,7 +33,7 @@ Feature: Managers can manage course custom fields
 
   @javascript
   Scenario: Delete a custom course field
-    When I select "Text Input" from the "Create a new custom field" singleselect
+    When I select "Text Input" from the "Add a new custom field" singleselect
     And I set the following fields to these values:
       | Name | Test field |
       | Short Name | testfield |
