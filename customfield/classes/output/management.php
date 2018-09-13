@@ -41,11 +41,12 @@ class management implements renderable, templatable {
         global $OUTPUT;
         $data = (object) [];
 
+        // TODO: load field types from database or files and get their names from a callback or predefined string key.
         $options = [
                 'text' => 'Text Input',
                 'textarea' => 'Text Area',
                 'select' => 'Dropdown Menu',
-                'checkbox' => 'CheckBox',
+                'checkbox' => 'Checkbox',
                 'date' => 'Date Time'
         ];
 
