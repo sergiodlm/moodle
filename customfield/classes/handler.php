@@ -180,4 +180,8 @@ abstract class handler {
             }
         }
     }
+
+    public function field_types() {
+        return api::field_types();
+    }
 }

@@ -22,5 +22,4 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Text Area';
-
+$string['pluginname'] = 'Checkbox';

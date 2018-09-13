@@ -41,14 +41,7 @@ class management implements renderable, templatable {
         global $OUTPUT;
         $data = (object) [];
 
-        // TODO: load field types from database or files and get their names from a callback or predefined string key.
-        $options = [
-                'text' => 'Text Input',
-                'textarea' => 'Text Area',
-                'select' => 'Dropdown Menu',
-                'checkbox' => 'Checkbox',
-                'date' => 'Date Time'
-        ];
+        $fieldtypes = $this->handler->field_types();
 
         $data->customfield = get_string('customfield', 'core_customfield');
         $data->action = get_string('action', 'core_customfield');
@@ -103,7 +96,7 @@ class management implements renderable, templatable {
             foreach ($category->fields() as $field) {
                 global $OUTPUT;
 
-                $fieldarray['type'] = $options[$field->type()];
+                $fieldarray['type'] = $fieldtypes[$field->type()];
                 $fieldarray['id'] = $field->id();
                 $fieldarray['name'] = $field->name();
                 $fieldarray['shortname'] = $field->shortname();
@@ -146,7 +139,7 @@ class management implements renderable, templatable {
         $data->categories = $categoriesarray;
 
         // Create a new dropdown for types of fields.
-        $select = new \single_select($data->link, 'type', $options, '', array('' => get_string('choosedots')), 'newfieldform');
+        $select = new \single_select($data->link, 'type', $fieldtypes, '', array('' => get_string('choosedots')), 'newfieldform');
         $select->set_label(get_string('createnewcustomfield', 'core_customfield'));
         $data->singleselect = $select->export_for_template($output);
 
