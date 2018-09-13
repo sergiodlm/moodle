@@ -103,7 +103,7 @@ abstract class field extends persistent {
      * @return int
      * @throws \coding_exception
      */
-    public function id(int $value = null): int {
+    public function id(int $value = null) {
         if (! is_null($value)) {
             $this->set('id', $value);
         }
@@ -114,7 +114,7 @@ abstract class field extends persistent {
      * @return string
      * @throws \coding_exception
      */
-    public function shortname(): string {
+    public function shortname() {
         return $this->get('shortname');
     }
 
@@ -122,7 +122,7 @@ abstract class field extends persistent {
      * @return string
      * @throws \coding_exception
      */
-    public function name(): string {
+    public function name() {
         return $this->get('name');
     }
 
@@ -130,7 +130,7 @@ abstract class field extends persistent {
      * @return string
      * @throws \coding_exception
      */
-    public function type(): string {
+    public function type() {
         return $this->get('type');
     }
 
@@ -139,7 +139,7 @@ abstract class field extends persistent {
      * @return string|null
      * @throws \coding_exception
      */
-    public function description(string $value = null): string {
+    public function description(string $value = null) {
         if (! is_null($value)) {
             $this->set('description', $value);
         }
@@ -151,7 +151,7 @@ abstract class field extends persistent {
      * @return string|null
      * @throws \coding_exception
      */
-    public function descriptionformat(string $value = null): string {
+    public function descriptionformat(string $value = null) {
         if (! is_null($value)) {
             $this->set('descriptionformat', $value);
         }
@@ -162,7 +162,7 @@ abstract class field extends persistent {
      * @return int
      * @throws \coding_exception
      */
-    public function sortorder(int $value = null): int {
+    public function sortorder(int $value = null) {
         if (! is_null($value)) {
             $this->set('sortorder', $value);
         }
@@ -173,7 +173,7 @@ abstract class field extends persistent {
      * @return int
      * @throws \coding_exception
      */
-    public function categoryid(): int {
+    public function categoryid() {
         return $this->get('categoryid');
     }
 
@@ -190,7 +190,7 @@ abstract class field extends persistent {
      * @return string|null
      * @throws \coding_exception
      */
-    public function configdata(string $value = null): string {
+    public function configdata(string $value = null) {
         if (! is_null($value)) {
             $this->set('configdata', $value);
         }
@@ -204,7 +204,7 @@ abstract class field extends persistent {
      * @return int
      * @throws \dml_exception
      */
-    private static function count_fields(int $categoryid) : int {
+    private static function count_fields(int $categoryid)  {
         global $DB;
 
         return $DB->count_records(
