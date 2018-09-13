@@ -97,6 +97,8 @@ class data extends persistent {
         );
     }
 
+
+
     /**
      * @param int $fieldid
      * @param int $recordid
@@ -118,6 +120,11 @@ class data extends persistent {
         $dbdata = $DB->get_record(self::TABLE, ['fieldid' => $fieldid]);
 
         return new self($dbdata->id);
+    }
+
+
+    public function id() {
+        return $this->get('id');
     }
 
     public function fieldid(string $value = null) {

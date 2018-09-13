@@ -229,7 +229,8 @@ abstract class field extends persistent {
      * @throws \coding_exception
      */
     protected function before_delete() : bool {
-        if (!$this->data()->delete()) {
+        if ( $this->data()->id() > 0 ) {
+            $this->data()->delete();
             return false;
         }
         return true;
