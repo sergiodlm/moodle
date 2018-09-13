@@ -37,14 +37,23 @@
   }
 }}
 
-<h2>{{pagetitle}}</h2>
+<div class="row">
+     <div class="col-10">
+        <h2>{{pagetitle}}</h2>
+    </div>
+    <div class="col-2">
+        {{#addcategorybutton}}
+            {{{addcategorybutton}}}
+        {{/addcategorybutton}}
+    </div>
+</div>
 
 {{{alert}}}
 
 <div data-region="list-page" id="customfield_catlist" data-handler="{{{handler}}}">
-    {{^categories.length}}
+    {{^categories}}
         <p>There are no custom fields.</p>
-    {{/categories.length}}
+    {{/categories}}
 
     {{#categories}}
         <p>
@@ -93,13 +102,7 @@
 
 {{#singleselect}}
     {{>core/single_select}}
-
-    OR
 {{/singleselect}}
-
-{{#singlebutton}}
-    {{{singlebutton}}}
-{{/singlebutton}}
 
 {{#js}}
     require(['core_customfield/form'], function(s) {

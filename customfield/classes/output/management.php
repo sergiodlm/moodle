@@ -151,11 +151,9 @@ class management implements renderable, templatable {
         $data->singleselect = $select->export_for_template($output);
 
         // Create a new category link.
-        $data->singlebutton = $OUTPUT->single_button(
-                new \moodle_url('/customfield/edit_category.php',
-                        array('handler' => $data->handler)),
-                get_string('createnewccategory', 'core_customfield')
-        );
+        $newcategoryurl = new \moodle_url('/customfield/edit_category.php', array('handler' => $data->handler));
+        $data->addcategorybutton = $OUTPUT->single_button($newcategoryurl, get_string('addnewcategory', 'core_customfield'),
+                                                          'post', array('class' => 'float-right'));
 
         return $data;
     }
