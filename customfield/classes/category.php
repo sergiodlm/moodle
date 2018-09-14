@@ -147,7 +147,7 @@ class category extends persistent {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    protected function reorder(): bool {
+    public function reorder(): bool {
         $this::static_reorder(
                 [
                         'component' => $this->get('component'),
