@@ -90,6 +90,14 @@ abstract class handler {
         return \core_customfield\category::list($options);
     }
 
+    public function categories_list_for_select() {
+        $categorylist = array();
+        foreach ($this->categories_list() as $category) {
+            $categorylist[$category->id()] = $category->name();
+        }
+        return $categorylist;
+    }
+
     abstract public function can_configure($itemid = null): bool;
 
     abstract public function can_edit($recordid = null, $itemid = null): bool;
@@ -164,7 +172,7 @@ abstract class handler {
             // Check first if *any* fields will be displayed.
             $fieldstodisplay = [];
 
-            foreach ($category->get_fields() as $formfield) {
+            foreach ($category->fields() as $formfield) {
                 if ($formfield->is_editable()) {
                     $fieldstodisplay[] = $formfield;
                 }
@@ -179,5 +187,9 @@ abstract class handler {
                 $formfield->edit_field($mform);
             }
         }
+    }
+
+    public function field_types() {
+        return api::field_types();
     }
 }

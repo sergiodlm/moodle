@@ -21,6 +21,7 @@
  */
 
 require_once(__DIR__ . '/../config.php');
+require_once($CFG->libdir.'/adminlib.php');
 
 define('OTHERFIELDSNAME', get_string('otherfields', 'core_customfield'));
 
@@ -28,6 +29,8 @@ $handlerparam = required_param('handler', PARAM_RAW);
 $itemid = optional_param('itemid', 0, PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT);
 $type = optional_param('type', null, PARAM_NOTAGS);
+
+require_login();
 
 $handler = new $handlerparam(null);
 
@@ -52,40 +55,31 @@ if ($id) {
         }
     }
 
+    $title = get_string('editingfield', 'core_customfield');
+
 } else {
     $classfieldtype = '\customfield_'.$type.'\field';
     $arrayform = (object)null;
     $arrayform->type = $type;
+    $arrayform->id = null;
     $arrayform->configdata = ['required' => 0];
+    $title = get_string('addingnewcustomfield', 'core_customfield');
 }
 
 $url = new \moodle_url('/customfield/edit.php', ['handler' => $handlerparam]);
 
-$PAGE->set_context(\context_system::instance());
-$PAGE->set_url($url);
-$PAGE->set_pagelayout('report');
-$PAGE->set_title(get_string('customfields', 'core_customfield'));
-$PAGE->navbar->add(get_string('edit'), $url);
+admin_externalpage_setup('course_customfield');
 
-//$handler = new $handlerparam(null);
-
-$categorylist = array();
-foreach ($handler->categories_list() as $category) {
-    $categorylist[$category->id()] = $category->name();
-}
-
+$categorylist = $handler->categories_list_for_select();
 $args = ['handler' => $handlerparam, 'classfieldtype' => $classfieldtype, 'categorylist' => $categorylist];
 
-// Get fields for field type.
 $mform = $handler->get_field_config_form($args);
 
-if ($id) {
-    $textfieldoptions = array('trusttext' => true, 'subdirs' => true, 'maxfiles' => 50, 'maxbytes' => 0,
-                              'context' => $PAGE->context, 'noclean' => 0, 'enable_filemanagement' => true);
+$textfieldoptions = array('trusttext' => true, 'subdirs' => true, 'maxfiles' => 50, 'maxbytes' => 0,
+                          'context' => $PAGE->context, 'noclean' => 0, 'enable_filemanagement' => true);
 
-    file_prepare_standard_editor($arrayform, 'description', $textfieldoptions, $PAGE->context, 'core_customfield',
-                                 'description', $arrayform->id);
-}
+file_prepare_standard_editor($arrayform, 'description', $textfieldoptions, $PAGE->context, 'core_customfield',
+                             'description', $arrayform->id);
 
 $mform->set_data($arrayform);
 
@@ -127,19 +121,16 @@ if ($mform->is_cancelled()) {
     } else {
 
     	if (empty($data->categoryid)) {
-			$defaultcategorydata            = new \stdClass();
-			$defaultcategorydata->name      = OTHERFIELDSNAME;
-			$defaultcategorydata->area      = $handler->get_area();
-			$defaultcategorydata->component = $handler->get_component();
+            $defaultcategorydata            = new \stdClass();
+            $defaultcategorydata->name      = OTHERFIELDSNAME;
+            $defaultcategorydata->area      = $handler->get_area();
+            $defaultcategorydata->component = $handler->get_component();
 
-			$defaultcategory                = new \core_customfield\category(0, $defaultcategorydata);
-			$defaultcategory->save();
+            $defaultcategory                = new \core_customfield\category(0, $defaultcategorydata);
+            $defaultcategory->save();
 
-			$data->categoryid = $defaultcategory->id();
-		}
-
-
-
+            $data->categoryid = $defaultcategory->id();
+        }
         // New.
         $fielddata = new \stdClass();
         $fielddata->name = $data->name;
@@ -181,9 +172,13 @@ if ($mform->is_cancelled()) {
     }
 }
 
-echo $OUTPUT->header();
+$PAGE->set_url($url);
+$PAGE->set_heading(get_site()->fullname);
+$PAGE->set_title($title);
+$PAGE->navbar->add($title);
 
-echo "<h2>".get_string('addingnewcustomfield', 'core_customfield')."</h2>";
+echo $OUTPUT->header();
+echo $OUTPUT->heading($title);
 
 if (isset($notification)) {
     $renderer = new \core_renderer($PAGE, 'customfield');

@@ -42,6 +42,9 @@ class category_config_form extends \moodleform {
     public function definition() {
         $mform = $this->_form;
 
+        // Form definition with new course defaults.
+        $mform->addElement('header','general', get_string('general', 'form'));
+
         $mform->addElement('text', 'name', get_string('categoryname', 'core_customfield'));
         $mform->setType('name', PARAM_NOTAGS);
         $mform->addRule('name', get_string('name'), 'required');

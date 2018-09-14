@@ -74,4 +74,19 @@ class api {
         return $formfields;
     }
 
+    /**
+     * Retrieve a list of all available custom field types
+     * @return   array   a list of the fieldtypes suitable to use in a select statement
+     */
+    public static function field_types() {
+        $fieldtypes = array();
+
+        $plugins = \core_component::get_plugin_list('customfield');
+        foreach ($plugins as $type => $unused) {
+            $fieldtypes[$type] = get_string('pluginname', 'customfield_'.$type);
+        }
+        asort($fieldtypes);
+
+        return $fieldtypes;
+    }
 }

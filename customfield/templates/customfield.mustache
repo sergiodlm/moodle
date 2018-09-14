@@ -37,52 +37,68 @@
   }
 }}
 
-<h2>{{pagetitle}}</h2>
+<div class="row justify-content-between">
+    <div class="col-auto">
+        <h2>{{pagetitle}}</h2>
+    </div>
+    <div class="col-md-2">
+        {{#addcategorybutton}}
+            {{{addcategorybutton}}}
+        {{/addcategorybutton}}
+    </div>
+</div>
 
 {{{alert}}}
 
 <div data-region="list-page" id="customfield_catlist" data-handler="{{{handler}}}">
-    {{^categories.length}}
+    {{^categories}}
         <p>There are no custom fields.</p>
-    {{/categories.length}}
+    {{/categories}}
 
     {{#categories}}
-        <p>
-            <h3>{{name}}</h3>
-            <a href="{{{editcategoryurl}}}" data-role="editcategory" data-id="{{id}}">{{{editicon}}}</a>
-            <a href="{{{deletecategoryurl}}}" class="confirm_delete_category" data-role="deletecategory" data-id="{{id}}">{{{deleteicon}}}</a>
-            <a href="" class="move_up_category" data-id="{{id}}">{{{upiconcategory}}}</a>
-            <a href="" class="move_down_category" data-id="{{id}}">{{{downiconcategory}}}</a>
-        </p>
+        <div class="row align-items-start">
+            <div class="col-auto">
+                <h3>{{name}}</h3>
+            </div>
+            <div class="col-4">
+                <a href="{{{editcategoryurl}}}" data-role="editcategory" data-id="{{id}}">{{{editicon}}}</a>
+                <a href="{{{deletecategoryurl}}}" class="confirm_delete_category" data-role="deletecategory" data-id="{{id}}">{{{deleteicon}}}</a>
+                <a href="" class="move_up_category" data-id="{{id}}">{{{upiconcategory}}}</a>
+                <a href="" class="move_down_category" data-id="{{id}}">{{{downiconcategory}}}</a>
+            </div>
+        </div>
         <div>
             <table id="core_customfield-managefields-wrapper" class="generaltable fullwidth">
                 <thead>
                 <tr>
-                    <th scope="col">{{customfield}}</th>
-                    <th scope="col">{{shortname}}</th>
-                    <th scope="col">{{type}}</th>
-                    <th scope="col">{{action}}</th>
+                    <th scope="col" class="col-5">{{customfield}}</th>
+                    <th scope="col" class="col-2">{{shortname}}</th>
+                    <th scope="col" class="col-2">{{type}}</th>
+                    <th scope="col" class="text-right">{{action}}</th>
                 </tr>
                 </thead>
                 <tbody>
                     {{#fields}}
                         <tr data-field-name="{{{name}}}">
-                            <td>
+                            <td class="col-5">
                                 <p>{{name}}</p>
                             </td>
-                            <td>
+                            <td class="col-2">
                                 <p>{{shortname}}</p>
                             </td>
-                            <td>
+                            <td class="col-2">
                                 <p>{{type}}</p>
                             </td>
-                            <td>
+                            <td class="text-right">
                                 <a href="{{{editfieldurl}}}" data-role="editfield">{{{editicon}}}</a>
                                 <a href="{{{deletefieldurl}}}" class="confirm_delete" data-id="{{id}}" data-role="deletefield">{{{deleteicon}}}</a>
                                 <a href="" class="move_up_field" data-id="{{id}}">{{{upiconfield}}}</a>
                                 <a href="" class="move_down_field" data-id="{{id}}">{{{downiconfield}}}</a>
                             </td>
                         </tr>
+                    {{/fields}}
+                    {{^fields}}
+                        <td colspan="4">There are no fields on this category.</td>
                     {{/fields}}
                 </tbody>
             </table>
@@ -93,13 +109,7 @@
 
 {{#singleselect}}
     {{>core/single_select}}
-
-    OR
 {{/singleselect}}
-
-{{#singlebutton}}
-    {{{singlebutton}}}
-{{/singlebutton}}
 
 {{#js}}
     require(['core_customfield/form'], function(s) {

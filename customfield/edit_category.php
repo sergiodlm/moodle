@@ -21,26 +21,27 @@
  */
 
 require_once(__DIR__ . '/../config.php');
+require_once($CFG->libdir.'/adminlib.php');
 
 $handlerparam = required_param('handler', PARAM_RAW);
 $id = optional_param('id', 0, PARAM_INT);
+
+require_login();
 
 $handler = new $handlerparam(null);
 
 if ($id) {
     $record = $handler->load_category($id);
     $arrayform = ['name' => $record->name(), 'id' => $id];
+    $title = get_string('editingcategory', 'core_customfield');
 } else {
+    $title = get_string('addingnewcategory', 'core_customfield');
     $arrayform = null;
 }
 
 $url = new \moodle_url('/customfield/edit_category.php', ['handler' => $handlerparam]);
 
-$PAGE->set_context(\context_system::instance());
-$PAGE->set_url($url);
-$PAGE->set_pagelayout('report');
-$PAGE->set_title(get_string('customfields', 'core_customfield'));
-$PAGE->navbar->add(get_string('edit'), new \moodle_url($url));
+admin_externalpage_setup('course_customfield');
 
 $mform = $handler->get_category_config_form($handlerparam);
 
@@ -53,18 +54,17 @@ if ($mform->is_cancelled()) {
 
 } else if ($data = $mform->get_data()) {
 
-    if (!empty($data->id)) {
+    if (empty($data->id)) {
+        // New.
+        $category = $handler->new_category($data->name);
+    } else {
         // Update.
         $category = $handler->load_category($id);
         $category->name($data->name);
-    } else {
-        // New.
-        $category = $handler->new_category($data->name);
     }
 
     try {
         $category->save();
-
         $notification = 'success';
         redirect(new moodle_url($handler->url));
     } catch (\dml_write_exception $exception) {
@@ -72,16 +72,19 @@ if ($mform->is_cancelled()) {
     }
 }
 
-echo $OUTPUT->header();
-$render = new \core_renderer($PAGE, 'customfield');
+$PAGE->set_url($url);
+$PAGE->set_heading(get_site()->fullname);
+$PAGE->set_title($title);
+$PAGE->navbar->add($title, new \moodle_url($url));
 
-echo "<h2>".get_string('creatingnewcategory', 'core_customfield')."</h2>";
+echo $OUTPUT->header();
+echo $OUTPUT->heading($title);
+
+$render = new \core_renderer($PAGE, 'customfield');
 
 if (isset($notification)) {
     echo $render->notification($notification, $notification);
 }
-
-echo "<h3>".get_string('commonsettings', 'core_customfield')."</h3>";
 
 $mform->display();
 
