@@ -23,8 +23,6 @@
 require_once(__DIR__ . '/../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
-define('OTHERFIELDSNAME', get_string('otherfields', 'core_customfield'));
-
 $handlerparam = required_param('handler', PARAM_RAW);
 $itemid = optional_param('itemid', 0, PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT);
@@ -122,7 +120,7 @@ if ($mform->is_cancelled()) {
 
     	if (empty($data->categoryid)) {
             $defaultcategorydata            = new \stdClass();
-            $defaultcategorydata->name      = OTHERFIELDSNAME;
+            $defaultcategorydata->name      = get_string('otherfields', 'core_customfield');
             $defaultcategorydata->area      = $handler->get_area();
             $defaultcategorydata->component = $handler->get_component();
 

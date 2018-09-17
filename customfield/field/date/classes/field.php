@@ -39,7 +39,21 @@ class field extends \core_customfield\field{
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-        $mform->addElement('date_selector', $this->inputname(), format_string($this->name()));
+        // Get the current calendar in use - see MDL-18375.
+        $calendartype = \core_calendar\type_factory::get_calendar_instance();
+
+        // Check if the field is required.
+        $config = json_decode($this->configdata());
+        $optional = ($config->required != 1);
+
+        $attributes = ['optional' => $optional];
+
+        if (!empty($config->dateincludetime)) {
+            $mform->addElement('date_time_selector', $this->inputname(), format_string($this->name()), $attributes);
+        } else {
+            $mform->addElement('date_selector', $this->inputname(), format_string($this->name()), $attributes);
+        }
+        $mform->setType($this->inputname(), PARAM_INT);
         $mform->setDefault($this->inputname(), time());
     }
 
