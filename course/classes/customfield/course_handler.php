@@ -53,7 +53,7 @@ class course_handler extends \core_customfield\handler {
      */
     public function display_fields($courseid) {
         $fields = $this->get_fields_with_data($courseid);
-        $content = \html_writer::start_tag('div');
+        $content = \html_writer::start_tag('div', ['class' => 'customfields-container', 'style' => 'clear: both;']);
         foreach ($fields as $field) {
             if ($field->should_display()) {
                 $content .= $field->display();
