@@ -55,4 +55,11 @@ class field extends \core_customfield\field{
         //$mform->setType($this->shortname, PARAM_TEXT);
     }
 
+    public function set_data($data) {
+        $this->data = $data->charvalue;
+    }
+
+    public function datafield() {
+        return 'charvalue';
+    }
 }
