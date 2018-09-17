@@ -35,8 +35,10 @@ class field_config_form extends \moodleform {
         global $PAGE;
         $mform = $this->_form;
 
-        // We add common settings here.
         $mform->addElement('header', '_commonsettings', get_string('commonsettings', 'core_customfield'));
+
+        $mform->addElement('select', 'categoryid', get_string('category', 'core_customfield'), $this->_customdata['categorylist']);
+        $mform->addRule('categoryid', get_string('categoryidrequired', 'core_customfield'), 'required');
 
         $mform->addElement('text', 'name', get_string('fieldname', 'core_customfield'));
         $mform->setType('name', PARAM_NOTAGS);
@@ -58,14 +60,20 @@ class field_config_form extends \moodleform {
         $mform->addElement('editor', 'description_editor', get_string('description', 'core_customfield'), null, $desceditoroptions);
         $mform->setType('description_editor', PARAM_RAW);
 
-        // Category list.
-        $select = $mform->addElement('select', 'categoryid', get_string('category', 'core_customfield'), $this->_customdata['categorylist']);
-
         // If field is required.
         $mform->addElement('selectyesno', 'configdata[required]', get_string('isfieldrequired', 'core_customfield'));
 
+        // If field is locked.
+        $mform->addElement('selectyesno', 'configdata[locked]', get_string('isfieldlocked', 'core_customfield'));
+
         // If field data is unique.
         $mform->addElement('selectyesno', 'configdata[unique]', get_string('isdataunique', 'core_customfield'));
+
+        // Field data visibility.
+        $visibilityoptions = [get_string('notvisible', 'core_customfield'),
+                              get_string('courseeditors', 'core_customfield'),
+                              get_string('everyone', 'core_customfield')];
+        $mform->addElement('select', 'configdata[visibility]', get_string('visibility', 'core_customfield'), $visibilityoptions);
 
         // We add specific settings here.
         $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_customfield'));

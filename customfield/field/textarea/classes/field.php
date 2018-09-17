@@ -54,7 +54,6 @@ class field extends \core_customfield\field {
         $shortname = 'customfield_'.$this->get('shortname');
         $mform->addElement('editor', $shortname, format_string($this->get('name')));
         $mform->setType($shortname, PARAM_RAW);
-        $mform->setDefault($shortname, $this->data);
     }
 
     public function display() {
