@@ -62,4 +62,11 @@ class field extends \core_customfield\field{
     public function datafield() {
         return 'charvalue';
     }
+
+    public function display() {
+        return \html_writer::start_tag('div') .
+               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
+               \html_writer::tag('span', format_text($this->data), ['class' => 'customfieldvalue']).
+               \html_writer::end_tag('div');
+    }
 }

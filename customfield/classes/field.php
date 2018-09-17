@@ -499,4 +499,9 @@ abstract class field extends persistent {
         return $this->categoryname;
     }
 
+    public function should_display() {
+        // TODO: text config/attribute;
+        return true;
+    }
+
 }
