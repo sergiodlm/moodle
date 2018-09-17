@@ -23,8 +23,6 @@
 namespace core_customfield;
 
 use core\persistent;
-use Horde\Socket\Client\Exception;
-use Phpml\Exception\DatasetException;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -446,5 +444,52 @@ abstract class field extends persistent {
         $data->save();
     }
 
-}
+    /**
+     * Saves the data coming from form
+     * @param stdClass $datanew data coming from the form
+     * @return mixed returns data id if success of db insert/update, false on fail, 0 if not permitted
+     */
+    public function edit_save_data($datanew) {
+        global $DB;
 
+
+	if (!isset($datanew->{$this->shortname()})) {
+	    // Field not present in form, probably locked and invisible - skip it.
+	    return;
+	}
+
+	$datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->id()));
+
+	$datanew->{$this->shortname()} = $this->edit_save_data_preprocess($datanew->{$this->shortname()}, $datarecord);
+
+	if ($datarecord) {
+            $datarecord->charvalue = $datanew->{$this->shortname()};
+	    $datarecord->timemodified = time();
+	    $result = $DB->update_record('customfield_data', $datarecord);
+	} else {
+	    $now = time();
+            $datarecord = new stdclass();
+            $datarecord->charvalue = $datanew->{$this->shortname()};
+	    $datarecord->fieldid = $this->id();
+            $datarecord->recordid = $datanew->id;
+	    $datarecord->timecreated = $now;
+	    $datarecord->timemodified = $now;
+	    $result = $DB->insert_record('customfield_data', $datarecord);
+	}
+	return $result;
+    }
+
+    /**
+     * Hook for child classess to process the data before it gets saved in database
+     * @param stdClass $data
+     * @param stdClass $datarecord The object that will be used to save the record
+     * @return  mixed
+     * @return int
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function edit_save_data_preprocess($data, $datarecord) {
+        return $data;
+    }
+
+}

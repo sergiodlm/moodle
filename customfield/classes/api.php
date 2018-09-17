@@ -55,19 +55,16 @@ class api {
         $formfields = [];
         foreach($fieldsdata as $data) {
             // Assuming data->type is safe already.
-            //$classname = "\\customfield_".$data->type."\\field";
-            //$field = new \stdclass();
-            //$field->id = $data->field_id;
-            //$field->shortname = $data->shortname;
-            //$formfield = new $classname($field);
-
-            $formfield = field_factory::load($data->field_id);
+            $classname = "\\customfield_".$data->type."\\field";
+            $field = new \stdclass();
+            $field->id = $data->field_id;
+            $field->shortname = $data->shortname;
+            $formfield = new $classname($field->id, $field);
 
             if ($data->id == null) {
                 $data->fieldid = $data->field_id;
                 $data->recordid = $recordid;
             }
-            $formfield->set_datarecord($data);
             $formfields[] = $formfield;
         }
 

@@ -153,7 +153,7 @@ abstract class handler {
         }
     }
 
-    public function save_data($data) {
+    public function save_customfield_data($data) {
         $fields = $this->get_fields_with_data($data->id);
         foreach ($fields as $formfield) {
             $formfield->edit_save_data($data);
@@ -182,9 +182,9 @@ abstract class handler {
             }
 
             // Display the header and the fields.
-            $mform->addElement('header', 'category_' . $category->get_id(), format_string($category->get_name()));
+            $mform->addElement('header', 'category_' . $category->id(), format_string($category->name()));
             foreach ($fieldstodisplay as $formfield) {
-                $formfield->edit_field($mform);
+                $formfield->edit_field_add($mform);
             }
         }
     }
