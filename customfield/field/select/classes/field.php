@@ -32,10 +32,7 @@ class field extends \core_customfield\field{
      * @param moodleform $mform
      */
     public static function add_field_to_edit_form( \MoodleQuickForm $mform) {
-        //public static function add_fields_edit_form(\core_customfield\field $fielddefinition, \moodleform $form, \MoodleQuickForm $mform) {
-
         $mform->addElement('textarea', 'configdata[options]', 'Menu options (one per line)');
-
     }
 
     /**
@@ -51,22 +48,35 @@ class field extends \core_customfield\field{
             $options = array();
         }
 
-        $mform->addElement('select', $this->get('shortname'), format_string($this->get('name')), $options);
-        //$mform->setType($this->shortname, PARAM_TEXT);
+        $mform->addElement('select', $this->inputname(), format_string($this->get('name')), $options);
+        $mform->setDefault($this->inputname(), $this->data);
     }
 
     public function set_data($data) {
-        $this->data = $data->charvalue;
+        $this->data = $data->intvalue;
     }
 
     public function datafield() {
-        return 'charvalue';
+        return 'intvalue';
     }
 
     public function display() {
+        $configdata = json_decode($this->get('configdata'));
+
+        if (isset($configdata->options)) {
+            $options = explode("\n", $configdata->options);
+        } else {
+            $options = array();
+        }
         return \html_writer::start_tag('div') .
                \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
-               \html_writer::tag('span', format_text($this->data), ['class' => 'customfieldvalue']).
+               \html_writer::tag('span', format_text($options[$this->data]), ['class' => 'customfieldvalue']).
                \html_writer::end_tag('div');
+    }
+
+    public function edit_load_data($data) {
+        if ($this->data !== null) {
+            $data->{$this->inputname()} = $this->data;
+        }
     }
 }

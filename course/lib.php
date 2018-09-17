@@ -2486,6 +2486,12 @@ function create_course($data, $editoroptions = NULL) {
         core_tag_tag::set_item_tags('core', 'course', $course->id, context_course::instance($course->id), $data->tags);
     }
 
+    // Save custom fields.
+    $handler  = new core_course\customfield\course_handler(null);
+    $data->id = $course->id;
+    $handler->save_customfield_data($data);
+
+
     return $course;
 }
 

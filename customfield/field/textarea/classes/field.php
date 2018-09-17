@@ -53,7 +53,7 @@ class field extends \core_customfield\field {
     public function edit_field_add($mform) {
         $shortname = 'customfield_'.$this->get('shortname');
         $mform->addElement('editor', $shortname, format_string($this->get('name')));
-        $mform->setType($shortname, PARAM_TEXT);
+        $mform->setType($shortname, PARAM_RAW);
         $mform->setDefault($shortname, $this->data);
     }
 
@@ -84,5 +84,17 @@ class field extends \core_customfield\field {
             $data = $data['text'];
         }
         return $data;
+    }
+
+    /**
+     * Load data for this custom field, ready for editing.
+     * @param stdClass $user
+     */
+    public function edit_load_data($data) {
+        if ($this->data !== null) {
+            $this->dataformat = 1;
+            $this->data = clean_text($this->data, $this->dataformat);
+            $data->{$this->inputname()} = array('text' => $this->data, 'format' => $this->dataformat);
+        }
     }
 }

@@ -61,7 +61,6 @@ class field extends \core_customfield\field {
         $shortname = 'customfield_'.$this->shortname();
         $mform->addElement(self::TYPE, $shortname, format_string($this->get('name')), 'size="'.self::SIZE.'" ');
         $mform->setType($shortname, PARAM_TEXT);
-        $mform->setDefault($shortname, $this->data);
     }
 
     public function set_data($data) {

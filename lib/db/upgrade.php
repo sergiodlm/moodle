@@ -2384,9 +2384,6 @@ function xmldb_main_upgrade($oldversion) {
 
         // Adding indexes to table customfield_data.
         $table->add_index('recordid-fieldid', XMLDB_INDEX_UNIQUE, ['recordid', 'fieldid']);
-        $table->add_index('fieldid-intvalue', XMLDB_INDEX_UNIQUE, ['fieldid', 'intvalue']);
-        $table->add_index('fieldid-decvalue', XMLDB_INDEX_UNIQUE, ['fieldid', 'decvalue']);
-        $table->add_index('fieldid-shortcharvalue', XMLDB_INDEX_UNIQUE, ['fieldid', 'shortcharvalue']);
 
         // Conditionally launch create table for customfield_data.
         if (!$dbman->table_exists($table)) {

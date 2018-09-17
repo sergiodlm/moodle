@@ -41,7 +41,6 @@ class field extends \core_customfield\field{
     public function edit_field_add($mform) {
         $shortname = 'customfield_'.$this->shortname();
         $mform->addElement('checkbox', $shortname, format_string($this->get('name')));
-        // TODO: check if checked by default.
     }
 
     public function set_data($data) {
