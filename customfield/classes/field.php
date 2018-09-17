@@ -452,24 +452,24 @@ abstract class field extends persistent {
     public function edit_save_data($datanew) {
         global $DB;
 
-
-	if (!isset($datanew->{$this->shortname()})) {
+        $shortname = 'customfield_'.$this->shortname();
+	if (!isset($datanew->{$shortname})) {
 	    // Field not present in form, probably locked and invisible - skip it.
 	    return;
 	}
 
 	$datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->id()));
 
-	$datanew->{$this->shortname()} = $this->edit_save_data_preprocess($datanew->{$this->shortname()}, $datarecord);
+	$datanew->{$shortname} = $this->edit_save_data_preprocess($datanew->{$shortname}, $datanew);
 
 	if ($datarecord) {
-            $datarecord->charvalue = $datanew->{$this->shortname()};
+            $datarecord->{$this->datafield()} = $datanew->{$shortname};
 	    $datarecord->timemodified = time();
 	    $result = $DB->update_record('customfield_data', $datarecord);
 	} else {
 	    $now = time();
-            $datarecord = new stdclass();
-            $datarecord->charvalue = $datanew->{$this->shortname()};
+            $datarecord = new \stdclass();
+            $datarecord->{$this->datafield()} = $datanew->{$shortname};
 	    $datarecord->fieldid = $this->id();
             $datarecord->recordid = $datanew->id;
 	    $datarecord->timecreated = $now;
@@ -490,6 +490,13 @@ abstract class field extends persistent {
      */
     public function edit_save_data_preprocess($data, $datarecord) {
         return $data;
+    }
+
+    public function categoryname($name = null) {
+        if (!empty($name)) {
+            $this->categoryname = $name;
+        }
+        return $this->categoryname;
     }
 
 }

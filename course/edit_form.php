@@ -321,7 +321,7 @@ class course_edit_form extends moodleform {
         }
 
         $handler  = new core_course\customfield\course_handler(null);
-        $handler->add_custom_fields($mform);
+        $handler->add_custom_fields($mform, $course->id);
 
         // When two elements we need a group.
         $buttonarray = array();

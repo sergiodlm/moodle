@@ -32,8 +32,7 @@ class field extends \core_customfield\field {
      * @param moodleform $mform
      */
     public static function add_field_to_edit_form( \MoodleQuickForm $mform) {
-        //public static function add_fields_edit_form(\core_customfield\field $fielddefinition, \moodleform $form, \MoodleQuickForm $mform) {
-global $PAGE;
+        global $PAGE;
         $desceditoroptions = array(
                 'trusttext' => true,
                 'subdirs' => true,
@@ -52,8 +51,10 @@ global $PAGE;
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-        $mform->addElement('editor', $this->get('shortname'), format_string($this->get('name')));
-        $mform->setType($this->get('shortname'), PARAM_TEXT);
+        $shortname = 'customfield_'.$this->get('shortname');
+        $mform->addElement('editor', $shortname, format_string($this->get('name')));
+        $mform->setType($shortname, PARAM_TEXT);
+        $mform->setDefault($shortname, $this->data);
     }
 
     public function display() {
@@ -61,5 +62,27 @@ global $PAGE;
                \html_writer::tag('span', format_string($this->get_name()), ['class' => 'customfieldname']).
                \html_writer::tag('span', format_text($this->get_data()), ['class' => 'customfieldvalue']).
                \html_writer::end_tag('div');
+    }
+
+    public function set_data($data) {
+        $this->data = $data->value;
+    }
+
+    public function datafield() {
+        return 'value';
+    }
+
+    /**
+     * Process incoming data for the field.
+     * @param stdClass $data
+     * @param stdClass $datarecord
+     * @return mixed|stdClass
+     */
+    public function edit_save_data_preprocess($data, $datarecord) {
+        if (is_array($data)) {
+            $datarecord->dataformat = $data['format'];
+            $data = $data['text'];
+        }
+        return $data;
     }
 }

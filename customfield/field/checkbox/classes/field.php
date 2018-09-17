@@ -32,8 +32,6 @@ class field extends \core_customfield\field{
      * @param moodleform $mform
      */
     public static function add_field_to_edit_form( \MoodleQuickForm $mform) {
-        //public static function add_fields_edit_form(\core_customfield\field $fielddefinition, \moodleform $form, \MoodleQuickForm $mform) {
-
         $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));    }
 
     /**
@@ -41,10 +39,6 @@ class field extends \core_customfield\field{
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-
-
         $mform->addElement('checkbox', $this->get('shortname'), format_string($this->get('name')));
-        //$mform->setType($this->shortname, PARAM_TEXT);
     }
-
 }
