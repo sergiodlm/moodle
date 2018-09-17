@@ -107,10 +107,6 @@ if ($id) {
     print_error('needcoursecategroyid');
 }
 
-// Load custom fields data.
-$handler  = new core_course\customfield\course_handler(null);
-$handler->load_data($course);
-
 // Prepare course and the editor.
 $editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true);
 $overviewfilesoptions = course_overviewfiles_options($course);

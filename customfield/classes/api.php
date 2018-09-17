@@ -41,7 +41,7 @@ class api {
 
     public static function get_fields_with_data($component, $area, $recordid) {
         global $DB;
-        $sql = 'SELECT f.id as field_id, f.shortname, d.*, f.type
+        $sql = 'SELECT f.id as field_id, f.shortname, f.categoryid, f.type, c.name as categoryname, d.*
                   FROM {customfield_category} c
                   JOIN {customfield_field} f
                     ON (c.id = f.categoryid)
@@ -55,19 +55,18 @@ class api {
         $formfields = [];
         foreach($fieldsdata as $data) {
             // Assuming data->type is safe already.
-            //$classname = "\\customfield_".$data->type."\\field";
-            //$field = new \stdclass();
-            //$field->id = $data->field_id;
-            //$field->shortname = $data->shortname;
-            //$formfield = new $classname($field);
-
-            $formfield = field_factory::load($data->field_id);
+            $classname = "\\customfield_".$data->type."\\field";
+            $field = new \stdclass();
+            $field->id = $data->field_id;
+            $field->shortname = $data->shortname;
+            $formfield = new $classname($field->id, $field);
+            $formfield->categoryname($data->categoryname);
+            $formfield->set_data($data);
 
             if ($data->id == null) {
                 $data->fieldid = $data->field_id;
                 $data->recordid = $recordid;
             }
-            $formfield->set_datarecord($data);
             $formfields[] = $formfield;
         }
 

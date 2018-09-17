@@ -153,7 +153,7 @@ abstract class handler {
         }
     }
 
-    public function save_data($data) {
+    public function save_customfield_data($data) {
         $fields = $this->get_fields_with_data($data->id);
         foreach ($fields as $formfield) {
             $formfield->edit_save_data($data);
@@ -165,26 +165,31 @@ abstract class handler {
      *
      * @param moodleform $mform
      */
-    public function add_custom_fields($mform) {
+    public function add_custom_fields($mform, $recordid) {
 
-        $categories = $this->get_fields_definitions();
-        foreach ($categories as $category) {
+        $fieldswithdata = $this->get_fields_with_data($recordid);
+        $categories = [];
+        foreach ($fieldswithdata as $field) {
+            $categories[$field->categoryid()][] = $field;
+        }
+        foreach ($categories as $categoryid => $fields) {
             // Check first if *any* fields will be displayed.
             $fieldstodisplay = [];
 
-            foreach ($category->fields() as $formfield) {
+            foreach ($fields as $formfield) {
                 if ($formfield->is_editable()) {
                     $fieldstodisplay[] = $formfield;
                 }
             }
+
             if (empty($fieldstodisplay)) {
                 continue;
             }
 
             // Display the header and the fields.
-            $mform->addElement('header', 'category_' . $category->get_id(), format_string($category->get_name()));
+            $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->categoryname()));
             foreach ($fieldstodisplay as $formfield) {
-                $formfield->edit_field($mform);
+                $formfield->edit_field_add($mform);
             }
         }
     }
