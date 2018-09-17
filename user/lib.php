@@ -48,12 +48,16 @@ function user_create_user($user, $updatepassword = true, $triggerevent = true) {
     }
 
     // Check username.
+    if (trim($user->username) === '') {
+        throw new moodle_exception('invalidusernameblank');
+    }
+
     if ($user->username !== core_text::strtolower($user->username)) {
         throw new moodle_exception('usernamelowercase');
-    } else {
-        if ($user->username !== core_user::clean_field($user->username, 'username')) {
-            throw new moodle_exception('invalidusername');
-        }
+    }
+
+    if ($user->username !== core_user::clean_field($user->username, 'username')) {
+        throw new moodle_exception('invalidusername');
     }
 
     // Save the password in a temp value for later.
@@ -1280,7 +1284,7 @@ function user_get_tagged_users($tag, $exclusivemode = false, $fromctx = 0, $ctx 
  */
 function user_get_participants_sql($courseid, $groupid = 0, $accesssince = 0, $roleid = 0, $enrolid = 0, $statusid = -1,
                                    $search = '', $additionalwhere = '', $additionalparams = array()) {
-    global $DB, $USER;
+    global $DB, $USER, $CFG;
 
     // Get the context.
     $context = \context_course::instance($courseid, MUST_EXIST);
@@ -1393,6 +1397,27 @@ function user_get_participants_sql($courseid, $groupid = 0, $accesssince = 0, $r
             }
             $conditions[] = $idnumber;
 
+            if (!empty($CFG->showuseridentity)) {
+                // Search all user identify fields.
+                $extrasearchfields = explode(',', $CFG->showuseridentity);
+                foreach ($extrasearchfields as $extrasearchfield) {
+                    if (in_array($extrasearchfield, ['email', 'idnumber', 'country'])) {
+                        // Already covered above. Search by country not supported.
+                        continue;
+                    }
+                    $param = $searchkey3 . $extrasearchfield;
+                    $condition = $DB->sql_like($extrasearchfield, ':' . $param, false, false);
+                    $params[$param] = "%$keyword%";
+                    if (!in_array($extrasearchfield, $userfields)) {
+                        // User cannot see this field, but allow match if their own account.
+                        $userid3 = 'userid' . $index . '3' . $extrasearchfield;
+                        $condition = "(". $condition . " AND u.id = :$userid3)";
+                        $params[$userid3] = $USER->id;
+                    }
+                    $conditions[] = $condition;
+                }
+            }
+
             // Search by middlename.
             $middlename = $DB->sql_like('middlename', ':' . $searchkey4, false, false);
             $conditions[] = $middlename;
@@ -1501,7 +1526,7 @@ function user_get_course_lastaccess_sql($accesssince = null, $tableprefix = 'ul'
     if ($accesssince == -1) { // Never.
         return $tableprefix . '.timeaccess = 0';
     } else {
-        return $tableprefix . '.timeaccess != 0 AND ul.timeaccess < ' . $accesssince;
+        return $tableprefix . '.timeaccess != 0 AND ' . $tableprefix . '.timeaccess < ' . $accesssince;
     }
 }
 
@@ -1520,7 +1545,7 @@ function user_get_user_lastaccess_sql($accesssince = null, $tableprefix = 'u') {
     if ($accesssince == -1) { // Never.
         return $tableprefix . '.lastaccess = 0';
     } else {
-        return $tableprefix . '.lastaccess != 0 AND u.lastaccess < ' . $accesssince;
+        return $tableprefix . '.lastaccess != 0 AND ' . $tableprefix . '.lastaccess < ' . $accesssince;
     }
 }
 
