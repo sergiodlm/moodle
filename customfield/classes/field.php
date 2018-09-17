@@ -344,7 +344,7 @@ abstract class field extends persistent {
             return false;
         }
 
-        //TODO refactoring pending
+        //TODO: refactoring of this pending
         if (!is_null($newcategoryid)) {
             $newcategory = new category($newcategoryid);
             $oldcategory = new category($this->categoryid());
