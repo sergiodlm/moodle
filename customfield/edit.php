@@ -36,12 +36,17 @@ if ($id) {
     $record = \core_customfield\field_factory::load($id);
     $classfieldtype = '\customfield_'. $record->type().'\field';
     $configdata = json_decode( $record->configdata() );
+    // TODO: find a better approach to this!
     $arrayform = (object)[
             'id'                => $id,
             'name'              => $record->name(),
             'shortname'         => $record->shortname(),
             'type'              => $record->type(),
             'categoryid'        => $record->categoryid(),
+            'required'          => $record->required(),
+            'locked'            => $record->locked(),
+            'uniquevalues'      => $record->uniquevalues(),
+            'visibility'        => $record->visibility(),
             'description'       => $record->description(),
             'descriptionformat' => $record->descriptionformat(),
     ];
@@ -88,14 +93,7 @@ if ($mform->is_cancelled()) {
 
     if (!empty($data->id)) {
         // Update.
-        $fielddata = new \stdClass();
-        $fielddata->id = $data->id;
-        $fielddata->name = $data->name;
-        $fielddata->shortname = $data->shortname;
-        $fielddata->categoryid = $data->categoryid;
-        $fielddata->type = $data->type;
-        $fielddata->configdata = json_encode($data->configdata);
-
+        $data->configdata = json_encode($data->configdata);
         if ( isset($data->description_editor) ) {
 
             $textfieldoptions = ['trusttext' => true, 'subdirs' => true, 'maxfiles' => 5, 'maxbytes' => 0,
@@ -104,11 +102,13 @@ if ($mform->is_cancelled()) {
             $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context,
                                                     'core_customfield', 'description', $data->id);
 
-            $fielddata->description = $data->description;
-            $fielddata->descriptionformat = $data->descriptionformat;
+            $data->description = $data->description;
+            $data->descriptionformat = $data->descriptionformat;
+            unset($data->description_editor);
         }
+        unset($data->handler, $data->submitbutton, $data->descriptiontrust);
 
-        $field = new $classfieldtype(0, $fielddata);
+        $field = new $classfieldtype($data->id, $data);
         try {
             $field->save();
             redirect(new moodle_url($handler->url));

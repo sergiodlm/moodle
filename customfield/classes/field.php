@@ -68,6 +68,22 @@ abstract class field extends persistent {
                         'type' => PARAM_INT,
                         'default' => 0,
                 ],
+                'required' => [
+                        'type' => PARAM_INT,
+                        'default' => 0,
+                ],
+                'locked' => [
+                        'type' => PARAM_INT,
+                        'default' => 0,
+                ],
+                'uniquevalues' => [
+                        'type' => PARAM_INT,
+                        'default' => 0,
+                ],
+                'visibility' => [
+                        'type' => PARAM_INT,
+                        'default' => 0,
+                ],
                 'categoryid' => [
                         'type' => PARAM_INT
                 ],
@@ -106,6 +122,38 @@ abstract class field extends persistent {
             $this->set('id', $value);
         }
         return $this->get('id');
+    }
+
+    /**
+     * @return string
+     * @throws \coding_exception
+     */
+    public function required() {
+        return $this->get('required');
+    }
+
+    /**
+     * @return string
+     * @throws \coding_exception
+     */
+    public function locked() {
+        return $this->get('locked');
+    }
+
+    /**
+     * @return string
+     * @throws \coding_exception
+     */
+    public function uniquevalues() {
+        return $this->get('uniquevalues');
+    }
+
+    /**
+     * @return string
+     * @throws \coding_exception
+     */
+    public function visibility() {
+        return $this->get('visibility');
     }
 
     /**
@@ -412,12 +460,12 @@ abstract class field extends persistent {
      * @param moodleform $mform instance of the moodleform class
      */
     public function edit_field_set_locked($mform) {
-        if (!$mform->elementExists($this->get('shortname'))) {
+        if (!$mform->elementExists($this->inputname())) {
             return;
         }
         if ($this->is_locked() and !has_capability('moodle/course:update', context_course::instance($this->get('courseid')))) {
-            $mform->hardFreeze($this->get('shortname'));
-            $mform->setConstant($this->get('shortname'), $this->get('data'));
+            $mform->hardFreeze($this->inputname());
+            $mform->setConstant($this->inputname(), $this->data);
         }
     }
 
