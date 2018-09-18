@@ -101,9 +101,6 @@ if ($mform->is_cancelled()) {
 
             $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context,
                                                     'core_customfield', 'description', $data->id);
-
-            $data->description = $data->description;
-            $data->descriptionformat = $data->descriptionformat;
             unset($data->description_editor);
         }
         unset($data->handler, $data->submitbutton, $data->descriptiontrust);
@@ -117,52 +114,29 @@ if ($mform->is_cancelled()) {
         }
 
     } else {
+        $data->configdata = json_encode($data->configdata);
+        if (isset($data->description_editor)) {
 
-    	if (empty($data->categoryid)) {
-            $defaultcategorydata            = new \stdClass();
-            $defaultcategorydata->name      = get_string('otherfields', 'core_customfield');
-            $defaultcategorydata->area      = $handler->get_area();
-            $defaultcategorydata->component = $handler->get_component();
+            $textfieldoptions = array(
+                    'trusttext'             => true,
+                    'subdirs'               => true,
+                    'maxfiles'              => 5,
+                    'maxbytes'              => 0,
+                    'context'               => $PAGE->context,
+                    'noclean'               => 0,
+                    'enable_filemanagement' => true
+            );
 
-            $defaultcategory                = new \core_customfield\category(0, $defaultcategorydata);
-            $defaultcategory->save();
+            $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context, 'core_customfield',
+                                                    'description', $data->id);
 
-            $data->categoryid = $defaultcategory->id();
+            unset($data->description_editor);
         }
-        // New.
-        $fielddata = new \stdClass();
-        $fielddata->name = $data->name;
-        $fielddata->shortname = $data->shortname;
-        $fielddata->categoryid = $data->categoryid;
-        $fielddata->type = $type;
-
-        $field = new $classfieldtype(0, $fielddata);
-        $field->save();
+        unset($data->handler, $data->submitbutton, $data->descriptiontrust);
+        $field = new $classfieldtype($data->id, $data);
 
         try {
             $field->save();
-            $insertid = $field->id();
-
-            if (isset($data->description_editor)) {
-
-                $textfieldoptions = array(
-                        'trusttext'             => true,
-                        'subdirs'               => true,
-                        'maxfiles'              => 5,
-                        'maxbytes'              => 0,
-                        'context'               => $PAGE->context,
-                        'noclean'               => 0,
-                        'enable_filemanagement' => true
-                );
-
-                $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context, 'core_customfield',
-                                                        'description', $insertid);
-
-                $field->description($data->description);
-                $field->descriptionformat($data->descriptionformat);
-                $field->save();
-            }
-            $notification = 'success';
             redirect(new moodle_url($handler->url));
         } catch (\dml_write_exception $exception) {
             $notification = 'error';

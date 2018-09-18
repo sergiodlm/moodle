@@ -146,6 +146,9 @@ abstract class handler {
     }
 
     public function load_data($data) {
+        if (!isset($data->id)) {
+            $data->id = 0;
+        }
         $fields = $this->get_fields_with_data($data->id);
 
         foreach ($fields as $formfield) {
@@ -196,6 +199,13 @@ abstract class handler {
             $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->categoryname()));
             foreach ($fieldstodisplay as $formfield) {
                 $formfield->edit_field_add($mform);
+                if ($formfield->required()) {
+                    $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
+                }
+                // TODO: move capability check to course handler or get capability from current handler.
+                if ($formfield->locked() and !has_capability('moodle/course:update', \context_system::instance())) {
+                    $mform->hardFreeze($formfield->inputname());
+                }
             }
         }
     }
