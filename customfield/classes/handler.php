@@ -203,7 +203,7 @@ abstract class handler {
                     $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
                 }
                 // TODO: move capability check to course handler or get capability from current handler.
-                if ($formfield->locked() and !has_capability('moodle/course:update', context_system::instance())) {
+                if ($formfield->locked() and !has_capability('moodle/course:update', \context_system::instance())) {
                     $mform->hardFreeze($formfield->inputname());
                 }
             }
