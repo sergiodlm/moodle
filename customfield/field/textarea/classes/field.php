@@ -51,9 +51,8 @@ class field extends \core_customfield\field {
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-        $shortname = 'customfield_'.$this->get('shortname');
-        $mform->addElement('editor', $shortname, format_string($this->get('name')));
-        $mform->setType($shortname, PARAM_RAW);
+        $mform->addElement('editor', $this->inputname(), format_string($this->get('name')));
+        $mform->setType($this->inputname(), PARAM_RAW);
     }
 
     public function display() {

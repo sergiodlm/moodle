@@ -39,8 +39,7 @@ class field extends \core_customfield\field{
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-        $shortname = 'customfield_'.$this->shortname();
-        $mform->addElement('checkbox', $shortname, format_string($this->get('name')));
+        $mform->addElement('checkbox', $this->inputname(), format_string($this->get('name')));
     }
 
     public function set_data($data) {

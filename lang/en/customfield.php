@@ -48,6 +48,7 @@ $string['editingfield'] = 'Editing field';
 $string['errorfieldtypenotfound'] = 'Field Type not found';
 $string['everyone'] = 'Everyone';
 $string['fieldname'] = 'Name';
+$string['fieldrequired'] = 'This field is required';
 $string['fieldshortname'] = 'Short Name';
 $string['formcategorycheckname'] = 'Category name already exists';
 $string['formfieldcheckname'] = 'Name already exists';
