@@ -2313,6 +2313,10 @@ function xmldb_main_upgrade($oldversion) {
         $table->add_field('type', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
         $table->add_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('descriptionformat', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('required', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('locked', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('uniquevalues', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('visibility', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
         $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('categoryid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('configdata', XMLDB_TYPE_TEXT, null, null, null, null, null);
@@ -2358,7 +2362,6 @@ function xmldb_main_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-
 
         // Define table customfield_data to be created.
         $table = new xmldb_table('customfield_data');

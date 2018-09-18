@@ -64,6 +64,7 @@ $string['modify'] = 'Modify';
 $string['newwindow'] = 'New window';
 $string['none'] = 'None';
 $string['no'] = 'No';
+$string['nocategories'] = 'There are no custom fields and categories. <a href="{$a}">Add a category</a>.';
 $string['notvisible'] = 'Not visible';
 $string['otherfields'] = 'Other Fields';
 $string['sameframe'] = 'Same frame';

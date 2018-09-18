@@ -138,6 +138,11 @@ class management implements renderable, templatable {
 
         $data->categories = $categoriesarray;
 
+        if (empty($data->categories)) {
+            $url = new \moodle_url('/customfield/edit_category.php', array('handler' => 'core_course\customfield\course_handler'));
+            $data->nocategories = get_string('nocategories', 'core_customfield', (string)$url);
+        }
+
         // Create a new dropdown for types of fields.
         $select = new \single_select($data->link, 'type', $fieldtypes, '', array('' => get_string('choosedots')), 'newfieldform');
         $select->set_label(get_string('createnewcustomfield', 'core_customfield'));

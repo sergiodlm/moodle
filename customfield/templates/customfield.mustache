@@ -52,7 +52,7 @@
 
 <div data-region="list-page" id="customfield_catlist" data-handler="{{{handler}}}">
     {{^categories}}
-        <p>There are no custom fields.</p>
+        <p>{{{nocategories}}}</p>
     {{/categories}}
 
     {{#categories}}
@@ -107,9 +107,11 @@
     {{/categories}}
 </div>
 
-{{#singleselect}}
-    {{>core/single_select}}
-{{/singleselect}}
+{{#categories}}
+    {{#singleselect}}
+        {{>core/single_select}}
+    {{/singleselect}}
+{{/categories}}
 
 {{#js}}
     require(['core_customfield/form'], function(s) {
