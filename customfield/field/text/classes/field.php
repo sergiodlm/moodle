@@ -61,7 +61,6 @@ class field extends \core_customfield\field {
         $shortname = 'customfield_'.$this->shortname();
         $mform->addElement(self::TYPE, $shortname, format_string($this->get('name')), 'size="'.self::SIZE.'" ');
         $mform->setType($shortname, PARAM_TEXT);
-        $mform->setDefault($shortname, $this->data);
     }
 
     public function set_data($data) {
@@ -74,9 +73,9 @@ class field extends \core_customfield\field {
 
     public function display() {
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->get_name()), ['class' => 'customfieldname']).
+               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname customfieldtext']).
                ' : '.
-               \html_writer::tag('span', format_string($this->get_data()), ['class' => 'customfieldvalue']).
+               \html_writer::tag('span', format_string($this->data), ['class' => 'customfieldvalue customfieldtext']).
                \html_writer::end_tag('div');
     }
 }

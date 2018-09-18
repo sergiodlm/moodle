@@ -138,6 +138,10 @@ if (!empty($course)) {
     }
 }
 
+// Load custom fields data.
+$handler  = new core_course\customfield\course_handler(null);
+$handler->load_data($course);
+
 // First create the form.
 $args = array(
     'course' => $course,

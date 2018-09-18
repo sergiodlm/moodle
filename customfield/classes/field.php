@@ -426,8 +426,8 @@ abstract class field extends persistent {
      * @param stdClass $user a user object
      */
     public function edit_load_data($data) {
-        if ($this->data() !== null) {
-           $data->{$this->get('shortname')} = $this->data()->value();
+        if ($this->data !== null) {
+           $data->{$this->inputname()} = $this->data;
         }
     }
 
@@ -452,24 +452,24 @@ abstract class field extends persistent {
     public function edit_save_data($datanew) {
         global $DB;
 
-        $shortname = 'customfield_'.$this->shortname();
-	if (!isset($datanew->{$shortname})) {
+        // TODO: handle unchecked checkboxes.
+	if (!isset($datanew->{$this->inputname()})) {
 	    // Field not present in form, probably locked and invisible - skip it.
 	    return;
 	}
 
 	$datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->id()));
 
-	$datanew->{$shortname} = $this->edit_save_data_preprocess($datanew->{$shortname}, $datanew);
+	$datanew->{$this->inputname()} = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
 
 	if ($datarecord) {
-            $datarecord->{$this->datafield()} = $datanew->{$shortname};
+            $datarecord->{$this->datafield()} = $datanew->{$this->inputname()};
 	    $datarecord->timemodified = time();
 	    $result = $DB->update_record('customfield_data', $datarecord);
 	} else {
 	    $now = time();
             $datarecord = new \stdclass();
-            $datarecord->{$this->datafield()} = $datanew->{$shortname};
+            $datarecord->{$this->datafield()} = $datanew->{$this->inputname()};
 	    $datarecord->fieldid = $this->id();
             $datarecord->recordid = $datanew->id;
 	    $datarecord->timecreated = $now;
@@ -497,6 +497,15 @@ abstract class field extends persistent {
             $this->categoryname = $name;
         }
         return $this->categoryname;
+    }
+
+    public function should_display() {
+        // TODO: text config/attribute;
+        return true;
+    }
+
+    public function inputname() {
+        return 'customfield_'.$this->shortname();
     }
 
 }

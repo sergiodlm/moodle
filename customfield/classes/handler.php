@@ -165,7 +165,13 @@ abstract class handler {
      *
      * @param moodleform $mform
      */
-    public function add_custom_fields($mform, $recordid) {
+    public function add_custom_fields($mform, $record) {
+
+        if (isset($record->id)) {
+            $recordid = $record->id;
+        } else {
+            $recordid = 0;
+        }
 
         $fieldswithdata = $this->get_fields_with_data($recordid);
         $categories = [];

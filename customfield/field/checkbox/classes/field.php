@@ -39,6 +39,24 @@ class field extends \core_customfield\field{
      * @param moodleform $mform
      */
     public function edit_field_add($mform) {
-        $mform->addElement('checkbox', $this->get('shortname'), format_string($this->get('name')));
+        $shortname = 'customfield_'.$this->shortname();
+        $mform->addElement('checkbox', $shortname, format_string($this->get('name')));
+    }
+
+    public function set_data($data) {
+        // TODO: verify if should support checkboxes with custom values.
+        $this->data = $data->intvalue;
+    }
+
+    public function datafield() {
+        return 'intvalue';
+    }
+
+    public function display() {
+        return \html_writer::start_tag('div') .
+               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
+               // TODO: show as checkbox, disabled or icon.
+               \html_writer::tag('span', $this->data, ['class' => 'customfieldvalue']).
+               \html_writer::end_tag('div');
     }
 }

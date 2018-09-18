@@ -52,26 +52,14 @@ class course_handler extends \core_customfield\handler {
      * @param moodleform $mform
      */
     public function display_fields($courseid) {
-        $categories = $this->get_fields_definitions();
-        $content = '';
-        foreach ($categories as $category) {
-            // Check first if *any* fields will be displayed.
-            $fieldstodisplay = [];
-            foreach ($category->get_fields() as $formfield) {
-                if ($formfield->is_editable()) {
-                    $fieldstodisplay[] = $formfield;
-                }
-            }
-            if (empty($fieldstodisplay)) {
-                continue;
-            }
-            $content .= \html_writer::tag('h5', format_string($category->get_name()));
-
-            // Display the header and the fields.
-            foreach ($fieldstodisplay as $formfield) {
-                $content .= $formfield->display();
+        $fields = $this->get_fields_with_data($courseid);
+        $content = \html_writer::start_tag('div', ['class' => 'customfields-container', 'style' => 'clear: both;']);
+        foreach ($fields as $field) {
+            if ($field->should_display()) {
+                $content .= $field->display();
             }
         }
+        $content .= \html_writer::end_tag('div');
         return $content;
     }
 }

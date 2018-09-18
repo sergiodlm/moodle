@@ -53,14 +53,13 @@ class field extends \core_customfield\field {
     public function edit_field_add($mform) {
         $shortname = 'customfield_'.$this->get('shortname');
         $mform->addElement('editor', $shortname, format_string($this->get('name')));
-        $mform->setType($shortname, PARAM_TEXT);
-        $mform->setDefault($shortname, $this->data);
+        $mform->setType($shortname, PARAM_RAW);
     }
 
     public function display() {
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->get_name()), ['class' => 'customfieldname']).
-               \html_writer::tag('span', format_text($this->get_data()), ['class' => 'customfieldvalue']).
+               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
+               \html_writer::tag('span', format_text($this->data), ['class' => 'customfieldvalue']).
                \html_writer::end_tag('div');
     }
 
@@ -84,5 +83,17 @@ class field extends \core_customfield\field {
             $data = $data['text'];
         }
         return $data;
+    }
+
+    /**
+     * Load data for this custom field, ready for editing.
+     * @param stdClass $user
+     */
+    public function edit_load_data($data) {
+        if ($this->data !== null) {
+            $this->dataformat = 1;
+            $this->data = clean_text($this->data, $this->dataformat);
+            $data->{$this->inputname()} = array('text' => $this->data, 'format' => $this->dataformat);
+        }
     }
 }
