@@ -105,7 +105,7 @@ class management implements renderable, templatable {
 
         if (empty($data->categories)) {
             $url = new \moodle_url('/customfield/edit_category.php',
-                array('handler' => 'core_course\customfield\course_handler', 'itemid' => $data->itemid));
+                array('handler' => $data->handler, 'itemid' => $data->itemid));
             $data->nocategories = get_string('nocategories', 'core_customfield', (string)$url);
         }
 

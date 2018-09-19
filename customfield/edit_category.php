@@ -40,7 +40,7 @@ if ($id) {
     $arrayform = null;
 }
 
-$url = new \moodle_url('/customfield/edit_category.php', ['handler' => $handlerparam]);
+$url = new \moodle_url('/customfield/edit_category.php', ['handler' => $handlerparam, 'itemid' => $itemid]);
 
 admin_externalpage_setup('course_customfield');
 
@@ -51,7 +51,7 @@ $mform->set_data($arrayform);
 // Process Form data.
 if ($mform->is_cancelled()) {
 
-    redirect(new \moodle_url($handler->url));
+    redirect($handler->get_configuration_url());
 
 } else if ($data = $mform->get_data()) {
 
@@ -67,7 +67,7 @@ if ($mform->is_cancelled()) {
     try {
         $category->save();
         $notification = 'success';
-        redirect(new moodle_url($handler->url));
+        redirect($handler->get_configuration_url());
     } catch (\dml_write_exception $exception) {
         $notification = 'error: ' . $exception;
     }
