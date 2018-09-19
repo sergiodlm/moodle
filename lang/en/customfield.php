@@ -74,5 +74,6 @@ $string['shortname'] = 'Short Name';
 $string['showdate'] = 'Show date';
 $string['specificsettings'] = 'Specific settings';
 $string['type'] = 'Type';
+$string['unknownhandler'] = 'Unknown handler';
 $string['visibility'] = ' Who is this field visible to?';
 $string['yes'] = 'Yes';

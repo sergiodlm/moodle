@@ -35,6 +35,11 @@ class field_config_form extends \moodleform {
         global $PAGE;
         $mform = $this->_form;
 
+        $handler = $this->_customdata['handler'];
+        if (!$handler || !$handler instanceof handler) {
+            throw new \coding_exception('Handler must be passed in customdata');
+        }
+
         $mform->addElement('header', '_commonsettings', get_string('commonsettings', 'core_customfield'));
 
         $mform->addElement('select', 'categoryid', get_string('category', 'core_customfield'), $this->_customdata['categorylist']);
@@ -82,8 +87,11 @@ class field_config_form extends \moodleform {
         $this->_customdata['classfieldtype']::add_field_to_edit_form($mform);
 
         // We add hidden fields.
-        $mform->addElement('hidden', 'handler', $this->_customdata['handler']);
+        $mform->addElement('hidden', 'handler', get_class($handler));
         $mform->setType('handler', PARAM_RAW);
+
+        $mform->addElement('hidden', 'itemid', $handler->get_item_id());
+        $mform->setType('itemid', PARAM_INT);
 
         $mform->addElement('hidden', 'type');
         $mform->setType('type', PARAM_NOTAGS);

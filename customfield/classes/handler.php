@@ -30,20 +30,31 @@ abstract class handler {
 
     protected $itemid;
 
-    public function __construct($itemid = null, $component = null, $area = null) {
-        $this->itemid = $itemid;
-        $this->component = $component;
-        $this->area = $area;
+    public final function __construct($itemid = null) {
+        $this->itemid = $itemid ?: null;
     }
 
-    public function get_component() {
-        return $this->component;
+    /**
+     * Returns an instance of handler by it's class name
+     *
+     * @param string $classname
+     * @return handler
+     * @throws \moodle_exception
+     */
+    public static function get_instance(string $classname, int $itemid = null) : handler {
+        if (class_exists($classname) && is_subclass_of($classname, self::class)) {
+            return new $classname($itemid);
+        }
+        throw new \moodle_exception('unknownhandler', 'core_customfield');
     }
 
-    public function get_area() {
-        return $this->area;
-    }
+    abstract function get_component() : string;
 
+    abstract function get_area() : string;
+
+    /**
+     * @return int|null
+     */
     public function get_item_id() {
         return $this->itemid;
     }
@@ -56,12 +67,12 @@ abstract class handler {
         return true;
     }
 
-    public function get_category_config_form($handler): \core_customfield\category_config_form {
-        return new \core_customfield\category_config_form(null, ['handler' => $handler]);
+    public function get_category_config_form(): \core_customfield\category_config_form {
+        return new \core_customfield\category_config_form(null, ['handler' => $this]);
     }
 
     public function get_field_config_form($args): \core_customfield\field_config_form {
-        return new \core_customfield\field_config_form(null, $args);
+        return new \core_customfield\field_config_form(null, ['handler' => $this] + $args);
     }
 
     public function new_category($name) {
@@ -107,7 +118,15 @@ abstract class handler {
         return true;
     }
 
-    public function get_fields_definitions() {
+    /**
+     * Returns array of categories, each of them contains a list of fields definitions.
+     *
+     * @param string $component
+     * @param string|null $area
+     * @param int|null $itemid
+     * @return category[]
+     */
+    public function get_fields_definitions() : array {
         $fields = api::get_fields_definitions(
                 $this->get_component(),
                 $this->get_area(),

@@ -24,11 +24,12 @@ require_once(__DIR__ . '/../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
 $handlerparam = required_param('handler', PARAM_RAW);
+$itemid = optional_param('itemid', null, PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT);
 
 require_login();
 
-$handler = new $handlerparam(null);
+$handler = \core_customfield\handler::get_instance($handlerparam, $itemid);
 
 if ($id) {
     $record = $handler->load_category($id);
@@ -43,7 +44,7 @@ $url = new \moodle_url('/customfield/edit_category.php', ['handler' => $handlerp
 
 admin_externalpage_setup('course_customfield');
 
-$mform = $handler->get_category_config_form($handlerparam);
+$mform = $handler->get_category_config_form();
 
 $mform->set_data($arrayform);
 
