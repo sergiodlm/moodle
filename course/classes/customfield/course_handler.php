@@ -24,8 +24,6 @@ namespace core_course\customfield;
 
 class course_handler extends \core_customfield\handler {
 
-     public $url = '/course/customfield.php';
-
      public function get_component() : string {
          return 'core_course';
      }
@@ -61,5 +59,9 @@ class course_handler extends \core_customfield\handler {
         }
         $content .= \html_writer::end_tag('div');
         return $content;
+    }
+
+    public function get_configuration_url(): \moodle_url {
+        return new \moodle_url('/course/customfield.php');
     }
 }

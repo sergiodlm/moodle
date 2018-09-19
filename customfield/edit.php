@@ -69,7 +69,7 @@ if ($id) {
     $title = get_string('addingnewcustomfield', 'core_customfield');
 }
 
-$url = new \moodle_url('/customfield/edit.php', ['handler' => $handlerparam]);
+$url = new \moodle_url('/customfield/edit.php', ['handler' => $handlerparam, 'itemid' => $itemid]);
 
 admin_externalpage_setup('course_customfield');
 
@@ -88,7 +88,7 @@ $mform->set_data($arrayform);
 
 // Process Form data.
 if ($mform->is_cancelled()) {
-    redirect(new \moodle_url($handler->url));
+    redirect($handler->get_configuration_url());
 } else if ($data = $mform->get_data()) {
 
     if (!empty($data->id)) {
@@ -108,7 +108,7 @@ if ($mform->is_cancelled()) {
         $field = new $classfieldtype($data->id, $data);
         try {
             $field->save();
-            redirect(new moodle_url($handler->url));
+            redirect($handler->get_configuration_url());
         } catch (\dml_write_exception $exception) {
             $notification = $exception->error;
         }
@@ -137,7 +137,7 @@ if ($mform->is_cancelled()) {
 
         try {
             $field->save();
-            redirect(new moodle_url($handler->url));
+            redirect($handler->get_configuration_url());
         } catch (\dml_write_exception $exception) {
             $notification = 'error';
         }

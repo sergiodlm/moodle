@@ -52,6 +52,8 @@ abstract class handler {
 
     abstract function get_area() : string;
 
+    abstract function get_configuration_url() : \moodle_url;
+
     /**
      * @return int|null
      */
