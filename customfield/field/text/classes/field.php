@@ -63,7 +63,7 @@ class field extends \core_customfield\field {
     }
 
     public function set_data($data) {
-        $this->data = $data->charvalue;
+        $this->data($data->charvalue);
     }
 
     public function datafield() {
@@ -74,7 +74,7 @@ class field extends \core_customfield\field {
         return \html_writer::start_tag('div') .
                \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname customfieldtext']).
                ' : '.
-               \html_writer::tag('span', format_string($this->data), ['class' => 'customfieldvalue customfieldtext']).
+               \html_writer::tag('span', format_string($this->data()), ['class' => 'customfieldvalue customfieldtext']).
                \html_writer::end_tag('div');
     }
 }

@@ -39,6 +39,5 @@ $output = $PAGE->get_renderer('core_customfield');
 $outputpage = new \core_customfield\output\management($handler);
 
 echo $OUTPUT->header();
-//echo $output->render($outputpage);
 echo "test";
 echo $OUTPUT->footer();

@@ -457,7 +457,9 @@ abstract class field extends persistent {
 
     /**
      * HardFreeze the field if locked.
+     *
      * @param moodleform $mform instance of the moodleform class
+     * @throws \coding_exception
      */
     public function edit_field_set_locked($mform) {
         if (!$mform->elementExists($this->inputname())) {
@@ -471,7 +473,9 @@ abstract class field extends persistent {
 
     /**
      * Loads an object with data for this field.
+     *
      * @param stdClass $user a user object
+     * @throws \coding_exception
      */
     public function edit_load_data($data) {
         if ($this->data() !== null) {
