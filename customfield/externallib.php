@@ -66,34 +66,26 @@ class core_customfield_external extends external_api {
         return new external_single_structure(
             array(
                 'handler' => new external_value(PARAM_RAW, 'handler'),
-                'customfield' => new external_value(PARAM_RAW, 'customfield'),
-                'shortname' => new external_value(PARAM_RAW, 'shortname'),
-                'type' => new external_value(PARAM_RAW, 'type'),
-                'action' => new external_value(PARAM_RAW, 'action'),
+                'itemid' => new external_value(PARAM_INT, 'id'),
                 'categories' => new external_multiple_structure(
                     new external_single_structure(
                         array(
-                            'name' => new external_value(PARAM_RAW, 'name'),
-                            'id' => new external_value(PARAM_RAW, 'id'),
-                            'editcategoryurl' => new external_value(PARAM_NOTAGS, 'edit category url'),
-                            'deletecategoryurl' => new external_value(PARAM_NOTAGS, 'delete category url'),
-                            'deleteicon' => new external_value(PARAM_RAW, 'delete icon'),
-                            'editicon' => new external_value(PARAM_RAW, 'edit icon'),
-                            'upiconcategory' => new external_value(PARAM_RAW, 'up icon'),
-                            'downiconcategory' => new external_value(PARAM_RAW, 'down icon'),
+                            'id' => new external_value(PARAM_INT, 'id'),
+                            'name' => new external_value(PARAM_NOTAGS, 'name'),
+                            'customfield' => new external_value(PARAM_NOTAGS, 'customfield'),
+                            'action' => new external_value(PARAM_RAW, 'action'),
+                            'editcategoryurl' => new external_value(PARAM_URL, 'edit category url'),
+                            'deletecategoryurl' => new external_value(PARAM_URL, 'delete category url'),
+                            'addfieldmenu' => new external_value(PARAM_RAW, 'addfieldmenu'),
                             'fields' => new external_multiple_structure(
                                 new external_single_structure(
                                     array(
-                                        'name' => new external_value(PARAM_RAW, 'name'),
-                                        'shortname' => new external_value(PARAM_RAW, 'shortname'),
-                                        'type' => new external_value(PARAM_RAW, 'type'),
-                                        'editfieldurl' => new external_value(PARAM_NOTAGS, 'edit field url'),
-                                        'editicon' => new external_value(PARAM_RAW, 'edit icon'),
-                                        'deletefieldurl' => new external_value(PARAM_NOTAGS, 'deleteurl'),
-                                        'deleteicon' => new external_value(PARAM_RAW, 'deleteicon'),
-                                        'id' => new external_value(PARAM_RAW, 'id'),
-                                        'upiconfield' => new external_value(PARAM_RAW, 'up icon'),
-                                        'downiconfield' => new external_value(PARAM_RAW, 'down icon'),
+                                        'name' => new external_value(PARAM_NOTAGS, 'name'),
+                                        'shortname' => new external_value(PARAM_NOTAGS, 'shortname'),
+                                        'type' => new external_value(PARAM_NOTAGS, 'type'),
+                                        'editfieldurl' => new external_value(PARAM_URL, 'edit field url'),
+                                        'deletefieldurl' => new external_value(PARAM_URL, 'deleteurl'),
+                                        'id' => new external_value(PARAM_INT, 'id'),
                                     )
                                 )
                             , '', VALUE_OPTIONAL),

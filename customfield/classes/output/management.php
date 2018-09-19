@@ -102,7 +102,7 @@ class management implements renderable, templatable {
 
             $select = new \single_select($addfieldurl, 'type', $fieldtypes, '', array('' => get_string('choosedots')), 'newfieldform');
             $select->set_label(get_string('createnewcustomfield', 'core_customfield'));
-            $categoryarray['addfieldmenu'] = $select->export_for_template($output);
+            $categoryarray['addfieldmenu'] = $output->render($select);
 
             $categoriesarray[] = $categoryarray;
         }
