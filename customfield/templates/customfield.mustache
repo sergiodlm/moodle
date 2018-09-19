@@ -69,6 +69,10 @@
                     t/up, core, {{#str}} moveup, moodle {{/str}} {{/pix}}</a>
                 <a href="#" class="move_down_category" data-id="{{id}}">{{#pix}}
                     t/down, core, {{#str}} movedown, moodle {{/str}} {{/pix}}</a>
+
+                {{#addfieldmenu}}
+                    {{>core/single_select}}
+                {{/addfieldmenu}}
             </div>
         </div>
         <div>
@@ -114,12 +118,6 @@
         <br><br>
     {{/categories}}
 </div>
-
-{{#categories}}
-    {{#singleselect}}
-        {{>core/single_select}}
-    {{/singleselect}}
-{{/categories}}
 
 {{#js}}
     require(['core_customfield/form'], function(s) {

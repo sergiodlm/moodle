@@ -45,9 +45,6 @@ class management implements renderable, templatable {
 
         $data->handler = get_class($this->handler);
         $data->itemid = $this->handler->get_item_id();
-        $addfieldurl = new \moodle_url('/customfield/edit.php',
-            array('handler' => $data->handler, 'itemid' => $data->itemid, 'action' => 'editfield'));
-
         $categories = $this->handler->get_fields_definitions();
 
         $categoriesarray = array();
@@ -70,6 +67,8 @@ class management implements renderable, templatable {
             $categoryarray['editcategoryurl'] = (new \moodle_url('/customfield/edit_category.php', [
                     'id' => $categoryarray['id'], 'handler' => $data->handler, 'itemid' => $data->itemid
             ]))->out(false);
+
+            $categoryarray['fields'] = array();
 
             foreach ($category->fields() as $field) {
                 global $OUTPUT;
@@ -95,9 +94,16 @@ class management implements renderable, templatable {
                 ]))->out(false);
 
                 $categoryarray['fields'][] = $fieldarray;
-                //$fieldexporter = new \core_customfield\list_exporter($fieldarray);
-                //$categoryarray['fields'][] = $fieldexporter->export($output);
             }
+            // Create a new dropdown for types of fields.
+            $addfieldurl = new \moodle_url('/customfield/edit.php',
+                array('handler' => $data->handler, 'itemid' => $data->itemid, 'action' => 'editfield',
+                      'categoryid' => $category->id()));
+
+            $select = new \single_select($addfieldurl, 'type', $fieldtypes, '', array('' => get_string('choosedots')), 'newfieldform');
+            $select->set_label(get_string('createnewcustomfield', 'core_customfield'));
+            $categoryarray['addfieldmenu'] = $select->export_for_template($output);
+
             $categoriesarray[] = $categoryarray;
         }
 
@@ -108,11 +114,6 @@ class management implements renderable, templatable {
                 array('handler' => $data->handler, 'itemid' => $data->itemid));
             $data->nocategories = get_string('nocategories', 'core_customfield', (string)$url);
         }
-
-        // Create a new dropdown for types of fields.
-        $select = new \single_select($addfieldurl, 'type', $fieldtypes, '', array('' => get_string('choosedots')), 'newfieldform');
-        $select->set_label(get_string('createnewcustomfield', 'core_customfield'));
-        $data->singleselect = $select->export_for_template($output);
 
         // Create a new category link.
         $newcategoryurl = new \moodle_url('/customfield/edit_category.php',
