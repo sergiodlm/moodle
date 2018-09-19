@@ -24,13 +24,13 @@ require_once(__DIR__ . '/../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
 $handlerparam = required_param('handler', PARAM_RAW);
-$itemid = optional_param('itemid', 0, PARAM_INT);
+$itemid = optional_param('itemid', null, PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT);
 $type = optional_param('type', null, PARAM_NOTAGS);
 
 require_login();
 
-$handler = new $handlerparam(null);
+$handler = \core_customfield\handler::get_instance($handlerparam, $itemid);
 
 if ($id) {
     $record = \core_customfield\field_factory::load($id);
@@ -74,7 +74,7 @@ $url = new \moodle_url('/customfield/edit.php', ['handler' => $handlerparam]);
 admin_externalpage_setup('course_customfield');
 
 $categorylist = $handler->categories_list_for_select();
-$args = ['handler' => $handlerparam, 'classfieldtype' => $classfieldtype, 'categorylist' => $categorylist];
+$args = ['classfieldtype' => $classfieldtype, 'categorylist' => $categorylist];
 
 $mform = $handler->get_field_config_form($args);
 
@@ -103,7 +103,7 @@ if ($mform->is_cancelled()) {
                                                     'core_customfield', 'description', $data->id);
             unset($data->description_editor);
         }
-        unset($data->handler, $data->submitbutton, $data->descriptiontrust);
+        unset($data->handler, $data->itemid, $data->submitbutton, $data->descriptiontrust);
 
         $field = new $classfieldtype($data->id, $data);
         try {
@@ -132,7 +132,7 @@ if ($mform->is_cancelled()) {
 
             unset($data->description_editor);
         }
-        unset($data->handler, $data->submitbutton, $data->descriptiontrust);
+        unset($data->handler, $data->itemid, $data->submitbutton, $data->descriptiontrust);
         $field = new $classfieldtype($data->id, $data);
 
         try {

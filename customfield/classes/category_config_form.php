@@ -42,6 +42,11 @@ class category_config_form extends \moodleform {
     public function definition() {
         $mform = $this->_form;
 
+        $handler = $this->_customdata['handler'];
+        if (!$handler || !$handler instanceof handler) {
+            throw new \coding_exception('Handler must be passed in customdata');
+        }
+
         // Form definition with new course defaults.
         $mform->addElement('header','general', get_string('general', 'form'));
 
@@ -49,8 +54,11 @@ class category_config_form extends \moodleform {
         $mform->setType('name', PARAM_NOTAGS);
         $mform->addRule('name', get_string('name'), 'required');
 
-        $mform->addElement('hidden', 'handler', $this->_customdata['handler']);
+        $mform->addElement('hidden', 'handler', get_class($handler));
         $mform->setType('handler', PARAM_RAW);
+
+        $mform->addElement('hidden', 'itemid', $handler->get_item_id());
+        $mform->setType('itemid', PARAM_INT);
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);

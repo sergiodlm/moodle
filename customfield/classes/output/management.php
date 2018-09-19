@@ -44,7 +44,9 @@ class management implements renderable, templatable {
         $fieldtypes = $this->handler->field_types();
 
         $data->handler = get_class($this->handler);
-        $addfieldurl = new \moodle_url('/customfield/edit.php', array('handler' => $data->handler, 'action' => 'editfield'));
+        $data->itemid = $this->handler->get_item_id();
+        $addfieldurl = new \moodle_url('/customfield/edit.php',
+            array('handler' => $data->handler, 'itemid' => $data->itemid, 'action' => 'editfield'));
 
         $categories = $this->handler->get_fields_definitions();
 
@@ -61,11 +63,12 @@ class management implements renderable, templatable {
             $categoryarray['deletecategoryurl'] = (new \moodle_url('/customfield/edit_category.php', [
                     'deletecategory' => $categoryarray['id'],
                     'handler' => $data->handler,
+                    'itemid' => $data->itemid,
                     'sesskey' => sesskey()
             ]))->out(false);
 
             $categoryarray['editcategoryurl'] = (new \moodle_url('/customfield/edit_category.php', [
-                    'id' => $categoryarray['id'], 'handler' => $data->handler,
+                    'id' => $categoryarray['id'], 'handler' => $data->handler, 'itemid' => $data->itemid
             ]))->out(false);
 
             foreach ($category->fields() as $field) {
@@ -79,6 +82,7 @@ class management implements renderable, templatable {
                 $fieldarray['deletefieldurl'] = (new \moodle_url('/customfield/edit.php', [
                         'delete' => $fieldarray['id'],
                         'handler' => $data->handler,
+                        'itemid' => $data->itemid,
                         'type' => $fieldarray['type'],
                         'sesskey' => sesskey()
                 ]))->out(false);
@@ -86,6 +90,7 @@ class management implements renderable, templatable {
                 $fieldarray['editfieldurl'] = (new \moodle_url('/customfield/edit.php', [
                         'id' => $fieldarray['id'],
                         'handler' => $data->handler,
+                        'itemid' => $data->itemid,
                         'type' => $fieldarray['type'],
                 ]))->out(false);
 
@@ -99,7 +104,8 @@ class management implements renderable, templatable {
         $data->categories = $categoriesarray;
 
         if (empty($data->categories)) {
-            $url = new \moodle_url('/customfield/edit_category.php', array('handler' => 'core_course\customfield\course_handler'));
+            $url = new \moodle_url('/customfield/edit_category.php',
+                array('handler' => 'core_course\customfield\course_handler', 'itemid' => $data->itemid));
             $data->nocategories = get_string('nocategories', 'core_customfield', (string)$url);
         }
 
@@ -109,7 +115,8 @@ class management implements renderable, templatable {
         $data->singleselect = $select->export_for_template($output);
 
         // Create a new category link.
-        $newcategoryurl = new \moodle_url('/customfield/edit_category.php', array('handler' => $data->handler));
+        $newcategoryurl = new \moodle_url('/customfield/edit_category.php',
+            array('handler' => $data->handler, 'itemid' => $data->itemid));
         $data->addcategorybutton = $OUTPUT->single_button($newcategoryurl, get_string('addnewcategory', 'core_customfield'),
                                                           'post', array('class' => 'float-right'));
 

@@ -34,7 +34,7 @@ class core_customfield_external extends external_api {
     }
 
     public static function delete_entry($id, $handler) {
-        $handler1 = new $handler();
+        $handler1 = \core_customfield\handler::get_instance($handler);
         if( $handler1->can_edit() ) {
             $record = \core_customfield\field_factory::load($id);
             $record->delete();
@@ -112,7 +112,7 @@ class core_customfield_external extends external_api {
     }
 
     public static function delete_category($id, $handler) {
-        $handler1 = new $handler();
+        $handler1 = \core_customfield\handler::get_instance($handler);
         if ($handler1->can_edit()) {
             $record = new \core_customfield\category($id);
             $record->delete();
@@ -130,7 +130,7 @@ class core_customfield_external extends external_api {
     }
 
     public static function move_up_field($id, $handler) {
-        $handler1 = new $handler();
+        $handler1 = \core_customfield\handler::get_instance($handler);
         if ($handler1->can_configure($id)) {
             $record = \core_customfield\field_factory::load($id);
             $record->up();
@@ -148,7 +148,7 @@ class core_customfield_external extends external_api {
     }
 
     public static function move_down_field($id, $handler) {
-        $handler1 = new $handler();
+        $handler1 = \core_customfield\handler::get_instance($handler);
         if ($handler1->can_configure()) {
             $record = \core_customfield\field_factory::load($id);
             $record->down();
@@ -166,7 +166,7 @@ class core_customfield_external extends external_api {
     }
 
     public static function move_up_category($id, $handler) {
-        $handler1 = new $handler();
+        $handler1 = \core_customfield\handler::get_instance($handler);
         if ($handler1->can_configure()) {
             $record = new \core_customfield\category($id);
             $record->up();
@@ -184,7 +184,7 @@ class core_customfield_external extends external_api {
     }
 
     public static function move_down_category($id, $handler) {
-        $handler1 = new $handler();
+        $handler1 = \core_customfield\handler::get_instance($handler);
         if ($handler1->can_configure()) {
             $record = new \core_customfield\category($id);
             $record->down();

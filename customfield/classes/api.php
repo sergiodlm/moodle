@@ -26,8 +26,15 @@ defined('MOODLE_INTERNAL') || die;
 
 class api {
 
-    // Returns array of categories, each of them contains a list of fields definitions.
-    public static function get_fields_definitions($component, $area = null, $itemid = null) {
+    /**
+     * Returns array of categories, each of them contains a list of fields definitions.
+     *
+     * @param string $component
+     * @param string|null $area
+     * @param int|null $itemid
+     * @return category[]
+     */
+    public static function get_fields_definitions(string $component, string $area = null, int $itemid = null) : array {
          return category::list([
                 'component' => $component,
                 'area' => $area,
@@ -35,8 +42,8 @@ class api {
         ]);
     }
 
-    public static function get_field($id) {
-        return field_factory::load($id);
+    public static function get_field(int $id, \stdClass $record = null) : \core_customfield\field {
+        return field_factory::load($id, $record);
     }
 
     public static function get_fields_with_data($component, $area, $recordid) {
@@ -54,19 +61,17 @@ class api {
 
         $formfields = [];
         foreach($fieldsdata as $data) {
-            // Assuming data->type is safe already.
-            $classname = "\\customfield_".$data->type."\\field";
             $field = new \stdclass();
             $field->id = $data->field_id;
             $field->shortname = $data->shortname;
-            $formfield = new $classname($field->id, $field);
+            $formfield = self::get_field($field->id, $field);
             $formfield->categoryname($data->categoryname);
-            $formfield->set_data($data);
 
             if ($data->id == null) {
                 $data->fieldid = $data->field_id;
                 $data->recordid = $recordid;
             }
+            $formfield->set_data($data);
             $formfields[] = $formfield;
         }
 
