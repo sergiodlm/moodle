@@ -66,10 +66,9 @@ if ($mform->is_cancelled()) {
 
     try {
         $category->save();
-        $notification = 'success';
-        redirect($handler->get_configuration_url());
+        redirect($handler->get_configuration_url(), get_string('categorysaved', 'core_customfield'));
     } catch (\dml_write_exception $exception) {
-        $notification = 'error: ' . $exception;
+        core\notification::error(get_string('categorysavefailed', 'core_customfield'));
     }
 }
 
@@ -82,10 +81,6 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
 
 $render = new \core_renderer($PAGE, 'customfield');
-
-if (isset($notification)) {
-    echo $render->notification($notification, $notification);
-}
 
 $mform->display();
 

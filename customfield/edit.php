@@ -137,9 +137,9 @@ if ($mform->is_cancelled()) {
 
         try {
             $field->save();
-            redirect($handler->get_configuration_url());
+            redirect($handler->get_configuration_url(), get_string('fieldsaved', 'core_customfield'));
         } catch (\dml_write_exception $exception) {
-            $notification = 'error';
+            core\notification::error(get_string('fieldsavefailed', 'core_customfield'));
         }
     }
 }
@@ -151,11 +151,6 @@ $PAGE->navbar->add($title);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
-
-if (isset($notification)) {
-    $renderer = new \core_renderer($PAGE, 'customfield');
-    echo $renderer->notification($notification, $notification);
-}
 
 $mform->display();
 
