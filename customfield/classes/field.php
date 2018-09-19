@@ -465,7 +465,7 @@ abstract class field extends persistent {
         }
         if ($this->is_locked() and !has_capability('moodle/course:update', context_course::instance($this->get('courseid')))) {
             $mform->hardFreeze($this->inputname());
-            $mform->setConstant($this->inputname(), $this->data);
+            $mform->setConstant($this->inputname(), $this->data());
         }
     }
 
@@ -474,8 +474,8 @@ abstract class field extends persistent {
      * @param stdClass $user a user object
      */
     public function edit_load_data($data) {
-        if ($this->data !== null) {
-           $data->{$this->inputname()} = $this->data;
+        if ($this->data() !== null) {
+           $data->{$this->inputname()} = $this->data();
         }
     }
 
@@ -494,8 +494,11 @@ abstract class field extends persistent {
 
     /**
      * Saves the data coming from form
+     *
      * @param stdClass $datanew data coming from the form
      * @return mixed returns data id if success of db insert/update, false on fail, 0 if not permitted
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
     public function edit_save_data($datanew) {
         global $DB;
