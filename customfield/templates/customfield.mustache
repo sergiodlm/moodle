@@ -61,39 +61,47 @@
                 <h3>{{name}}</h3>
             </div>
             <div class="col-4">
-                <a href="{{{editcategoryurl}}}" data-role="editcategory" data-id="{{id}}">{{{editicon}}}</a>
-                <a href="{{{deletecategoryurl}}}" class="confirm_delete_category" data-role="deletecategory" data-id="{{id}}">{{{deleteicon}}}</a>
-                <a href="" class="move_up_category" data-id="{{id}}">{{{upiconcategory}}}</a>
-                <a href="" class="move_down_category" data-id="{{id}}">{{{downiconcategory}}}</a>
+                <a href="{{editcategoryurl}}" data-role="editcategory" data-id="{{id}}">{{#pix}}
+                    t/edit, core, {{#str}} edit, moodle {{/str}} {{/pix}}</a>
+                <a href="{{deletecategoryurl}}" class="confirm_delete_category" data-role="deletecategory" data-id="{{id}}">{{#pix}}
+                    t/delete, core, {{#str}} delete, moodle {{/str}} {{/pix}}</a>
+                <a href="#" class="move_up_category" data-id="{{id}}">{{#pix}}
+                    t/up, core, {{#str}} moveup, moodle {{/str}} {{/pix}}</a>
+                <a href="#" class="move_down_category" data-id="{{id}}">{{#pix}}
+                    t/down, core, {{#str}} movedown, moodle {{/str}} {{/pix}}</a>
             </div>
         </div>
         <div>
             <table id="core_customfield-managefields-wrapper" class="generaltable fullwidth">
                 <thead>
                 <tr>
-                    <th scope="col" class="col-5">{{customfield}}</th>
-                    <th scope="col" class="col-2">{{shortname}}</th>
-                    <th scope="col" class="col-2">{{type}}</th>
-                    <th scope="col" class="text-right">{{action}}</th>
+                    <th scope="col" class="col-5">{{#str}} customfield, core_customfield {{/str}}</th>
+                    <th scope="col" class="col-2">{{#str}} shortname, core_customfield {{/str}}</th>
+                    <th scope="col" class="col-2">{{#str}} type, core_customfield {{/str}}</th>
+                    <th scope="col" class="text-right">{{#str}} action, core_customfield {{/str}}</th>
                 </tr>
                 </thead>
                 <tbody>
                     {{#fields}}
-                        <tr data-field-name="{{{name}}}">
+                        <tr data-field-name="{{name}}">
                             <td class="col-5">
-                                <p>{{name}}</p>
+                                <p>{{{name}}}</p>
                             </td>
                             <td class="col-2">
-                                <p>{{shortname}}</p>
+                                <p>{{{shortname}}}</p>
                             </td>
                             <td class="col-2">
-                                <p>{{type}}</p>
+                                <p>{{{type}}}</p>
                             </td>
                             <td class="text-right">
-                                <a href="{{{editfieldurl}}}" data-role="editfield">{{{editicon}}}</a>
-                                <a href="{{{deletefieldurl}}}" class="confirm_delete" data-id="{{id}}" data-role="deletefield">{{{deleteicon}}}</a>
-                                <a href="" class="move_up_field" data-id="{{id}}">{{{upiconfield}}}</a>
-                                <a href="" class="move_down_field" data-id="{{id}}">{{{downiconfield}}}</a>
+                                <a href="{{editfieldurl}}" data-role="editfield">{{#pix}}
+                                    t/edit, core, {{#str}} edit, moodle {{/str}} {{/pix}}</a>
+                                <a href="{{deletefieldurl}}" class="confirm_delete" data-id="{{id}}" data-role="deletefield">{{#pix}}
+                                    t/delete, core, {{#str}} delete, moodle {{/str}} {{/pix}}</a>
+                                <a href="#" class="move_up_field" data-id="{{id}}">{{#pix}}
+                                    t/up, core, {{#str}} moveup, moodle {{/str}} {{/pix}}</a>
+                                <a href="" class="move_down_field" data-id="{{id}}">{{#pix}}
+                                    t/down, core, {{#str}} movedown, moodle {{/str}} {{/pix}}</a>
                             </td>
                         </tr>
                     {{/fields}}
