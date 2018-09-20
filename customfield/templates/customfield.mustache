@@ -52,7 +52,10 @@
 
 <div data-region="list-page" id="customfield_catlist" data-component="{{component}}" data-area="{{area}}" data-itemid="{{itemid}}">
     {{^categories}}
-        <p>{{{nocategories}}} {{{defaultaddfieldmenu}}}</p>
+        <div class="row">
+            <div class="col-xs-6 left">{{{nocategories}}}</div>
+            <div class="col-xs-6 right">{{{defaultaddfieldmenu}}}</div>
+        </div>
     {{/categories}}
 
     {{#categories}}
