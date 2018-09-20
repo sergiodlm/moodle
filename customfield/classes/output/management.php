@@ -123,6 +123,30 @@ class management implements renderable, templatable {
             $categoriesarray[] = $categoryarray;
         }
 
+        //Default Add Field menu if no categories are present.
+        $addfieldurl = new \moodle_url(
+                '/customfield/edit.php',
+                [
+                        'handler' => $data->handler,
+                        'itemid' => $data->itemid,
+                        'action' => 'editfield'
+                ]
+        );
+        $select      = new \single_select(
+                $addfieldurl,
+                'type',
+                $fieldtypes,
+                '',
+                [
+                        '' => get_string('choosedots')
+                ],
+                'newfieldform'
+        );
+        $select->set_label(get_string('createnewcustomfield', 'core_customfield'));
+
+        $data->defaultaddfieldmenu = $output->render($select);
+
+
         $data->categories = $categoriesarray;
 
         if (empty($data->categories)) {

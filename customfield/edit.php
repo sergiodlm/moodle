@@ -51,7 +51,23 @@ $url = new \moodle_url('/customfield/edit.php',
 
 admin_externalpage_setup('course_customfield');
 
-$mform = $handler->get_field_config_form($record);
+
+$categorylist = $handler->categories_list_for_select();
+//If no categories are present, we create a new default category.
+if (empty($categorylist)) {
+    $otherfieldscategory = new \core_customfield\category();
+    $otherfieldscategory->set('name', get_string('otherfields', 'core_customfield'));
+    $otherfieldscategory->set('component', $handler->get_component());
+    $otherfieldscategory->set('area', $handler->get_area());
+    $otherfieldscategory->set('itemid', $handler->get_item_id());
+    $otherfieldscategory->save();
+    $categorylist = $handler->categories_list_for_select();
+}
+
+
+$args         = ['classfieldtype' => $classfieldtype, 'categorylist' => $categorylist];
+
+$mform = $handler->get_field_config_form($args);
 
 $textfieldoptions = array('trusttext' => true, 'subdirs' => true, 'maxfiles' => 50, 'maxbytes' => 0,
                           'context'   => $PAGE->context, 'noclean' => 0, 'enable_filemanagement' => true);
