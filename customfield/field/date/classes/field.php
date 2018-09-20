@@ -44,10 +44,10 @@ class field extends \core_customfield\field{
     /**
      * Add fields for editing a textarea field.
      *
-     * @param moodleform $mform
+     * @param \moodleform $mform
      * @throws \coding_exception
      */
-    public function edit_field_add($mform) {
+    public function edit_field_add(\moodleform $mform) {
         // Get the current calendar in use - see MDL-18375.
         $calendartype = \core_calendar\type_factory::get_calendar_instance();
 
