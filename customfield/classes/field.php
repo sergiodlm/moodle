@@ -38,6 +38,13 @@ abstract class field extends persistent {
     const TABLE = 'customfield_field';
 
     /**
+     * Add field parameters to the field configuration form
+     *
+     * @param \MoodleQuickForm $mform
+     */
+    abstract public function add_field_to_edit_form( \MoodleQuickForm $mform);
+
+    /**
      * Return the definition of the properties of this model.
      *
      * @return array

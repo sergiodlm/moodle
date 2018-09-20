@@ -42,7 +42,7 @@ class api {
         ]);
     }
 
-    public static function get_field(int $id, \stdClass $record = null) : \core_customfield\field {
+    public static function get_field(int $id, \stdClass $record = null) : field {
         return field_factory::load($id, $record);
     }
 

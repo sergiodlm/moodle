@@ -38,7 +38,7 @@ class field extends \core_customfield\field {
      * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
-    public static function add_field_to_edit_form(\MoodleQuickForm $mform) {
+    public function add_field_to_edit_form(\MoodleQuickForm $mform) {
         //public static function add_fields_edit_form(\core_customfield\field $fielddefinition, \moodleform $form, \MoodleQuickForm $mform) {
 
         $linkstargetlist = array(

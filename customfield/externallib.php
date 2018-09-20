@@ -28,17 +28,17 @@ class core_customfield_external extends external_api {
 
     public static function delete_entry_parameters() {
         return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'Entry ID to delete', VALUE_REQUIRED),
-                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
+                array('id' => new external_value(PARAM_INT, 'Entry ID to delete', VALUE_REQUIRED))
         );
     }
 
-    public static function delete_entry($id, $handler) {
-        $handler1 = \core_customfield\handler::get_instance($handler);
-        if( $handler1->can_edit() ) {
-            $record = \core_customfield\field_factory::load($id);
-            $record->delete();
+    public static function delete_entry($id) {
+        $record = \core_customfield\field_factory::load($id);
+        $handler = \core_customfield\handler::get_handler_for_field($record);
+        if (!$handler->can_configure()) {
+            throw new moodle_exception('nopermissionconfigure', 'core_customfield');
         }
+        $record->delete();
     }
 
     public static function delete_entry_returns() {
@@ -46,26 +46,33 @@ class core_customfield_external extends external_api {
 
     public static function reload_template_parameters() {
         return new external_function_parameters(
-                array('handler' => new external_value(PARAM_RAW, 'handler', VALUE_REQUIRED))
+            array(
+                'component' => new external_value(PARAM_COMPONENT, 'component', VALUE_REQUIRED),
+                'area' => new external_value(PARAM_ALPHANUMEXT, 'area', VALUE_REQUIRED),
+                'itemid' => new external_value(PARAM_INT, 'itemid', VALUE_OPTIONAL)
+            )
         );
     }
 
-    public static function reload_template($handler) {
+    public static function reload_template($component, $area, $itemid) {
         global $PAGE;
 
         require_login();
         $PAGE->set_context(context_system::instance());
-
-        $handlerparam = new  $handler();
+        $handler = \core_customfield\handler::get_handler($component, $area, $itemid);
+        if (!$handler->can_configure()) {
+            throw new moodle_exception('nopermissionconfigure', 'core_customfield');
+        }
         $output = $PAGE->get_renderer('core_customfield');
-        $outputpage = new \core_customfield\output\management($handlerparam);
+        $outputpage = new \core_customfield\output\management($handler);
         return $outputpage->export_for_template($output);
     }
 
     public static function reload_template_returns() {
         return new external_single_structure(
             array(
-                'handler' => new external_value(PARAM_RAW, 'handler'),
+                'component' => new external_value(PARAM_COMPONENT, 'component'),
+                'area' => new external_value(PARAM_ALPHANUMEXT, 'area'),
                 'itemid' => new external_value(PARAM_INT, 'id'),
                 'categories' => new external_multiple_structure(
                     new external_single_structure(
@@ -98,17 +105,17 @@ class core_customfield_external extends external_api {
 
     public static function delete_category_parameters() {
         return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'category ID to delete', VALUE_REQUIRED),
-                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
+                array('id' => new external_value(PARAM_INT, 'category ID to delete', VALUE_REQUIRED))
         );
     }
 
-    public static function delete_category($id, $handler) {
-        $handler1 = \core_customfield\handler::get_instance($handler);
-        if ($handler1->can_edit()) {
-            $record = new \core_customfield\category($id);
-            $record->delete();
+    public static function delete_category($id) {
+        $category = new \core_customfield\category($id);
+        $handler = \core_customfield\handler::get_handler_for_category($category);
+        if (!$handler->can_configure()) {
+            throw new moodle_exception('nopermissionconfigure', 'core_customfield');
         }
+        $category->delete();
     }
 
     public static function delete_category_returns() {

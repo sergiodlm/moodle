@@ -24,19 +24,12 @@ namespace core_course\customfield;
 
 class course_handler extends \core_customfield\handler {
 
-     public function get_component() : string {
-         return 'core_course';
-     }
-
-     public function get_area() : string {
-         return 'course';
-     }
-
-     public function can_configure($itemid = null) : bool {
+     public function can_configure() : bool {
+         // TODO separate capability
          return has_capability('moodle/category:manage', \context_system::instance());
      }
 
-     public function can_edit($recordid = null, $itemid = null) : bool {
+     public function can_edit($recordid = null) : bool {
          if ($recordid) {
              return has_capability('moodle/course:edit', \context_course::instance($recordid));
          } else {

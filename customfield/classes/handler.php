@@ -28,9 +28,16 @@ defined('MOODLE_INTERNAL') || die;
 
 abstract class handler {
 
-    protected $itemid;
+    private $itemid;
+    private $component;
+    private $area;
 
     public final function __construct($itemid = null) {
+        if (!preg_match('|^(\w+_[\w_]+)\\\\customfield\\\\([\w_]+)_handler$|', static::class, $matches)) {
+            throw new \coding_exception('Handler class name must have format: <PLUGIN>\\customfield\\<AREA>_handler');
+        }
+        $this->component = $matches[1];
+        $this->area = $matches[2];
         $this->itemid = $itemid ?: null;
     }
 
@@ -41,18 +48,33 @@ abstract class handler {
      * @return handler
      * @throws \moodle_exception
      */
-    public static function get_instance(string $classname, int $itemid = null) : handler {
+    public static function get_handler(string $component, string $area, int $itemid = null) : handler {
+        $classname = $component . '\\customfield\\' . $area . '_handler';
         if (class_exists($classname) && is_subclass_of($classname, self::class)) {
             return new $classname($itemid);
         }
-        throw new \moodle_exception('unknownhandler', 'core_customfield');
+        $a = ['component' => s($component), 'area' => s($area)];
+        throw new \moodle_exception('unknownhandler', 'core_customfield', (object)$a);
     }
 
-    abstract function get_component() : string;
+    public static function get_handler_for_field(field $field) : handler {
+        $category = new category($field->get('categoryid'));
+        return self::get_handler_for_category($category);
+    }
 
-    abstract function get_area() : string;
+    public static function get_handler_for_category(category $category) : handler {
+        return self::get_handler($category->get('component'), $category->get('area'), $category->get('itemid'));
+    }
 
-    abstract function get_configuration_url() : \moodle_url;
+    public function get_component() : string {
+        return $this->component;
+    }
+
+    public function get_area() : string {
+        return $this->area;
+    }
+
+    abstract public function get_configuration_url() : \moodle_url;
 
     /**
      * @return int|null
@@ -73,11 +95,17 @@ abstract class handler {
         return new \core_customfield\category_config_form(null, ['handler' => $this]);
     }
 
-    public function get_field_config_form($args): \core_customfield\field_config_form {
-        return new \core_customfield\field_config_form(null, ['handler' => $this] + $args);
+    public function get_field_config_form(field $field): field_config_form {
+         return new field_config_form(null, ['handler' => $this, 'field' => $field]);
     }
 
-    public function new_category($name) {
+    public function new_field(category $category, string $type) : field {
+        $field = field_factory::create($type);
+        $field->set('categoryid', $category->get('id'));
+        return $field;
+    }
+
+    public function new_category($name) : category {
         $categorydata = new stdClass();
         $categorydata->name = $name;
         $categorydata->component = $this->get_component();
@@ -90,6 +118,7 @@ abstract class handler {
     }
 
     public function load_category($id) {
+        // TODO remove
         return new \core_customfield\category($id);
     }
 
@@ -111,9 +140,9 @@ abstract class handler {
         return $categorylist;
     }
 
-    abstract public function can_configure($itemid = null): bool;
+    abstract public function can_configure(): bool;
 
-    abstract public function can_edit($recordid = null, $itemid = null): bool;
+    abstract public function can_edit($recordid = null): bool;
 
     public function is_field_supported(\core_customfield\field $field): bool {
         // Placeholder for now to allow in the future components to decide that they don't want to support some field types.

@@ -1,6 +1,6 @@
 define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'], function($, str, notification, ajax, templates) {
 
-    var confirmDelete = function(id, handler, type) {
+    var confirmDelete = function(id, type, component, area, itemid) {
         str.get_strings([
             {'key': 'delete'},
             {'key': 'confirmdelete', component: 'core_customfield'},
@@ -17,8 +17,8 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                         break;
                 }
                 var promises = ajax.call([
-                    {methodname: func, args:{id: id, handler: handler}},
-                    {methodname: 'core_customfield_reload_template', args:{handler: handler}}
+                    {methodname: func, args:{id: id}},
+                    {methodname: 'core_customfield_reload_template', args:{component: component, area: area, itemid: itemid}}
                 ]);
                 promises[1].done(function(response) {
                     templates.render('core_customfield/customfield',response).done(function(html, js) {
@@ -65,14 +65,15 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
     };
     return {
         init: function() {
+            var component = $('#customfield_catlist').attr('data-component'),
+                area = $('#customfield_catlist').attr('data-area'),
+                itemid = $('#customfield_catlist').attr('data-itemid');
             $(".confirm_delete").on('click', function(e) {
-                var handler = $('#customfield_catlist').attr('data-handler');
-                confirmDelete($(this).attr('data-id'), handler, 'field');
+                confirmDelete($(this).attr('data-id'), 'field', component, area, itemid);
                 e.preventDefault();
             });
             $(".confirm_delete_category").on('click', function(e) {
-                var handler = $('#customfield_catlist').attr('data-handler');
-                confirmDelete($(this).attr('data-id'), handler, 'category');
+                confirmDelete($(this).attr('data-id'), 'category', component, area, itemid);
                 e.preventDefault();
             });
             $(".move_up_field").on('click', function(e) {

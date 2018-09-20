@@ -37,7 +37,7 @@ class field extends \core_customfield\field{
      * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
-    public static function add_field_to_edit_form( \MoodleQuickForm $mform) {
+    public function add_field_to_edit_form( \MoodleQuickForm $mform) {
         $mform->addElement('checkbox', 'configdata[dateincludetime]', get_string('includetime', 'core_customfield'));
     }
 

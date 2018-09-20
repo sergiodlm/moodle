@@ -54,8 +54,11 @@ class category_config_form extends \moodleform {
         $mform->setType('name', PARAM_NOTAGS);
         $mform->addRule('name', get_string('name'), 'required');
 
-        $mform->addElement('hidden', 'handler', get_class($handler));
-        $mform->setType('handler', PARAM_RAW);
+        $mform->addElement('hidden', 'component', $handler->get_component());
+        $mform->setType('component', PARAM_COMPONENT);
+
+        $mform->addElement('hidden', 'area', $handler->get_area());
+        $mform->setType('area', PARAM_ALPHANUMEXT);
 
         $mform->addElement('hidden', 'itemid', $handler->get_item_id());
         $mform->setType('itemid', PARAM_INT);
