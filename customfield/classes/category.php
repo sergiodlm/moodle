@@ -84,38 +84,6 @@ class category extends persistent {
     }
 
     /**
-     * @return int
-     * @throws \coding_exception
-     */
-    public function id(){
-        return $this->get('id');
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function name(string $name = null): string {
-        if (isset($name)) {
-            $this->set('name', $name);
-        }
-
-        return $this->get('name');
-    }
-
-    /**
-     * @param int|null $value
-     * @return int
-     * @throws \coding_exception
-     */
-    public function sortorder(int $value = null): int {
-        if (!is_null($value)) {
-            $this->set('sortorder', $value);
-        }
-        return $this->get('sortorder');
-    }
-
-    /**
      * @return array|null
      * @throws \coding_exception
      */
@@ -135,7 +103,7 @@ class category extends persistent {
         $neworder = count($categoryneighbours);
 
         foreach ($categoryneighbours as $category) {
-            $category->sortorder(--$neworder);
+            $category->set('sortorder' ,--$neworder);
             $category->save();
         }
 
@@ -226,9 +194,9 @@ class category extends persistent {
         )[0];
 
         if (!empty($nextcategory)) {
-            $nextcategory->sortorder($this->get('sortorder'));
+            $nextcategory->set('sortorder', $this->get('sortorder'));
             $nextcategory->save();
-            $this->sortorder($this->get('sortorder') + $position);
+            $this->set('sortorder', $this->get('sortorder') + $position);
             $this->save();
         }
 

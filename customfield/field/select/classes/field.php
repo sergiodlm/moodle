@@ -22,6 +22,11 @@
 
 namespace customfield_select;
 
+/**
+ * Class field
+ *
+ * @package customfield_select
+ */
 class field extends \core_customfield\field{
 
     const TYPE = 'select';
@@ -37,7 +42,9 @@ class field extends \core_customfield\field{
 
     /**
      * Add fields for editing a textarea field.
+     *
      * @param moodleform $mform
+     * @throws \coding_exception
      */
     public function edit_field_add($mform) {
         $configdata = json_decode($this->get('configdata'));
@@ -49,17 +56,28 @@ class field extends \core_customfield\field{
         }
 
         $mform->addElement('select', $this->inputname(), format_string($this->get('name')), $options);
-        $mform->setDefault($this->inputname(), $this->data);
+        $mform->setDefault($this->inputname(), $this->get('data'));
     }
 
+    /**
+     * @param $data
+     * @throws \coding_exception
+     */
     public function set_data($data) {
-        $this->data = $data->intvalue;
+        $this->set('data', $data->intvalue);
     }
 
+    /**
+     * @return string
+     */
     public function datafield() {
         return 'intvalue';
     }
 
+    /**
+     * @return string
+     * @throws \coding_exception
+     */
     public function display() {
         $configdata = json_decode($this->get('configdata'));
 
@@ -70,13 +88,17 @@ class field extends \core_customfield\field{
         }
         return \html_writer::start_tag('div') .
                \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
-               \html_writer::tag('span', format_text($options[$this->data]), ['class' => 'customfieldvalue']).
+               \html_writer::tag('span', format_text($options[$this->get('data')]), ['class' => 'customfieldvalue']).
                \html_writer::end_tag('div');
     }
 
+    /**
+     * @param $data
+     * @throws \coding_exception
+     */
     public function edit_load_data($data) {
-        if ($this->data !== null) {
-            $data->{$this->inputname()} = $this->data;
+        if ($this->get('data') !== null) {
+            $data->{$this->inputname()} = $this->get('data');
         }
     }
 }

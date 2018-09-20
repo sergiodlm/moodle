@@ -22,13 +22,20 @@
 
 namespace customfield_date;
 
+/**
+ * Class field
+ *
+ * @package customfield_date
+ */
 class field extends \core_customfield\field{
     const TYPE = 'date';
     const SIZE = 40;
 
     /**
      * Add fields for editing a text field.
-     * @param moodleform $mform
+     *
+     * @param \MoodleQuickForm $mform
+     * @throws \coding_exception
      */
     public static function add_field_to_edit_form( \MoodleQuickForm $mform) {
         $mform->addElement('checkbox', 'configdata[dateincludetime]', get_string('includetime', 'core_customfield'));
@@ -36,7 +43,9 @@ class field extends \core_customfield\field{
 
     /**
      * Add fields for editing a textarea field.
+     *
      * @param moodleform $mform
+     * @throws \coding_exception
      */
     public function edit_field_add($mform) {
         // Get the current calendar in use - see MDL-18375.
@@ -57,18 +66,21 @@ class field extends \core_customfield\field{
         $mform->setDefault($this->inputname(), time());
     }
 
-    public function set_data($data) {
-        $this->data = $data->value;
-    }
-
-    public function datafield() {
+    /**
+     * @return string
+     */
+    public function data_field() {
         return 'value';
     }
 
+    /**
+     * @return string
+     * @throws \coding_exception
+     */
     public function display() {
         return \html_writer::start_tag('div') .
                \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
-               \html_writer::tag('span', userdate($this->data), ['class' => 'customfieldvalue']).
+               \html_writer::tag('span', userdate($this->get('data')), ['class' => 'customfieldvalue']).
                \html_writer::end_tag('div');
     }
 
@@ -79,6 +91,7 @@ class field extends \core_customfield\field{
      * @param stdClass $datarecord The object that will be used to save the record
      * @return int timestamp
      * @since Moodle 2.5
+     * @throws \coding_exception
      */
     public function edit_save_data_preprocess($datetime, $datarecord) {
         if (!$datetime) {

@@ -22,8 +22,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component    = 'core_customfield';
-$plugin->version      = 2018082101;
-$plugin->requires     = 2015111600;
-$plugin->release      = '0.1';
-$plugin->maturity     = MATURITY_ALPHA;
+$plugin->component = 'core_customfield';
+$plugin->version   = 2018082101;
+$plugin->requires  = 2015111600;
+$plugin->release   = '0.1';
+$plugin->maturity  = MATURITY_ALPHA;

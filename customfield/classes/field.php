@@ -113,117 +113,6 @@ abstract class field extends persistent {
     }
 
     /**
-     * @param int|null $value
-     * @return int
-     * @throws \coding_exception
-     */
-    public function id(int $value = null) {
-        if (! is_null($value)) {
-            $this->set('id', $value);
-        }
-        return $this->get('id');
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function required() {
-        return $this->get('required');
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function locked() {
-        return $this->get('locked');
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function uniquevalues() {
-        return $this->get('uniquevalues');
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function visibility() {
-        return $this->get('visibility');
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function shortname() {
-        return $this->get('shortname');
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function name() {
-        return $this->get('name');
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function type() {
-        return $this->get('type');
-    }
-
-    /**
-     * @param string|null $value
-     * @return string|null
-     * @throws \coding_exception
-     */
-    public function description(string $value = null) {
-        if (! is_null($value)) {
-            $this->set('description', $value);
-        }
-        return $this->get('description');
-    }
-
-    /**
-     * @param string|null $value
-     * @return string|null
-     * @throws \coding_exception
-     */
-    public function descriptionformat(string $value = null) {
-        if (! is_null($value)) {
-            $this->set('descriptionformat', $value);
-        }
-        return $this->get('descriptionformat');
-    }
-
-    /**
-     * @return int
-     * @throws \coding_exception
-     */
-    public function sortorder(int $value = null) {
-        if (! is_null($value)) {
-            $this->set('sortorder', $value);
-        }
-        return $this->get('sortorder');
-    }
-
-    /**
-     * @return int
-     * @throws \coding_exception
-     */
-    public function categoryid() {
-        return $this->get('categoryid');
-    }
-
-    /**
      * @return data|null
      * @throws \coding_exception
      */
@@ -231,17 +120,6 @@ abstract class field extends persistent {
         return data::fieldload($this->get('id'));
     }
 
-    /**
-     * @param string|null $value
-     * @return string|null
-     * @throws \coding_exception
-     */
-    public function configdata(string $value = null) {
-        if (! is_null($value)) {
-            $this->set('configdata', $value);
-        }
-        return $this->get('configdata');
-    }
 
     // Get total count of fields for this category.
 
@@ -275,7 +153,7 @@ abstract class field extends persistent {
      * @throws \coding_exception
      */
     protected function before_delete() : bool {
-        if ( $this->data()->id() > 0 ) {
+        if ( $this->data()->get('id') > 0 ) {
             $this->data()->delete();
             return false;
         }
@@ -326,7 +204,6 @@ abstract class field extends persistent {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -336,7 +213,7 @@ abstract class field extends persistent {
      * @throws \dml_exception
      */
     private function reorder() : bool {
-        return $this::static_reorder($this->categoryid());
+        return $this::static_reorder($this->get('categoryid'));
     }
 
     /**
@@ -351,16 +228,16 @@ abstract class field extends persistent {
         $nextfielddata = $DB->get_record(
                 $this::TABLE,
                 [
-                        'sortorder' => $this->sortorder() + $position,
-                        'categoryid' => $this->categoryid()
+                        'sortorder' => $this->get('sortorder') + $position,
+                        'categoryid' => $this->get('categoryid')
                 ]
         );
 
         if (!empty($nextfielddata)) {
             $previusfield = field_factory::load($nextfielddata->id);
-            $previusfield->sortorder($this->sortorder());
+            $previusfield->set('sortorder', $this->get('sortorder'));
             $previusfield->save();
-            $this->sortorder($this->sortorder() + $position);
+            $this->set('sortorder', $this->get('sortorder') + $position);
             $this->save();
         }
 
@@ -393,15 +270,15 @@ abstract class field extends persistent {
         //TODO: refactoring of this pending
         if (!is_null($newcategoryid)) {
             $newcategory = new category($newcategoryid);
-            $oldcategory = new category($this->categoryid());
+            $oldcategory = new category($this->get('categoryid'));
 
-            $this->categoryid($newcategory->id());
+            $this->set('categoryid', $newcategory->get('id'));
             $this->save();
 
             $oldcategory->reorder();
             $oldcategory->save();
 
-            $this->sortorder(0);
+            $this->set('sortorder', 0);
             $newcategory->reorder();
             $newcategory->save();
 
@@ -513,7 +390,7 @@ abstract class field extends persistent {
 	    return;
 	}
 
-	$datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->id()));
+	$datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->get('id')));
 
 	$datanew->{$this->inputname()} = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
 
@@ -525,7 +402,7 @@ abstract class field extends persistent {
 	    $now = time();
             $datarecord = new \stdclass();
             $datarecord->{$this->datafield()} = $datanew->{$this->inputname()};
-	    $datarecord->fieldid = $this->id();
+	    $datarecord->fieldid = $this->get('id');
             $datarecord->recordid = $datanew->id;
 	    $datarecord->timecreated = $now;
 	    $datarecord->timemodified = $now;
@@ -545,13 +422,6 @@ abstract class field extends persistent {
      */
     public function edit_save_data_preprocess($data, $datarecord) {
         return $data;
-    }
-
-    public function categoryname($name = null) {
-        if (!empty($name)) {
-            $this->categoryname = $name;
-        }
-        return $this->categoryname;
     }
 
     public function should_display() {

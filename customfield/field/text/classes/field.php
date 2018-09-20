@@ -22,6 +22,11 @@
 
 namespace customfield_text;
 
+/**
+ * Class field
+ *
+ * @package customfield_text
+ */
 class field extends \core_customfield\field {
 
     const TYPE = 'text';
@@ -29,16 +34,18 @@ class field extends \core_customfield\field {
 
     /**
      * Add fields for editing a text field.
-     * @param moodleform $mform
+     *
+     * @param \MoodleQuickForm $mform
+     * @throws \coding_exception
      */
-    public static function add_field_to_edit_form( \MoodleQuickForm $mform) {
+    public static function add_field_to_edit_form(\MoodleQuickForm $mform) {
         //public static function add_fields_edit_form(\core_customfield\field $fielddefinition, \moodleform $form, \MoodleQuickForm $mform) {
 
         $linkstargetlist = array(
-                ''          => get_string('none', 'core_customfield'),
-                '_blank'    => get_string('newwindow', 'core_customfield'),
-                '_self'     => get_string('sameframe', 'core_customfield'),
-                '_top'      => get_string('samewindow', 'core_customfield')
+                ''       => get_string('none', 'core_customfield'),
+                '_blank' => get_string('newwindow', 'core_customfield'),
+                '_self'  => get_string('sameframe', 'core_customfield'),
+                '_top'   => get_string('samewindow', 'core_customfield')
         );
 
         // Max length.
@@ -55,26 +62,39 @@ class field extends \core_customfield\field {
 
     /**
      * Add fields for editing a text profile field.
+     *
      * @param moodleform $mform
+     * @throws \coding_exception
      */
     public function edit_field_add($mform) {
-        $mform->addElement(self::TYPE, $this->inputname(), format_string($this->get('name')), 'size="'.self::SIZE.'" ');
+        $mform->addElement(self::TYPE, $this->inputname(), format_string($this->get('name')), 'size="' . self::SIZE . '" ');
         $mform->setType($this->inputname(), PARAM_TEXT);
     }
 
+    /**
+     * @param $data
+     * @throws \coding_exception
+     */
     public function set_data($data) {
-        $this->data($data->charvalue);
+        $this->set('data', $data->charvalue);
     }
 
+    /**
+     * @return string
+     */
     public function datafield() {
         return 'charvalue';
     }
 
+    /**
+     * @return string
+     * @throws \coding_exception
+     */
     public function display() {
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname customfieldtext']).
-               ' : '.
-               \html_writer::tag('span', format_string($this->data()), ['class' => 'customfieldvalue customfieldtext']).
+               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname customfieldtext']) .
+               ' : ' .
+               \html_writer::tag('span', format_string($this->data()), ['class' => 'customfieldvalue customfieldtext']) .
                \html_writer::end_tag('div');
     }
 }

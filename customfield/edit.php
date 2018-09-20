@@ -21,34 +21,34 @@
  */
 
 require_once(__DIR__ . '/../config.php');
-require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
 $handlerparam = required_param('handler', PARAM_RAW);
-$itemid = optional_param('itemid', null, PARAM_INT);
-$id = optional_param('id', 0, PARAM_INT);
-$type = optional_param('type', null, PARAM_NOTAGS);
+$itemid       = optional_param('itemid', null, PARAM_INT);
+$id           = optional_param('id', 0, PARAM_INT);
+$type         = optional_param('type', null, PARAM_NOTAGS);
 
 require_login();
 
 $handler = \core_customfield\handler::get_instance($handlerparam, $itemid);
 
 if ($id) {
-    $record = \core_customfield\field_factory::load($id);
-    $classfieldtype = '\customfield_'. $record->type().'\field';
-    $configdata = json_decode( $record->configdata() );
+    $record         = \core_customfield\field_factory::load($id);
+    $classfieldtype = '\customfield_' . $record->get('type') . '\field';
+    $configdata     = json_decode($record->configdata());
     // TODO: find a better approach to this!
-    $arrayform = (object)[
+    $arrayform = (object) [
             'id'                => $id,
-            'name'              => $record->name(),
-            'shortname'         => $record->shortname(),
-            'type'              => $record->type(),
-            'categoryid'        => $record->categoryid(),
-            'required'          => $record->required(),
-            'locked'            => $record->locked(),
-            'uniquevalues'      => $record->uniquevalues(),
-            'visibility'        => $record->visibility(),
-            'description'       => $record->description(),
-            'descriptionformat' => $record->descriptionformat(),
+            'name'              => $record->get('name'),
+            'shortname'         => $record->get('shortname'),
+            'type'              => $record->get('type'),
+            'categoryid'        => $record->get('categoryid'),
+            'required'          => $record->get('required'),
+            'locked'            => $record->get('locked'),
+            'uniquevalues'      => $record->get('uniquevalues'),
+            'visibility'        => $record->get('visibility'),
+            'description'       => $record->get('description'),
+            'descriptionformat' => $record->get('descriptionformat'),
     ];
 
     // We format configdata fields.
@@ -61,12 +61,12 @@ if ($id) {
     $title = get_string('editingfield', 'core_customfield');
 
 } else {
-    $classfieldtype = '\customfield_'.$type.'\field';
-    $arrayform = (object)null;
-    $arrayform->type = $type;
-    $arrayform->id = null;
+    $classfieldtype        = '\customfield_' . $type . '\field';
+    $arrayform             = (object) null;
+    $arrayform->type       = $type;
+    $arrayform->id         = null;
     $arrayform->configdata = ['required' => 0];
-    $title = get_string('addingnewcustomfield', 'core_customfield');
+    $title                 = get_string('addingnewcustomfield', 'core_customfield');
 }
 
 $url = new \moodle_url('/customfield/edit.php', ['handler' => $handlerparam, 'itemid' => $itemid]);
@@ -74,12 +74,12 @@ $url = new \moodle_url('/customfield/edit.php', ['handler' => $handlerparam, 'it
 admin_externalpage_setup('course_customfield');
 
 $categorylist = $handler->categories_list_for_select();
-$args = ['classfieldtype' => $classfieldtype, 'categorylist' => $categorylist];
+$args         = ['classfieldtype' => $classfieldtype, 'categorylist' => $categorylist];
 
 $mform = $handler->get_field_config_form($args);
 
 $textfieldoptions = array('trusttext' => true, 'subdirs' => true, 'maxfiles' => 50, 'maxbytes' => 0,
-                          'context' => $PAGE->context, 'noclean' => 0, 'enable_filemanagement' => true);
+                          'context'   => $PAGE->context, 'noclean' => 0, 'enable_filemanagement' => true);
 
 file_prepare_standard_editor($arrayform, 'description', $textfieldoptions, $PAGE->context, 'core_customfield',
                              'description', $arrayform->id);
@@ -93,11 +93,10 @@ if ($mform->is_cancelled()) {
 
     if (!empty($data->id)) {
         // Update.
-        $data->configdata = json_encode($data->configdata);
-        if ( isset($data->description_editor) ) {
+        if (isset($data->description_editor)) {
 
             $textfieldoptions = ['trusttext' => true, 'subdirs' => true, 'maxfiles' => 5, 'maxbytes' => 0,
-                                 'context' => $PAGE->context, 'noclean' => 0, 'enable_filemanagement' => true];
+                                 'context'   => $PAGE->context, 'noclean' => 0, 'enable_filemanagement' => true];
 
             $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context,
                                                     'core_customfield', 'description', $data->id);
@@ -114,7 +113,6 @@ if ($mform->is_cancelled()) {
         }
 
     } else {
-        $data->configdata = json_encode($data->configdata);
         if (isset($data->description_editor)) {
 
             $textfieldoptions = array(

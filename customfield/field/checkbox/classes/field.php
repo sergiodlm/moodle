@@ -22,6 +22,11 @@
 
 namespace customfield_checkbox;
 
+/**
+ * Class field
+ *
+ * @package customfield_checkbox
+ */
 class field extends \core_customfield\field{
 
     const TYPE = 'checkbox';
@@ -29,33 +34,48 @@ class field extends \core_customfield\field{
 
     /**
      * Add fields for editing a text field.
-     * @param moodleform $mform
+     *
+     * @param \MoodleQuickForm $mform
+     * @throws \coding_exception
      */
     public static function add_field_to_edit_form( \MoodleQuickForm $mform) {
         $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));    }
 
     /**
      * Add fields for editing a textarea field.
+     *
      * @param moodleform $mform
+     * @throws \coding_exception
      */
     public function edit_field_add($mform) {
         $mform->addElement('checkbox', $this->inputname(), format_string($this->get('name')));
     }
 
+    /**
+     * @param $data
+     * @throws \coding_exception
+     */
     public function set_data($data) {
         // TODO: verify if should support checkboxes with custom values.
-        $this->data = $data->intvalue;
+        $this->set('data', $data->intvalue);
     }
 
+    /**
+     * @return string
+     */
     public function datafield() {
         return 'intvalue';
     }
 
+    /**
+     * @return string
+     * @throws \coding_exception
+     */
     public function display() {
         return \html_writer::start_tag('div') .
                \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
                // TODO: show as checkbox, disabled or icon.
-               \html_writer::tag('span', $this->data, ['class' => 'customfieldvalue']).
+               \html_writer::tag('span', $this->get('data'), ['class' => 'customfieldvalue']).
                \html_writer::end_tag('div');
     }
 }

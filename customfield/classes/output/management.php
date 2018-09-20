@@ -28,15 +28,37 @@ use renderer_base;
 
 defined('MOODLE_INTERNAL') || die;
 
+/**
+ * Class management
+ *
+ * @package core_customfield\output
+ */
 class management implements renderable, templatable {
 
+    /**
+     * @var \core_customfield\handler
+     */
     protected $handler;
+    /**
+     * @var
+     */
     protected $categoryid;
 
+    /**
+     * management constructor.
+     *
+     * @param \core_customfield\handler $handler
+     */
     public function __construct(\core_customfield\handler $handler) {
         $this->handler = $handler;
     }
 
+    /**
+     * @param renderer_base $output
+     * @return array|object|\stdClass
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
     public function export_for_template(renderer_base $output) {
         global $OUTPUT;
         $data = (object) [];
@@ -52,8 +74,8 @@ class management implements renderable, templatable {
         foreach ($categories as $category) {
 
             $categoryarray = array();
-            $categoryarray['id'] = $category->id();
-            $categoryarray['name'] = $category->name();
+            $categoryarray['id'] = $category->get('id');
+            $categoryarray['name'] = $category->get('name');
             $categoryarray['customfield'] = get_string('customfield', 'core_customfield');
             $categoryarray['action'] = get_string('action', 'core_customfield');
 
@@ -73,10 +95,10 @@ class management implements renderable, templatable {
             foreach ($category->fields() as $field) {
                 global $OUTPUT;
 
-                $fieldarray['type'] = $fieldtypes[$field->type()];
-                $fieldarray['id'] = $field->id();
-                $fieldarray['name'] = $field->name();
-                $fieldarray['shortname'] = $field->shortname();
+                $fieldarray['type'] = $fieldtypes[$field->get('type')];
+                $fieldarray['id'] = $field->get('id');
+                $fieldarray['name'] = $field->get('name');
+                $fieldarray['shortname'] = $field->get('shortname');
 
                 $fieldarray['deletefieldurl'] = (new \moodle_url('/customfield/edit.php', [
                         'delete' => $fieldarray['id'],
@@ -97,10 +119,11 @@ class management implements renderable, templatable {
             }
             // Create a new dropdown for types of fields.
             $addfieldurl = new \moodle_url('/customfield/edit.php',
-                array('handler' => $data->handler, 'itemid' => $data->itemid, 'action' => 'editfield',
-                      'categoryid' => $category->id()));
+                    array('handler' => $data->handler, 'itemid' => $data->itemid, 'action' => 'editfield',
+                            'categoryid' => $category->get('id')));
 
-            $select = new \single_select($addfieldurl, 'type', $fieldtypes, '', array('' => get_string('choosedots')), 'newfieldform');
+            $select = new \single_select($addfieldurl, 'type', $fieldtypes, '', array('' => get_string('choosedots')),
+                    'newfieldform');
             $select->set_label(get_string('createnewcustomfield', 'core_customfield'));
             $categoryarray['addfieldmenu'] = $output->render($select);
 
@@ -111,15 +134,15 @@ class management implements renderable, templatable {
 
         if (empty($data->categories)) {
             $url = new \moodle_url('/customfield/edit_category.php',
-                array('handler' => $data->handler, 'itemid' => $data->itemid));
-            $data->nocategories = get_string('nocategories', 'core_customfield', (string)$url);
+                    array('handler' => $data->handler, 'itemid' => $data->itemid));
+            $data->nocategories = get_string('nocategories', 'core_customfield', (string) $url);
         }
 
         // Create a new category link.
         $newcategoryurl = new \moodle_url('/customfield/edit_category.php',
-            array('handler' => $data->handler, 'itemid' => $data->itemid));
+                array('handler' => $data->handler, 'itemid' => $data->itemid));
         $data->addcategorybutton = $OUTPUT->single_button($newcategoryurl, get_string('addnewcategory', 'core_customfield'),
-                                                          'post', array('class' => 'float-right'));
+                'post', array('class' => 'float-right'));
 
         return $data;
     }

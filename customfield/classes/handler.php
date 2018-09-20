@@ -106,7 +106,7 @@ abstract class handler {
     public function categories_list_for_select() {
         $categorylist = array();
         foreach ($this->categories_list() as $category) {
-            $categorylist[$category->id()] = $category->name();
+            $categorylist[$category->get('id')] = $category->get('name');
         }
         return $categorylist;
     }
@@ -200,7 +200,7 @@ abstract class handler {
         $fieldswithdata = $this->get_fields_with_data($recordid);
         $categories = [];
         foreach ($fieldswithdata as $field) {
-            $categories[$field->categoryid()][] = $field;
+            $categories[$field->get('categoryid')][] = $field;
         }
         foreach ($categories as $categoryid => $fields) {
             // Check first if *any* fields will be displayed.

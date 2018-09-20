@@ -30,12 +30,11 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('report');
 $PAGE->set_title('customfield');
-//$PAGE->set_heading(get_string('pluginname', 'core_customfield'));
 $PAGE->navbar->add(get_string('home'), new moodle_url($url));
 
 $handler = new core_course\customfield\course_handler();
 
-$output = $PAGE->get_renderer('core_customfield');
+$output     = $PAGE->get_renderer('core_customfield');
 $outputpage = new \core_customfield\output\management($handler);
 
 echo $OUTPUT->header();
