@@ -172,7 +172,8 @@ class category extends persistent {
         return $DB->count_records('customfield_category',
                 [
                         'component' => $this->get('component'),
-                        'area' => $this->get('area')
+                        'area' => $this->get('area'),
+                        'itemid' => $this->get('itemid')
                 ]
         );
     }
@@ -235,7 +236,7 @@ class category extends persistent {
         $categories = array();
 
         foreach ($DB->get_records(self::TABLE, $options, 'sortorder DESC') as $categorydata) {
-            $categories[] = new self($categorydata->id);
+            $categories[] = new self(0, $categorydata);
         }
 
         return $categories;

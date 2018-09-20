@@ -23,53 +23,31 @@
 require_once(__DIR__ . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-$handlerparam = required_param('handler', PARAM_RAW);
-$itemid       = optional_param('itemid', null, PARAM_INT);
-$id           = optional_param('id', 0, PARAM_INT);
-$type         = optional_param('type', null, PARAM_NOTAGS);
+$id = optional_param('id', 0, PARAM_INT);
+$categoryid = optional_param('categoryid', 0, PARAM_INT);
+$type = optional_param('type', null, PARAM_COMPONENT);
 
 require_login();
 
-$handler = \core_customfield\handler::get_instance($handlerparam, $itemid);
-
 if ($id) {
-    $record         = \core_customfield\field_factory::load($id);
-    $classfieldtype = '\customfield_' . $record->get('type') . '\field';
-    $configdata     = json_decode($record->configdata());
-    // TODO: find a better approach to this!
-    $arrayform = (object) [
-            'id'                => $id,
-            'name'              => $record->get('name'),
-            'shortname'         => $record->get('shortname'),
-            'type'              => $record->get('type'),
-            'categoryid'        => $record->get('categoryid'),
-            'required'          => $record->get('required'),
-            'locked'            => $record->get('locked'),
-            'uniquevalues'      => $record->get('uniquevalues'),
-            'visibility'        => $record->get('visibility'),
-            'description'       => $record->get('description'),
-            'descriptionformat' => $record->get('descriptionformat'),
-    ];
-
-    // We format configdata fields.
-    if ($configdata) {
-        foreach ($configdata as $a => $b) {
-            $arrayform->configdata[$a] = $b;
-        }
-    }
+    $record = \core_customfield\api::get_field($id);
+    $type = $record->get('type');
+    $handler = \core_customfield\handler::get_handler_for_field($record);
+    $arrayform = (object)$record->to_record();
+    $arrayform->configdata = json_decode($arrayform->configdata, true);
 
     $title = get_string('editingfield', 'core_customfield');
-
 } else {
-    $classfieldtype        = '\customfield_' . $type . '\field';
-    $arrayform             = (object) null;
-    $arrayform->type       = $type;
-    $arrayform->id         = null;
-    $arrayform->configdata = ['required' => 0];
-    $title                 = get_string('addingnewcustomfield', 'core_customfield');
+    $category = new \core_customfield\category($categoryid);
+    $handler = \core_customfield\handler::get_handler_for_category($category);
+    $record = $handler->new_field($category, $type);
+    $arrayform = (object)['id' => null, 'type' => $type, 'configdata' => ['required' => 0], 'categoryid' => $categoryid];
+    $title = get_string('addingnewcustomfield', 'core_customfield');
 }
 
-$url = new \moodle_url('/customfield/edit.php', ['handler' => $handlerparam, 'itemid' => $itemid]);
+$url = new \moodle_url('/customfield/edit.php',
+    ['component' => $handler->get_component(), 'area' => $handler->get_area(), 'itemid' => $handler->get_item_id(),
+        'id' => $record->get('id'), 'type' => $record->get('type'), 'categoryid' => $record->get('categoryid')]);
 
 admin_externalpage_setup('course_customfield');
 
@@ -115,14 +93,16 @@ if ($mform->is_cancelled()) {
                                                     'core_customfield', 'description', $data->id);
             unset($data->description_editor);
         }
-        unset($data->handler, $data->itemid, $data->submitbutton, $data->descriptiontrust);
+        unset($data->component, $data->area, $data->itemid, $data->submitbutton, $data->descriptiontrust);
 
-        $field = new $classfieldtype($data->id, $data);
+        $data->configdata = json_encode($data->configdata);
+        $record->from_record($data);
+
         try {
-            $field->save();
+            $record->save();
             redirect($handler->get_configuration_url());
         } catch (\dml_write_exception $exception) {
-            $notification = $exception->error;
+            core\notification::error(get_string('fieldsavefailed', 'core_customfield'));
         }
 
     } else {
@@ -138,16 +118,18 @@ if ($mform->is_cancelled()) {
                     'enable_filemanagement' => true
             );
 
+            // TODO this will not work, $data->id is empty.
             $data = file_postupdate_standard_editor($data, 'description', $textfieldoptions, $PAGE->context, 'core_customfield',
                                                     'description', $data->id);
 
             unset($data->description_editor);
         }
-        unset($data->handler, $data->itemid, $data->submitbutton, $data->descriptiontrust);
-        $field = new $classfieldtype($data->id, $data);
+        unset($data->component, $data->area, $data->itemid, $data->submitbutton, $data->descriptiontrust);
+        $data->configdata = json_encode($data->configdata);
+        $record->from_record($data);
 
         try {
-            $field->save();
+            $record->save();
             redirect($handler->get_configuration_url(), get_string('fieldsaved', 'core_customfield'));
         } catch (\dml_write_exception $exception) {
             core\notification::error(get_string('fieldsavefailed', 'core_customfield'));

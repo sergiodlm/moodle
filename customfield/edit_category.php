@@ -23,24 +23,26 @@
 require_once(__DIR__ . '/../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
-$handlerparam = required_param('handler', PARAM_RAW);
+$component = optional_param('component',null, PARAM_COMPONENT);
+$area = optional_param('area', null, PARAM_ALPHANUMEXT);
 $itemid = optional_param('itemid', null, PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT);
 
 require_login();
 
-$handler = \core_customfield\handler::get_instance($handlerparam, $itemid);
-
 if ($id) {
-    $record = $handler->load_category($id);
-    $arrayform = ['name' => $record->name(), 'id' => $id];
+    $record = new \core_customfield\category($id);
+    $handler = \core_customfield\handler::get_handler_for_category($record);
+    $arrayform = ['name' => $record->get('name'), 'id' => $id];
     $title = get_string('editingcategory', 'core_customfield');
 } else {
+    $handler = \core_customfield\handler::get_handler($component, $area, $itemid);
     $title = get_string('addingnewcategory', 'core_customfield');
     $arrayform = null;
 }
 
-$url = new \moodle_url('/customfield/edit_category.php', ['handler' => $handlerparam, 'itemid' => $itemid]);
+$url = new \moodle_url('/customfield/edit_category.php',
+    ['component' => $handler->get_component(), 'area' => $handler->get_area(), 'itemid' => $handler->get_item_id(), 'id' => $id]);
 
 admin_externalpage_setup('course_customfield');
 
@@ -61,7 +63,7 @@ if ($mform->is_cancelled()) {
     } else {
         // Update.
         $category = $handler->load_category($id);
-        $category->name($data->name);
+        $category->set('name', $data->name);
     }
 
     try {

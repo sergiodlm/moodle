@@ -39,10 +39,15 @@ class field_config_form extends \moodleform {
         if (!$handler || !$handler instanceof handler) {
             throw new \coding_exception('Handler must be passed in customdata');
         }
+        $categorylist = $handler->categories_list_for_select();
+        $field = $this->_customdata['field'];
+        if (!$field || !$field instanceof field) {
+            throw new \coding_exception('Field must be passed in customdata');
+        }
 
         $mform->addElement('header', '_commonsettings', get_string('commonsettings', 'core_customfield'));
 
-        $mform->addElement('select', 'categoryid', get_string('category', 'core_customfield'), $this->_customdata['categorylist']);
+        $mform->addElement('select', 'categoryid', get_string('category', 'core_customfield'), $categorylist);
         $mform->addRule('categoryid', get_string('categoryidrequired', 'core_customfield'), 'required');
 
         $mform->addElement('text', 'name', get_string('fieldname', 'core_customfield'));
@@ -84,17 +89,20 @@ class field_config_form extends \moodleform {
         $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_customfield'));
 
         // We load specific fields from type.
-        $this->_customdata['classfieldtype']::add_field_to_edit_form($mform);
+        $field->add_field_to_edit_form($mform);
 
         // We add hidden fields.
-        $mform->addElement('hidden', 'handler', get_class($handler));
-        $mform->setType('handler', PARAM_RAW);
+        $mform->addElement('hidden', 'component', $handler->get_component());
+        $mform->setType('component', PARAM_COMPONENT);
+
+        $mform->addElement('hidden', 'area', $handler->get_area());
+        $mform->setType('area', PARAM_ALPHANUMEXT);
 
         $mform->addElement('hidden', 'itemid', $handler->get_item_id());
         $mform->setType('itemid', PARAM_INT);
 
         $mform->addElement('hidden', 'type');
-        $mform->setType('type', PARAM_NOTAGS);
+        $mform->setType('type', PARAM_COMPONENT);
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);

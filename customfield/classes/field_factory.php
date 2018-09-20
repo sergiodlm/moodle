@@ -30,7 +30,7 @@ class field_factory {
 
     const CUSTOMFIELD_TABLE = 'customfield_field';
 
-    public static function load(int $id, \stdClass $field = null) : \core_customfield\field {
+    public static function load(int $id, \stdClass $field = null) : field {
         global $DB;
 
         if (!$field || empty($field->type)) {
@@ -38,11 +38,23 @@ class field_factory {
         }
 
         $customfieldtype = "\\customfield_{$field->type}\\field";
-        if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, \core_customfield\field::class)) {
-            throw new \coding_exception( get_string('errorfieldtypenotfound', 'core_customfield') );
+        if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
+            throw new \coding_exception( get_string('errorfieldtypenotfound', 'core_customfield', s($field->type)) );
         }
 
         return new $customfieldtype($field->id, $field);
+    }
+
+    public static function create(string $type) : field {
+
+        $customfieldtype = "\\customfield_{$type}\\field";
+        if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
+            throw new \coding_exception( get_string('errorfieldtypenotfound', 'core_customfield', s($type)) );
+        }
+
+        $field = new $customfieldtype();
+        $field->set('type', $type);
+        return $field;
     }
 
     public static function get_fiedls_from_category_array(int $categoryid) :array {
