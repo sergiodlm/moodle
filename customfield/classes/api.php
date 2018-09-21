@@ -93,4 +93,57 @@ class api {
 
         return $fieldtypes;
     }
+
+    /**
+     * Updates or creates a field with data that came from a form
+     *
+     * @param field $field
+     * @param \stdClass $formdata
+     * @param array $textoptions editor options (trusttext, subdirs, maxfiles, maxbytes etc.)
+     */
+    public static function save_field(field $field, \stdClass $formdata, array $textoptions) {
+        foreach ($formdata as $key => $value) {
+            if ($key === 'configdata' && is_array($value)) {
+                $value = json_encode($value);
+            }
+            if ($key === 'id' || ($key === 'type' && $field->get('id'))) {
+                continue;
+            }
+            if (field::has_property($key)) {
+                $field->set($key, $value);
+            }
+        }
+
+        $field->save();
+
+        if (isset($formdata->description_editor)) {
+            // Find context.
+            $category = new category($field->get('categoryid'));
+            $context = \context::instance_by_id($category->get('contextid'));
+            $textoptions['context'] = $context;
+
+            // Store files.
+            $data = (object)['description_editor' => $formdata->description_editor];
+            $data = file_postupdate_standard_editor($data, 'description', $textoptions, $context,
+                'core_customfield', 'description', $field->get('id'));
+            $field->set('description', $data->description);
+            $field->set('descriptionformat', $data->descriptionformat);
+            $field->save();
+        }
+
+        // TODO trigger event.
+    }
+
+    /**
+     * Updates or creates a category with data that came from a form
+     *
+     * @param category $category
+     * @param \stdClass $formdata
+     */
+    public static function save_category(category $category, \stdClass $formdata) {
+        $category->set('name', $formdata->name);
+        $category->save();
+
+        // TODO trigger event.
+    }
 }

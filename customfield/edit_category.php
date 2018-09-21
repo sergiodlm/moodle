@@ -33,48 +33,31 @@ require_login();
 if ($id) {
     $record = new \core_customfield\category($id);
     $handler = \core_customfield\handler::get_handler_for_category($record);
-    $arrayform = ['name' => $record->get('name'), 'id' => $id];
     $title = get_string('editingcategory', 'core_customfield');
 } else {
     $handler = \core_customfield\handler::get_handler($component, $area, $itemid);
+    $record = $handler->new_category(null);
     $title = get_string('addingnewcategory', 'core_customfield');
-    $arrayform = null;
 }
 
 $url = new \moodle_url('/customfield/edit_category.php',
     ['component' => $handler->get_component(), 'area' => $handler->get_area(), 'itemid' => $handler->get_item_id(), 'id' => $id]);
+$PAGE->set_url($url);
 
-admin_externalpage_setup('course_customfield');
+if (!$handler->can_configure()) {
+    print_error('nopermissionconfigure', 'core_customfield');
+}
+$PAGE->set_context($handler->get_configuration_context());
 
-$mform = $handler->get_category_config_form();
-
-$mform->set_data($arrayform);
-
+$mform = $handler->get_category_config_form($record);
 // Process Form data.
 if ($mform->is_cancelled()) {
-
     redirect($handler->get_configuration_url());
-
 } else if ($data = $mform->get_data()) {
-
-    if (empty($data->id)) {
-        // New.
-        $category = $handler->new_category($data->name);
-    } else {
-        // Update.
-        $category = $handler->load_category($id);
-        $category->set('name', $data->name);
-    }
-
-    try {
-        $category->save();
-        redirect($handler->get_configuration_url(), get_string('categorysaved', 'core_customfield'));
-    } catch (\dml_write_exception $exception) {
-        core\notification::error(get_string('categorysavefailed', 'core_customfield'));
-    }
+    $handler->save_category($record, $data);
+    redirect($handler->get_configuration_url());
 }
 
-$PAGE->set_url($url);
 $PAGE->set_heading(get_site()->fullname);
 $PAGE->set_title($title);
 $PAGE->navbar->add($title, new \moodle_url($url));
