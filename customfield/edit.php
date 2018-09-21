@@ -23,51 +23,55 @@
 require_once(__DIR__ . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-$id = optional_param('id', 0, PARAM_INT);
+$id         = optional_param('id', 0, PARAM_INT);
 $categoryid = optional_param('categoryid', 0, PARAM_INT);
-$type = optional_param('type', null, PARAM_COMPONENT);
+$type       = optional_param('type', null, PARAM_COMPONENT);
 
 require_login();
 
 if ($id) {
-    $record = \core_customfield\api::get_field($id);
-    $type = $record->get('type');
-    $handler = \core_customfield\handler::get_handler_for_field($record);
-    $arrayform = (object)$record->to_record();
+    $record                = \core_customfield\api::get_field($id);
+    $type                  = $record->get('type');
+    $handler               = \core_customfield\handler::get_handler_for_field($record);
+    $arrayform             = (object) $record->to_record();
     $arrayform->configdata = json_decode($arrayform->configdata, true);
 
     $title = get_string('editingfield', 'core_customfield');
 } else {
-    $category = new \core_customfield\category($categoryid);
-    $handler = \core_customfield\handler::get_handler_for_category($category);
-    $record = $handler->new_field($category, $type);
-    $arrayform = (object)['id' => null, 'type' => $type, 'configdata' => ['required' => 0], 'categoryid' => $categoryid];
-    $title = get_string('addingnewcustomfield', 'core_customfield');
+    $category  = new \core_customfield\category($categoryid);
+    $handler   = \core_customfield\handler::get_handler_for_category($category);
+
+    //
+    //if ( ! $categoryid ) {
+    //    $otherfieldscategory = new \core_customfield\category();
+    //    $otherfieldscategory->set('name', get_string('otherfields', 'core_customfield'));
+    //    $otherfieldscategory->set('component', $handler->get_component());
+    //    $otherfieldscategory->set('area', $handler->get_area());
+    //    $otherfieldscategory->set('itemid', $handler->get_item_id());
+    //    print_object($otherfieldscategory->save());die;
+    //}
+
+    $record    = $handler->new_field($category, $type);
+    $arrayform = (object) ['id' => null, 'type' => $type, 'configdata' => ['required' => 0], 'categoryid' => $categoryid];
+    $title     = get_string('addingnewcustomfield', 'core_customfield');
 }
 
 $url = new \moodle_url('/customfield/edit.php',
-    ['component' => $handler->get_component(), 'area' => $handler->get_area(), 'itemid' => $handler->get_item_id(),
-        'id' => $record->get('id'), 'type' => $record->get('type'), 'categoryid' => $record->get('categoryid')]);
+                       ['component'  => $handler->get_component(), 'area' => $handler->get_area(),
+                        'itemid'     => $handler->get_item_id(),
+                        'id'         => $record->get('id'), 'type' => $record->get('type'),
+                        'categoryid' => $record->get('categoryid')]);
 
 admin_externalpage_setup('course_customfield');
 
-
 $categorylist = $handler->categories_list_for_select();
 //If no categories are present, we create a new default category.
-if (empty($categorylist)) {
-    $otherfieldscategory = new \core_customfield\category();
-    $otherfieldscategory->set('name', get_string('otherfields', 'core_customfield'));
-    $otherfieldscategory->set('component', $handler->get_component());
-    $otherfieldscategory->set('area', $handler->get_area());
-    $otherfieldscategory->set('itemid', $handler->get_item_id());
-    $otherfieldscategory->save();
-    $categorylist = $handler->categories_list_for_select();
-}
 
 
-$args         = ['classfieldtype' => $classfieldtype, 'categorylist' => $categorylist];
 
-$mform = $handler->get_field_config_form($args);
+$args = [ 'categorylist' => $categorylist ];
+
+$mform = $handler->get_field_config_form($record);
 
 $textfieldoptions = array('trusttext' => true, 'subdirs' => true, 'maxfiles' => 50, 'maxbytes' => 0,
                           'context'   => $PAGE->context, 'noclean' => 0, 'enable_filemanagement' => true);
@@ -95,7 +99,7 @@ if ($mform->is_cancelled()) {
         }
         unset($data->component, $data->area, $data->itemid, $data->submitbutton, $data->descriptiontrust);
 
-        $data->configdata = json_encode($data->configdata);
+        $data->configdata = json_encode( (empty($data->configdata)) ? [] : $data->configdata );
         $record->from_record($data);
 
         try {
@@ -125,7 +129,7 @@ if ($mform->is_cancelled()) {
             unset($data->description_editor);
         }
         unset($data->component, $data->area, $data->itemid, $data->submitbutton, $data->descriptiontrust);
-        $data->configdata = json_encode($data->configdata);
+        $data->configdata = json_encode( (empty($data->configdata)) ? [] : $data->configdata );
         $record->from_record($data);
 
         try {

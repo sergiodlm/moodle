@@ -127,7 +127,7 @@ class management implements renderable, templatable {
         $addfieldurl = new \moodle_url(
                 '/customfield/edit.php',
                 [
-                        'handler' => $data->handler,
+                        //'handler' => $data->handler,
                         'itemid' => $data->itemid,
                         'action' => 'editfield'
                 ]

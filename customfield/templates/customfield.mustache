@@ -52,6 +52,7 @@
 
 <div data-region="list-page" id="customfield_catlist" data-component="{{component}}" data-area="{{area}}" data-itemid="{{itemid}}">
     {{^categories}}
+        <br><br>
         <div class="row">
             <div class="col-xs-6 left">{{{nocategories}}}</div>
             <div class="col-xs-6 right">{{{defaultaddfieldmenu}}}</div>
@@ -80,6 +81,7 @@
             <table id="core_customfield-managefields-wrapper" class="generaltable fullwidth">
                 <thead>
                 <tr>
+                    <th scope="col"></th>
                     <th scope="col" class="col-5">{{#str}} customfield, core_customfield {{/str}}</th>
                     <th scope="col" class="col-2">{{#str}} shortname, core_customfield {{/str}}</th>
                     <th scope="col" class="col-2">{{#str}} type, core_customfield {{/str}}</th>
@@ -89,6 +91,11 @@
                 <tbody>
                     {{#fields}}
                         <tr data-field-name="{{name}}">
+                            <td class="text-left">
+                                <a href="#" class="dashboardboxes-moveitem osep-link-icon">
+                                    {{#pix}}i/dragdrop, core, {{#str}}move{{/str}}{{/pix}}
+                                </a>
+                            </td>
                             <td class="col-5">
                                 <p>{{{name}}}</p>
                             </td>
@@ -98,7 +105,7 @@
                             <td class="col-2">
                                 <p>{{{type}}}</p>
                             </td>
-                            <td class="text-right">
+                            <td class="text-right col-5">
                                 <a href="{{editfieldurl}}" data-role="editfield">{{#pix}}
                                     t/edit, core, {{#str}} edit, moodle {{/str}} {{/pix}}</a>
                                 <a href="{{deletefieldurl}}" class="confirm_delete" data-id="{{id}}" data-role="deletefield">{{#pix}}
