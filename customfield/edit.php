@@ -41,16 +41,6 @@ if ($id) {
     $category  = new \core_customfield\category($categoryid);
     $handler   = \core_customfield\handler::get_handler_for_category($category);
 
-    //
-    //if ( ! $categoryid ) {
-    //    $otherfieldscategory = new \core_customfield\category();
-    //    $otherfieldscategory->set('name', get_string('otherfields', 'core_customfield'));
-    //    $otherfieldscategory->set('component', $handler->get_component());
-    //    $otherfieldscategory->set('area', $handler->get_area());
-    //    $otherfieldscategory->set('itemid', $handler->get_item_id());
-    //    print_object($otherfieldscategory->save());die;
-    //}
-
     $record    = $handler->new_field($category, $type);
     $arrayform = (object) ['id' => null, 'type' => $type, 'configdata' => ['required' => 0], 'categoryid' => $categoryid];
     $title     = get_string('addingnewcustomfield', 'core_customfield');
@@ -66,8 +56,6 @@ admin_externalpage_setup('course_customfield');
 
 $categorylist = $handler->categories_list_for_select();
 //If no categories are present, we create a new default category.
-
-
 
 $args = [ 'categorylist' => $categorylist ];
 
