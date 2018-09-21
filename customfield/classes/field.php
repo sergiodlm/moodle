@@ -42,7 +42,7 @@ abstract class field extends persistent {
      *
      * @param \MoodleQuickForm $mform
      */
-    abstract public function add_field_to_edit_form( \MoodleQuickForm $mform);
+    abstract public function add_field_to_edit_form(\MoodleQuickForm $mform);
 
     /**
      * Return the definition of the properties of this model.
@@ -51,54 +51,54 @@ abstract class field extends persistent {
      */
     protected static function define_properties(): array {
         return array(
-                'shortname' => [
+                'shortname'         => [
                         'type' => PARAM_TEXT,
                 ],
-                'name' => [
+                'name'              => [
                         'type' => PARAM_TEXT,
                 ],
-                'type' => [
+                'type'              => [
                         'type' => PARAM_TEXT,
                 ],
-                'description' => [
-                        'type' => PARAM_RAW,
+                'description'       => [
+                        'type'     => PARAM_RAW,
                         'optional' => true,
-                        'default' => null,
-                        'null' => NULL_ALLOWED
+                        'default'  => null,
+                        'null'     => NULL_ALLOWED
                 ],
                 'descriptionformat' => [
-                        'type' => PARAM_INT,
-                        'default' => FORMAT_MOODLE,
+                        'type'     => PARAM_INT,
+                        'default'  => FORMAT_MOODLE,
                         'optional' => true
                 ],
-                'sortorder' => [
-                        'type' => PARAM_INT,
+                'sortorder'         => [
+                        'type'    => PARAM_INT,
                         'default' => 0,
                 ],
-                'required' => [
-                        'type' => PARAM_INT,
+                'required'          => [
+                        'type'    => PARAM_INT,
                         'default' => 0,
                 ],
-                'locked' => [
-                        'type' => PARAM_INT,
+                'locked'            => [
+                        'type'    => PARAM_INT,
                         'default' => 0,
                 ],
-                'uniquevalues' => [
-                        'type' => PARAM_INT,
+                'uniquevalues'      => [
+                        'type'    => PARAM_INT,
                         'default' => 0,
                 ],
-                'visibility' => [
-                        'type' => PARAM_INT,
+                'visibility'        => [
+                        'type'    => PARAM_INT,
                         'default' => 0,
                 ],
-                'categoryid' => [
+                'categoryid'        => [
                         'type' => PARAM_INT
                 ],
-                'configdata' => [
-                        'type' => PARAM_TEXT,
+                'configdata'        => [
+                        'type'     => PARAM_TEXT,
                         'optional' => true,
-                        'default' => null,
-                        'null' => NULL_ALLOWED
+                        'default'  => null,
+                        'null'     => NULL_ALLOWED
                 ],
         );
     }
@@ -107,12 +107,12 @@ abstract class field extends persistent {
      * Validate the user ID.
      *
      * @param int $value The value.
-     * @return true|lang_string
+     * @return true|\lang_string
      * @throws \coding_exception
      * @throws \dml_write_exception
      */
     protected function validate_shortname($value) {
-        if ( strpos($value, ' ') !== false ) {
+        if (strpos($value, ' ') !== false) {
             throw new \dml_write_exception(get_string('invalidshortnameerror', 'core_customfield'));
         }
 
@@ -135,7 +135,7 @@ abstract class field extends persistent {
      * @return int
      * @throws \dml_exception
      */
-    private static function count_fields(int $categoryid)  {
+    private static function count_fields(int $categoryid) {
         global $DB;
 
         return $DB->count_records(
@@ -151,16 +151,16 @@ abstract class field extends persistent {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public function get_count_fields() : int {
-        return $this::count_fields( $this->get('categoryid') );
+    public function get_count_fields(): int {
+        return $this::count_fields($this->get('categoryid'));
     }
 
     /**
      * @return bool
      * @throws \coding_exception
      */
-    protected function before_delete() : bool {
-        if ( $this->data()->get('id') > 0 ) {
+    protected function before_delete(): bool {
+        if ($this->data()->get('id') > 0) {
             $this->data()->delete();
             return false;
         }
@@ -169,26 +169,26 @@ abstract class field extends persistent {
 
     /**
      * @return bool
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
-    protected function after_create() : bool {
+    protected function after_create(): bool {
         return $this::reorder();
     }
 
     /**
      * @param bool $result
      * @return bool
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
-    protected function after_delete($result) :bool  {
+    protected function after_delete($result): bool {
         return $this->reorder();
     }
 
     /**
      * @return bool
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     private static function static_reorder($categoryid): bool {
@@ -204,8 +204,8 @@ abstract class field extends persistent {
         $neworder = count($fieldneighbours);
 
         foreach ($fieldneighbours as $field) {
-            $dataobject = new \stdClass();
-            $dataobject->id = $field->id;
+            $dataobject            = new \stdClass();
+            $dataobject->id        = $field->id;
             $dataobject->sortorder = --$neworder;
             if (!$DB->update_record(self::TABLE, $dataobject)) {
                 return false;
@@ -216,10 +216,10 @@ abstract class field extends persistent {
 
     /**
      * @return bool
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
-    private function reorder() : bool {
+    private function reorder(): bool {
         return $this::static_reorder($this->get('categoryid'));
     }
 
@@ -235,7 +235,7 @@ abstract class field extends persistent {
         $nextfielddata = $DB->get_record(
                 $this::TABLE,
                 [
-                        'sortorder' => $this->get('sortorder') + $position,
+                        'sortorder'  => $this->get('sortorder') + $position,
                         'categoryid' => $this->get('categoryid')
                 ]
         );
@@ -252,7 +252,7 @@ abstract class field extends persistent {
     }
 
     /**
-     * @return category
+     * @return self
      * @throws \coding_exception
      * @throws \dml_exception
      */
@@ -261,7 +261,7 @@ abstract class field extends persistent {
     }
 
     /**
-     * @return category
+     * @return self
      * @throws \coding_exception
      * @throws \dml_exception
      */
@@ -310,10 +310,12 @@ abstract class field extends persistent {
 
     /**
      * Tweaks the edit form.
-     * @param moodleform $mform instance of the moodleform class
+     *
+     * @param \moodleform $mform
      * @return bool
+     * @throws \moodle_exception
      */
-    public function edit_after_data($mform) {
+    public function edit_after_data(\moodleform $mform) {
         if (!$this->is_editable()) {
             return false;
         }
@@ -342,10 +344,10 @@ abstract class field extends persistent {
     /**
      * HardFreeze the field if locked.
      *
-     * @param moodleform $mform instance of the moodleform class
+     * @param \moodleform $mform
      * @throws \coding_exception
      */
-    public function edit_field_set_locked($mform) {
+    public function edit_field_set_locked(\moodleform $mform) {
         if (!$mform->elementExists($this->inputname())) {
             return;
         }
@@ -358,12 +360,12 @@ abstract class field extends persistent {
     /**
      * Loads an object with data for this field.
      *
-     * @param stdClass $user a user object
+     * @param \stdClass $data
      * @throws \coding_exception
      */
-    public function edit_load_data($data) {
+    public function edit_load_data(\stdClass $data) {
         if ($this->data() !== null) {
-           $data->{$this->inputname()} = $this->data();
+            $data->{$this->inputname()} = $this->data();
         }
     }
 
@@ -383,51 +385,52 @@ abstract class field extends persistent {
     /**
      * Saves the data coming from form
      *
-     * @param stdClass $datanew data coming from the form
+     * @param \stdClass $datanew data coming from the form
      * @return mixed returns data id if success of db insert/update, false on fail, 0 if not permitted
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
-    public function edit_save_data($datanew) {
+    public function edit_save_data(\stdClass $datanew) {
         global $DB;
 
         // TODO: handle unchecked checkboxes.
-	if (!isset($datanew->{$this->inputname()})) {
-	    // Field not present in form, probably locked and invisible - skip it.
-	    return;
-	}
+        if (!isset($datanew->{$this->inputname()})) {
+            // Field not present in form, probably locked and invisible - skip it.
+            return;
+        }
 
-	$datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->get('id')));
+        $datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->get('id')));
 
-	$datanew->{$this->inputname()} = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
+        $datanew->{$this->inputname()} = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
 
-	if ($datarecord) {
+        if ($datarecord) {
             $datarecord->{$this->datafield()} = $datanew->{$this->inputname()};
-	    $datarecord->timemodified = time();
-	    $result = $DB->update_record('customfield_data', $datarecord);
-	} else {
-	    $now = time();
-            $datarecord = new \stdclass();
+            $datarecord->timemodified         = time();
+            $result                           = $DB->update_record('customfield_data', $datarecord);
+        } else {
+            $now                              = time();
+            $datarecord                       = new \stdclass();
             $datarecord->{$this->datafield()} = $datanew->{$this->inputname()};
-	    $datarecord->fieldid = $this->get('id');
-            $datarecord->recordid = $datanew->id;
-	    $datarecord->timecreated = $now;
-	    $datarecord->timemodified = $now;
-	    $result = $DB->insert_record('customfield_data', $datarecord);
-	}
-	return $result;
+            $datarecord->fieldid              = $this->get('id');
+            $datarecord->recordid             = $datanew->id;
+            $datarecord->timecreated          = $now;
+            $datarecord->timemodified         = $now;
+            $result                           = $DB->insert_record('customfield_data', $datarecord);
+        }
+        return $result;
     }
 
     /**
      * Hook for child classess to process the data before it gets saved in database
-     * @param stdClass $data
-     * @param stdClass $datarecord The object that will be used to save the record
+     *
+     * @param \stdClass $data
+     * @param \stdClass $datarecord The object that will be used to save the record
      * @return  mixed
      * @return int
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
-    public function edit_save_data_preprocess($data, $datarecord) {
+    public function edit_save_data_preprocess(\stdClass $data, \stdClass $datarecord) {
         return $data;
     }
 
@@ -437,7 +440,7 @@ abstract class field extends persistent {
     }
 
     public function inputname() {
-        return 'customfield_'.$this->shortname();
+        return 'customfield_' . $this->shortname();
     }
 
 }

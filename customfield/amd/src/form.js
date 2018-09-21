@@ -1,4 +1,4 @@
-define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'], function($, str, notification, ajax, templates) {
+define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates', 'core/sortable_list'], function($, str, notification, ajax, templates, sortableList) {
 
     var confirmDelete = function(id, type, component, area, itemid) {
         str.get_strings([
@@ -16,6 +16,7 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                         var func = 'core_customfield_delete_category';
                         break;
                 }
+
                 var promises = ajax.call([
                     {methodname: func, args:{id: id}},
                     {methodname: 'core_customfield_reload_template', args:{component: component, area: area, itemid: itemid}}
@@ -95,6 +96,44 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                 var handler = $('#customfield_catlist').attr('data-handler');
                 move($(this).attr('data-id'), handler, 'category_down');
                 e.preventDefault();
+            });
+
+            var sectionName = function(element) {
+                return element.closest('[data-category-name]').attr('data-category-name');
+            };
+
+            // Sort category.
+            sortableList.init({
+                listSelector: '#customfield_catlist',
+                moveHandlerSelector: '.movecategory',
+                elementNameCallback: function(el) {
+                    console.log('elementnamecallback');console.log(el);return sectionName(el);
+                }
+            });
+            $('[data-category-name]').on('sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend', function(evt, info) {
+                console.log('Category event ' + evt.type);
+                console.log(info);
+                evt.stopPropagation(); // Important for nested lists to prevent multiple targets.
+            });
+
+            // Sort activities.
+            sortableList.init({
+                listSelector: '#customfield_catlist .fieldslist tbody',
+                moveHandlerSelector: '.movefield',
+                destinationNameCallback: function(parentElement, afterElement) {
+                    if (!afterElement.length) {
+                        return str.get_string('totopofsection', 'moodle', sectionName(parentElement));
+                   } else if (afterElement.attr('data-field-name')) {
+                        return str.get_string('afterresource', 'moodle', afterElement.attr('data-field-name'));
+                    } else {
+                        return '';
+                    }
+                }
+            });
+            $('[data-field-name]').on('sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend', function(evt, info) {
+                console.log('Field event ' + evt.type);
+                console.log(info);
+                evt.stopPropagation(); // Important for nested lists to prevent multiple targets.
             });
         }
     };
