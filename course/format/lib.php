@@ -244,14 +244,12 @@ abstract class format_base {
         }
         if ($this->course === false) {
             $this->course = get_course($this->courseid);
+            $this->course->customfields = $this->get_custom_fields();
             $options = $this->get_format_options();
-            $dbcoursecolumns = null;
+            $dbcoursecolumns = $DB->get_columns('course');
             foreach ($options as $optionname => $optionvalue) {
                 if (isset($this->course->$optionname)) {
                     // Course format options must not have the same names as existing columns in db table "course".
-                    if (!isset($dbcoursecolumns)) {
-                        $dbcoursecolumns = $DB->get_columns('course');
-                    }
                     if (isset($dbcoursecolumns[$optionname])) {
                         debugging('The option name '.$optionname.' in course format '.$this->format.
                             ' is invalid because the field with the same name exists in {course} table',
@@ -603,6 +601,11 @@ abstract class format_base {
      */
     public function section_format_options($foreditform = false) {
         return array();
+    }
+
+    public function get_custom_fields() {
+        $handler = new \core_course\customfield\course_handler();
+        return $handler->fields_array($this->courseid);
     }
 
     /**

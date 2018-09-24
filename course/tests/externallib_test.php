@@ -1185,19 +1185,32 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $this->assignUserCapability('moodle/course:viewhiddencourses', $contextid, $roleid);
         $this->assignUserCapability('moodle/course:setforcedlanguage', $contextid, $roleid);
 
+        // Custom fields.
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+
+        $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
+        $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
+
         // Create category and course.
         $category1  = self::getDataGenerator()->create_category();
         $category2  = self::getDataGenerator()->create_category();
+
         $originalcourse1 = self::getDataGenerator()->create_course();
         self::getDataGenerator()->enrol_user($USER->id, $originalcourse1->id, $roleid);
+
         $originalcourse2 = self::getDataGenerator()->create_course();
         self::getDataGenerator()->enrol_user($USER->id, $originalcourse2->id, $roleid);
+
+        $customfieldoriginalvalue = ['shortname' => 'test', 'value' => 'Test value'];
+        $originalcourse3 = self::getDataGenerator()->create_course(['customfields' => [$customfieldoriginalvalue]]);
+        self::getDataGenerator()->enrol_user($USER->id, $originalcourse3->id, $roleid);
 
         // Course values to be updated.
         $course1['id'] = $originalcourse1->id;
         $course1['fullname'] = 'Updated test course 1';
         $course1['shortname'] = 'Udestedtestcourse1';
         $course1['categoryid'] = $category1->id;
+
         $course2['id'] = $originalcourse2->id;
         $course2['fullname'] = 'Updated test course 2';
         $course2['shortname'] = 'Updestedtestcourse2';
@@ -1220,7 +1233,11 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $course2['enablecompletion'] = 1;
         $course2['lang'] = 'en';
         $course2['forcetheme'] = 'bootstrapbase';
-        $courses = array($course1, $course2);
+
+        $course3['id'] = $originalcourse3->id;
+        $updatedcustomfieldvalue = ['shortname' => 'test', 'value' => 'Updated test value'];
+        $course3['customfields'] = [$updatedcustomfieldvalue];
+        $courses = array($course1, $course2, $course3);
 
         $updatedcoursewarnings = core_course_external::update_courses($courses);
         $updatedcoursewarnings = external_api::clean_returnvalue(core_course_external::update_courses_returns(),
@@ -1268,6 +1285,9 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 $this->assertEquals(5, course_get_format($course['id'])->get_last_section_number());
                 $this->assertEquals(0, $courseinfo->newsitems);
                 $this->assertEquals(FORMAT_MOODLE, $courseinfo->summaryformat);
+            } else if ($course['id'] == $course3['id']) {
+                $updatedcustomfields = [array_merge($customfield, $updatedcustomfieldvalue)];
+                $this->assertEquals($updatedcustomfields, $courseinfo->customfields);
             } else {
                 throw new moodle_exception('Unexpected shortname');
             }

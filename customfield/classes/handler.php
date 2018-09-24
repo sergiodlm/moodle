@@ -342,4 +342,14 @@ abstract class handler {
             \core\notification::error(get_string('categorysavefailed', 'core_customfield'));
         }
     }
+
+    public function fields_array($courseid) {
+        $fields = $this->get_fields_with_data($courseid);
+        $fieldsforws = array();
+        foreach ($fields as $field) {
+            $fieldsforws[]= ['type' => $field->get('type'), 'value' => $field->get_data(),
+                             'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
+        }
+        return $fieldsforws;
+    }
 }

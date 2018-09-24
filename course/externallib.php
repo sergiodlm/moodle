@@ -486,7 +486,7 @@ class core_course_external extends external_api {
             }
 
             $handler = new \core_course\customfield\course_handler();
-            $courseinfo['customfields'] = $handler->fields_for_ws($course->id);
+            $courseinfo['customfields'] = $handler->fields_array($course->id);
 
             //some field should be returned only if the user has update permission
             $courseadmin = has_capability('moodle/course:update', $context);
@@ -983,9 +983,9 @@ class core_course_external extends external_api {
                 }
 
                 if (!empty($course['customfields'])) {
-                    foreach ($course['customfields'] as $option) {
-                        if (isset($option['name']) && isset($option['value'])) {
-                            $course['customfield_'.$option['name']] = $option['value'];
+                    foreach ($course['customfields'] as $field) {
+                        if (isset($field['shortname']) && isset($field['value'])) {
+                            $course['customfield_'.$field['shortname']] = $field['value'];
                         }
                     }
                 }
