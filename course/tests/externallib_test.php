@@ -417,6 +417,10 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
 
         $category  = self::getDataGenerator()->create_category();
 
+        // Custom fields
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+        $field = self::getDataGenerator()->create_custom_field($fieldcategory, 'text', 'fieldshortname', 'Custom info');
+
         // Create base categories.
         $course1['fullname'] = 'Test course 1';
         $course1['shortname'] = 'Testcourse1';
@@ -456,7 +460,11 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         foreach ($course3options as $key => $value) {
             $course3['courseformatoptions'][] = array('name' => $key, 'value' => $value);
         }
-        $courses = array($course1, $course2, $course3);
+        $course4['fullname'] = 'Test course with custom fields';
+        $course4['shortname'] = 'Testcoursecustomfields';
+        $course4['categoryid'] = $category->id;
+        $course4['customfields'] = ['fieldshortname' => ['shortname' => 'fieldshortname', 'value' => 'Some value']];
+        $courses = array($course1, $course2, $course3, $course4);
 
         $createdcourses = core_course_external::create_courses($courses);
 
@@ -464,7 +472,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $createdcourses = external_api::clean_returnvalue(core_course_external::create_courses_returns(), $createdcourses);
 
         // Check that right number of courses were created.
-        $this->assertEquals(3, count($createdcourses));
+        $this->assertEquals(4, count($createdcourses));
 
         // Check that the courses were correctly created.
         foreach ($createdcourses as $createdcourse) {
@@ -520,6 +528,14 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 $this->assertEquals(course_get_format($createdcourse['id'])->get_last_section_number(),
                     $course3options['numsections']);
                 $this->assertEquals($courseinfo->coursedisplay, $course3options['coursedisplay']);
+            } else if ($createdcourse['shortname'] == $course4['shortname']) {
+                $this->assertEquals($courseinfo->fullname, $course4['fullname']);
+                $this->assertEquals($courseinfo->shortname, $course4['shortname']);
+                $this->assertEquals($courseinfo->category, $course4['categoryid']);
+
+                 $handler  = new core_course\customfield\course_handler(null);
+                 $customfields = $handler->get_fields_with_data($createdcourse['id']);
+                var_dump($customfields);die();
             } else {
                 throw new moodle_exception('Unexpected shortname');
             }

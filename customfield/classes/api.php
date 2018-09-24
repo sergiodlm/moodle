@@ -65,7 +65,7 @@ class api {
             $field->id = $data->field_id;
             $field->shortname = $data->shortname;
             $formfield = self::get_field($field->id, $field);
-            $formfield->categoryname($data->categoryname);
+            $formfield->set_categoryname($data->categoryname);
 
             if ($data->id == null) {
                 $data->fieldid = $data->field_id;

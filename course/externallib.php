@@ -677,16 +677,13 @@ class core_course_external extends external_api {
                             'customfields' => new external_multiple_structure(
                                 new external_single_structure(
                                     array(
-                                        'type'  => new external_value(PARAM_ALPHANUMEXT, 'The type of the custom field'),
+                                        'shortname'  => new external_value(PARAM_ALPHANUMEXT, 'The shortname of the custom field'),
                                         'value' => new external_value(PARAM_RAW, 'The value of the custom field'),
-                                    )
                                 )), 'custom fields for the course', VALUE_OPTIONAL
-                             ),
-                        )
-                    ), 'courses to create'
+                    )), 'courses to create'
                 )
             )
-        );
+        ));
     }
 
     /**

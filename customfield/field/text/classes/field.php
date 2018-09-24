@@ -76,7 +76,7 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function set_data($data) {
-        $this->set('data', $data->charvalue);
+       // $this->set('data', $data->charvalue);
     }
 
     /**

@@ -2491,7 +2491,6 @@ function create_course($data, $editoroptions = NULL) {
     $data->id = $course->id;
     $handler->save_customfield_data($data);
 
-
     return $course;
 }
 

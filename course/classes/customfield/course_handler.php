@@ -60,7 +60,7 @@ class course_handler extends \core_customfield\handler {
 
     public function fields_for_ws() {
         $fields = $this->get_fields_with_data($courseid);
-        $fieldsforws = array()
+        $fieldsforws = array();
         foreach ($fields as $field) {
             $fieldsforws[]= ['type' => $field->type(), 'value' => $field->data(),
                              'name' => $field->name(), 'shortname' => $field->shortname()];

@@ -38,6 +38,13 @@ abstract class field extends persistent {
     const TABLE = 'customfield_field';
 
     /**
+     * Name of the category that the field belongs to (used on forms and webservices).
+     *
+     * @var string
+     */
+    private $categoryname;
+
+    /**
      * Add field parameters to the field configuration form
      *
      * @param \MoodleQuickForm $mform
@@ -404,4 +411,11 @@ abstract class field extends persistent {
         return 'customfield_' . $this->get('shortname');
     }
 
+    public function set_categoryname($name) {
+        $this->categoryname = $name;
+    }
+
+    public function get_categoryname() {
+        return $this->categoryname;
+    }
 }
