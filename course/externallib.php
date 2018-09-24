@@ -768,8 +768,14 @@ class core_course_external extends external_api {
                 }
             }
 
+            if (!empty($course['customfields'])) {
+                foreach ($course['customfields'] as $field) {
+                    $course['customfield_'.$field['shortname']] = $field['value'];
+                }
+            }
+
             //Note: create_course() core function check shortname, idnumber, category
-            $course['id'] = create_course((object) $course)->id;
+            $course['id'] = create_course((object)$course)->id;
 
             $resultcourses[] = array('id' => $course['id'], 'shortname' => $course['shortname']);
         }

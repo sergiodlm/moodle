@@ -463,8 +463,9 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $course4['fullname'] = 'Test course with custom fields';
         $course4['shortname'] = 'Testcoursecustomfields';
         $course4['categoryid'] = $category->id;
-        $course4['customfields'] = ['fieldshortname' => ['shortname' => 'fieldshortname', 'value' => 'Some value']];
-        $courses = array($course1, $course2, $course3, $course4);
+        $course4customfields = [['shortname' => 'fieldshortname', 'value' => 'Some value']];
+        $course4['customfields'] = $course4customfields;
+        $courses = array($course4, $course1, $course2, $course3);
 
         $createdcourses = core_course_external::create_courses($courses);
 
@@ -535,7 +536,10 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
 
                  $handler  = new core_course\customfield\course_handler(null);
                  $customfields = $handler->get_fields_with_data($createdcourse['id']);
-                var_dump($customfields);die();
+                 foreach($customfields as $field) {
+                     $fieldarray = ['shortname' => $field->get('shortname'), 'value' => $field->get_data()];
+                     $this->assertTrue(in_array($fieldarray, $course4customfields));
+                 }
             } else {
                 throw new moodle_exception('Unexpected shortname');
             }

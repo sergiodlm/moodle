@@ -42,14 +42,14 @@ abstract class field extends persistent {
      *
      * @var string
      */
-    private $categoryname;
+    protected $categoryname;
 
     /**
-     * Data for field
+     * Data for field.
      *
      * @var string
      */
-    private $data;
+    protected $data;
 
     /**
      * Add field parameters to the field configuration form
@@ -340,10 +340,7 @@ abstract class field extends persistent {
      */
     public function edit_load_data(\stdClass $data) {
         if ($this->data() !== null) {
-            if ($this->inputname() == 'customfield_maisinfo') {
-                var_dump($this->data());die();
-            }
-            $data->{$this->inputname()} = $this->get_data();
+            $data->{$this->inputname()} = $this->data();
         }
     }
 
