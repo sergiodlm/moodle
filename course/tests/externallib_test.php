@@ -761,13 +761,30 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $coursedata2['fullname'] = 'SECOND COURSE';
         $course2  = self::getDataGenerator()->create_course($coursedata2);
 
+        // Custom fields
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+
+        $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
+        $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
+
+        $coursedata3['fullname'] = 'Course with custom fields';
+        $coursedata3['customfields'] = ['shortname' => 'test', 'value' => 'Custom value'];
+        $course3  = self::getDataGenerator()->create_course($coursedata3);
+
         $page = new moodle_page();
         $page->set_course($course2);
         $page->blocks->add_blocks([BLOCK_POS_LEFT => ['news_items'], BLOCK_POS_RIGHT => []], 'course-view-*');
+
         // Search by name.
         $results = core_course_external::search_courses('search', 'FIRST');
         $results = external_api::clean_returnvalue(core_course_external::search_courses_returns(), $results);
         $this->assertEquals($coursedata1['fullname'], $results['courses'][0]['fullname']);
+        $this->assertCount(1, $results['courses']);
+
+        // Search by customfield.
+        $results = core_course_external::search_courses('search', 'Custom');
+        $results = external_api::clean_returnvalue(core_course_external::search_courses_returns(), $results);
+        $this->assertEquals($coursedata3['fullname'], $results['courses'][0]['fullname']);
         $this->assertCount(1, $results['courses']);
 
         // Create the forum.
@@ -818,11 +835,11 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $this->assertEquals(1, $results['total']);
         $this->assertEquals($coursedata1['fullname'], $results['courses'][0]['fullname']);
 
-        // Check that we can see both without the limit to enrolled setting.
+        // Check that we can see all courses without the limit to enrolled setting.
         $results = core_course_external::search_courses('search', 'COURSE', 0, 0, array(), 0);
         $results = external_api::clean_returnvalue(core_course_external::search_courses_returns(), $results);
-        $this->assertCount(2, $results['courses']);
-        $this->assertEquals(2, $results['total']);
+        $this->assertCount(3, $results['courses']);
+        $this->assertEquals(3, $results['total']);
 
         // Check that we only see our enrolled course when limiting.
         $results = core_course_external::search_courses('search', 'COURSE', 0, 0, array(), 1);
@@ -834,7 +851,6 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         // Search by block (use news_items default block). Should fail (only admins allowed).
         $this->expectException('required_capability_exception');
         $results = core_course_external::search_courses('blocklist', $blockid);
-
     }
 
     /**
