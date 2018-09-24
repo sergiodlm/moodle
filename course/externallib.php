@@ -486,7 +486,7 @@ class core_course_external extends external_api {
             }
 
             $handler = new \core_course\customfield\course_handler();
-            $courseinfo['customfields'] = $handler->fields_for_ws($courseid);
+            $courseinfo['customfields'] = $handler->fields_for_ws($course->id);
 
             //some field should be returned only if the user has update permission
             $courseadmin = has_capability('moodle/course:update', $context);
@@ -598,9 +598,15 @@ class core_course_external extends external_api {
                                 new external_single_structure(
                                     array('name' => new external_value(PARAM_ALPHANUMEXT, 'course format option name'),
                                         'value' => new external_value(PARAM_RAW, 'course format option value')
-                                )),
-                                    'additional options for particular course format', VALUE_OPTIONAL
+                                )), 'additional options for particular course format', VALUE_OPTIONAL
                              ),
+                            'customfields' => new external_multiple_structure(
+                                new external_single_structure(
+                                    ['name' => new external_value(PARAM_RAW, 'The name of the custom field'),
+                                     'shortname' => new external_value(PARAM_RAW, 'The shortname of the custom field'),
+                                     'type'  => new external_value(PARAM_ALPHANUMEXT, 'The type of the custom field - text field, checkbox...'),
+                                     'value' => new external_value(PARAM_RAW, 'The value of the custom field')]
+                                ), 'Custom fields and associated values', VALUE_OPTIONAL),
                         ), 'course'
                 )
         );
@@ -855,12 +861,11 @@ class core_course_external extends external_api {
                                 new external_single_structure(
                                     array('name' => new external_value(PARAM_ALPHANUMEXT, 'course format option name'),
                                         'value' => new external_value(PARAM_RAW, 'course format option value')
-                                )),
-                                    'additional options for particular course format', VALUE_OPTIONAL),
+                                )), 'additional options for particular course format', VALUE_OPTIONAL),
                             'customfields' => new external_multiple_structure(
                                 new external_single_structure(
                                     [
-                                        'type'  => new external_value(PARAM_ALPHANUMEXT, 'The name of the custom field'),
+                                        'shortname'  => new external_value(PARAM_ALPHANUMEXT, 'The shortname of the custom field'),
                                         'value' => new external_value(PARAM_RAW, 'The value of the custom field')
                                     ]
                                 ), 'Custom fields', VALUE_OPTIONAL),
@@ -2458,10 +2463,10 @@ class core_course_external extends external_api {
             'customfields' => new external_multiple_structure(
                 new external_single_structure(
                     array(
-                        'type'  => new external_value(PARAM_ALPHANUMEXT, 'The type of the custom field - text field, checkbox...'),
-                        'value' => new external_value(PARAM_RAW, 'The value of the custom field'),
                         'name' => new external_value(PARAM_RAW, 'The name of the custom field'),
                         'shortname' => new external_value(PARAM_RAW, 'The shortname of the custom field - to be able to build the field class in the code'),
+                        'type'  => new external_value(PARAM_ALPHANUMEXT, 'The type of the custom field - text field, checkbox...'),
+                        'value' => new external_value(PARAM_RAW, 'The value of the custom field'),
                     )
                 ), 'Custom fields', VALUE_OPTIONAL),
         );

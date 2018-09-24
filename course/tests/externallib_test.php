@@ -419,7 +419,9 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
 
         // Custom fields
         $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
-        $field = self::getDataGenerator()->create_custom_field($fieldcategory, 'text', 'fieldshortname', 'Custom info');
+
+        $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
+        $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
 
         // Create base categories.
         $course1['fullname'] = 'Test course 1';
@@ -463,7 +465,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $course4['fullname'] = 'Test course with custom fields';
         $course4['shortname'] = 'Testcoursecustomfields';
         $course4['categoryid'] = $category->id;
-        $course4customfields = [['shortname' => 'fieldshortname', 'value' => 'Some value']];
+        $course4customfields = [$customfield];
         $course4['customfields'] = $course4customfields;
         $courses = array($course4, $course1, $course2, $course3);
 
@@ -628,11 +630,20 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $coursedata['summaryformat'] = FORMAT_MOODLE;
         $course1  = self::getDataGenerator()->create_course($coursedata);
 
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+
+        $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
+        $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
+
+        $customfieldvalue = ['shortname' => 'test', 'value' => 'Test value'];
+
         $generatedcourses[$course1->id] = $course1;
         $course2  = self::getDataGenerator()->create_course();
         $generatedcourses[$course2->id] = $course2;
         $course3  = self::getDataGenerator()->create_course(array('format' => 'topics'));
         $generatedcourses[$course3->id] = $course3;
+        $course4  = self::getDataGenerator()->create_course(['customfields' => [$customfieldvalue]]);
+        $generatedcourses[$course4->id] = $course4;
 
         // Set the required capabilities by the external function.
         $context = context_system::instance();
@@ -643,15 +654,17 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 context_course::instance($course2->id)->id, $roleid);
         $this->assignUserCapability('moodle/course:update',
                 context_course::instance($course3->id)->id, $roleid);
+        $this->assignUserCapability('moodle/course:update',
+                context_course::instance($course4->id)->id, $roleid);
 
         $courses = core_course_external::get_courses(array('ids' =>
-            array($course1->id, $course2->id)));
+            array($course1->id, $course2->id, $course4->id)));
 
         // We need to execute the return values cleaning process to simulate the web service server.
         $courses = external_api::clean_returnvalue(core_course_external::get_courses_returns(), $courses);
 
-        // Check we retrieve the good total number of categories.
-        $this->assertEquals(2, count($courses));
+        // Check we retrieve the good total number of courses.
+        $this->assertEquals(3, count($courses));
 
         foreach ($courses as $course) {
             $coursecontext = context_course::instance($course['id']);
@@ -687,6 +700,9 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                     array('name' => 'hiddensections', 'value' => $dbcourse->hiddensections),
                     array('name' => 'coursedisplay', 'value' => $dbcourse->coursedisplay),
                 ));
+            }
+            if ($dbcourse->id == 4) {
+                $this->assertEquals($course['customfields'], [array_merge($customfield, $customfieldvalue)]);
             }
         }
 

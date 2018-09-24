@@ -58,14 +58,14 @@ class course_handler extends \core_customfield\handler {
         return \context_system::instance();
     }
 
-    public function fields_for_ws() {
+    public function fields_for_ws($courseid) {
         $fields = $this->get_fields_with_data($courseid);
         $fieldsforws = array();
         foreach ($fields as $field) {
-            $fieldsforws[]= ['type' => $field->type(), 'value' => $field->data(),
-                             'name' => $field->name(), 'shortname' => $field->shortname()];
+            $fieldsforws[]= ['type' => $field->get('type'), 'value' => $field->get_data(),
+                             'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
         }
-        return $fields;
+        return $fieldsforws;
     }
 
     public function get_configuration_url(): \moodle_url {
