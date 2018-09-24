@@ -252,14 +252,14 @@ abstract class handler {
             }
 
             // Display the header and the fields.
-            $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->categoryname()));
+            $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->get_categoryname()));
             foreach ($fieldstodisplay as $formfield) {
                 $formfield->edit_field_add($mform);
-                if ($formfield->required()) {
+                if ($formfield->get('required')) {
                     $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
                 }
                 // TODO: move capability check to course handler or get capability from current handler.
-                if ($formfield->locked() and !has_capability('moodle/course:update', \context_system::instance())) {
+                if ($formfield->get('locked') and !has_capability('moodle/course:update', \context_system::instance())) {
                     $mform->hardFreeze($formfield->inputname());
                 }
             }

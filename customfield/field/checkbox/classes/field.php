@@ -56,8 +56,7 @@ class field extends \core_customfield\field{
      * @throws \coding_exception
      */
     public function set_data($data) {
-        // TODO: verify if should support checkboxes with custom values.
-        $this->set('data', $data->intvalue);
+        $this->data = $data->intvalue;
     }
 
     /**
@@ -73,9 +72,9 @@ class field extends \core_customfield\field{
      */
     public function display() {
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
+               \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname']).
                // TODO: show as checkbox, disabled or icon.
-               \html_writer::tag('span', $this->get('data'), ['class' => 'customfieldvalue']).
+               \html_writer::tag('span', $this->get_data(), ['class' => 'customfieldvalue']).
                \html_writer::end_tag('div');
     }
 }

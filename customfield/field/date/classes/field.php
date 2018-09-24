@@ -52,15 +52,15 @@ class field extends \core_customfield\field{
         $calendartype = \core_calendar\type_factory::get_calendar_instance();
 
         // Check if the field is required.
-        $config = json_decode($this->configdata());
+        $config = json_decode($this->get('configdata'));
         $optional = ($config->required != 1);
 
         $attributes = ['optional' => $optional];
 
         if (!empty($config->dateincludetime)) {
-            $mform->addElement('date_time_selector', $this->inputname(), format_string($this->name()), $attributes);
+            $mform->addElement('date_time_selector', $this->inputname(), format_string($this->get('name'), $attributes);
         } else {
-            $mform->addElement('date_selector', $this->inputname(), format_string($this->name()), $attributes);
+            $mform->addElement('date_selector', $this->inputname(), format_string($this->get('name'), $attributes);
         }
         $mform->setType($this->inputname(), PARAM_INT);
         $mform->setDefault($this->inputname(), time());

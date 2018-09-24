@@ -64,7 +64,7 @@ class field extends \core_customfield\field{
      * @throws \coding_exception
      */
     public function set_data($data) {
-        $this->set('data', $data->intvalue);
+        $this->data = $data->intvalue;
     }
 
     /**

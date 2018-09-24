@@ -76,7 +76,7 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function set_data($data) {
-       // $this->set('data', $data->charvalue);
+       $this->data = $data->charvalue;
     }
 
     /**
@@ -92,9 +92,9 @@ class field extends \core_customfield\field {
      */
     public function display() {
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname customfieldtext']) .
+               \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname customfieldtext']) .
                ' : ' .
-               \html_writer::tag('span', format_string($this->data()), ['class' => 'customfieldvalue customfieldtext']) .
+               \html_writer::tag('span', format_string($this->get_data()), ['class' => 'customfieldvalue customfieldtext']) .
                \html_writer::end_tag('div');
     }
 }

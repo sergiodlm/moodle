@@ -45,6 +45,13 @@ abstract class field extends persistent {
     private $categoryname;
 
     /**
+     * Data for field
+     *
+     * @var string
+     */
+    private $data;
+
+    /**
      * Add field parameters to the field configuration form
      *
      * @param \MoodleQuickForm $mform
@@ -333,7 +340,10 @@ abstract class field extends persistent {
      */
     public function edit_load_data(\stdClass $data) {
         if ($this->data() !== null) {
-            $data->{$this->inputname()} = $this->data();
+            if ($this->inputname() == 'customfield_maisinfo') {
+                var_dump($this->data());die();
+            }
+            $data->{$this->inputname()} = $this->get_data();
         }
     }
 
@@ -398,7 +408,7 @@ abstract class field extends persistent {
      * @throws \moodle_exception
      * @throws \dml_exception
      */
-    public function edit_save_data_preprocess(\stdClass $data, \stdClass $datarecord) {
+    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
         return $data;
     }
 
@@ -417,5 +427,13 @@ abstract class field extends persistent {
 
     public function get_categoryname() {
         return $this->categoryname;
+    }
+
+    public function set_data($data) {
+        $this->data = $data;
+    }
+
+    public function get_data() {
+        return $this->data;
     }
 }
