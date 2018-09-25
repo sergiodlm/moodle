@@ -62,16 +62,16 @@ class field extends \core_customfield\field {
         $formattedoptions = array();
         foreach ($options as $key => $option) {
             // Multilang formatting with filters.
-            $formattedoptions[$option] = format_string($option, true, ['context' => \context_system::instance()]);
+            $formattedoptions[$key] = format_string($option, true, ['context' => \context_system::instance()]);
+            $options[$key] = trim($option);
         }
 
-        $mform->addElement('select', $this->inputname(), format_string($this->get('name')), $options);
+        $mform->addElement('select', $this->inputname(), format_string($this->get('name')), $formattedoptions);
 
-        $key = $config->defaultvalue;
-        if (isset($formattedoptions[$key]) || ($key = array_search($key, $formattedoptions)) !== false) {
-            $defaultkey = $key;
+        if (is_null($this->get_data())) {
+            $defaultkey = array_search($config->defaultvalue, $options);
         } else {
-            $defaultkey = '';
+            $defaultkey = $this->get_data();
         }
         $mform->setDefault($this->inputname(), $defaultkey);
     }
