@@ -201,6 +201,7 @@ abstract class handler {
         return $errors;
     }
 
+    // Add the field to the $data received.
     public function load_data($data) {
         if (!isset($data->id)) {
             $data->id = 0;

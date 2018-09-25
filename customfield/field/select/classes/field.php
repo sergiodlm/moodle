@@ -55,15 +55,14 @@ class field extends \core_customfield\field {
         $config = json_decode($this->get('configdata'));
 
         if (isset($config->options)) {
-            $options = explode("\n", $config->options);
+            $options = explode("\r\n", $config->options);
         } else {
             $options = array();
         }
         $formattedoptions = array();
         foreach ($options as $key => $option) {
             // Multilang formatting with filters.
-            $formattedoptions[$key] = format_string($option, true, ['context' => \context_system::instance()]);
-            $options[$key] = trim($option);
+            $formattedoptions[$key] = format_string($option);
         }
 
         $mform->addElement('select', $this->inputname(), format_string($this->get('name')), $formattedoptions);
@@ -103,9 +102,15 @@ class field extends \core_customfield\field {
         } else {
             $options = array();
         }
+        if (is_null($this->get_data())) {
+            $displaydata = get_string('notset', 'core_customfield');
+        } else {
+            $displaydata = format_string($options[$this->get_data()]);
+        }
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
-               \html_writer::tag('span', format_text($options[$this->get('data')]), ['class' => 'customfieldvalue']).
+               \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname']) .
+               ' : ' .
+               \html_writer::tag('span', $displaydata, ['class' => 'customfieldvalue']) .
                \html_writer::end_tag('div');
     }
 }

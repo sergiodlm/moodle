@@ -129,6 +129,10 @@ class field extends \core_customfield\field {
         $mform->setDefault($this->inputname(), time());
     }
 
+    public function set_data($data) {
+        $this->data = $data->intvalue;
+    }
+
     /**
      * @return string
      */
@@ -150,14 +154,14 @@ class field extends \core_customfield\field {
         }
 
         // Check if a date has been specified.
-        if (empty($this->data)) {
+        if (empty($this->get_data())) {
             $date = get_string('notset', 'core_customfield');
         } else {
             $date = userdate($this->get_data(), $format);
         }
 
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']) .
+               \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname']) .
                ' : ' .
                \html_writer::tag('span', $date, ['class' => 'customfieldvalue']) .
                \html_writer::end_tag('div');

@@ -74,10 +74,16 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function display() {
+        global $OUTPUT;
+        if ($this->get_data()) {
+            $displaydata = $OUTPUT->pix_icon('checked', get_string('checked', 'core_customfield'), 'customfield_date');
+        } else {
+            $displaydata = $OUTPUT->pix_icon('notchecked', get_string('notchecked', 'core_customfield'), 'customfield_date');
+        }
         return \html_writer::start_tag('div') .
                \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname']).
-               // TODO: show as checkbox, disabled or icon.
-               \html_writer::tag('span', $this->get_data(), ['class' => 'customfieldvalue']).
+               ' : '.
+               \html_writer::tag('span', $displaydata, ['class' => 'customfieldvalue']).
                \html_writer::end_tag('div');
     }
 }
