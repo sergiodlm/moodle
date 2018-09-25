@@ -94,4 +94,23 @@ class field_factory {
 
         return true;
     }
+
+    public static function drag_and_drop($from, $to) {
+        $fieldfrom = self::load($from);
+        $fieldto   = self::load($to);
+
+        //TODO: refactoting this
+        if ($fieldfrom->get('sortorder') < $fieldto->get('sortorder')) {
+            for ($i = $fieldfrom->get('sortorder'); $i < $fieldto->get('sortorder'); $i++) {
+                $fieldfrom->up();
+            }
+        } elseif ($fieldfrom->get('sortorder') > $fieldto->get('sortorder')) {
+            for ($i = $fieldfrom->get('sortorder'); $i > $fieldto->get('sortorder'); $i--) {
+                $fieldfrom->down();
+            }
+        }
+
+        return true;
+    }
+
 }

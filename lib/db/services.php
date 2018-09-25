@@ -2198,6 +2198,14 @@ $functions = array(
                 'type'        => 'write',
                 'ajax'        => 'true'
         ),
+        'core_customfield_drag_and_drop' => array(
+                'classname'   => 'core_customfield_external',
+                'methodname'  => 'drag_and_drop',
+                'classpath'   => 'customfield/externallib.php',
+                'description' => 'Drag and drop',
+                'type'        => 'write',
+                'ajax'        => 'true'
+        ),
 );
 
 $services = array(

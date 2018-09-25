@@ -269,45 +269,6 @@ abstract class field extends persistent {
         return $this->move(-1);
     }
 
-    public function drag_and_drop($from, $to, $newcategoryid = null) {
-        if ($from < 1 || $to < 1 || $newcategoryid < 1) {
-            return false;
-        }
-
-        //TODO: refactoring of this pending
-        if (!is_null($newcategoryid)) {
-            $newcategory = new category($newcategoryid);
-            $oldcategory = new category($this->get('categoryid'));
-
-            $this->set('categoryid', $newcategory->get('id'));
-            $this->save();
-
-            $oldcategory->reorder();
-            $oldcategory->save();
-
-            $this->set('sortorder', 0);
-            $newcategory->reorder();
-            $newcategory->save();
-
-            //Always after change category:
-            $from = 0;
-        }
-
-        //in case of $from == $to
-        $return = null;
-        if ($from < $to) {
-            for ($i = $from; $i < $to; $i++) {
-                $return = $this->up();
-            }
-        } else if ($to > $from) {
-            for ($i = $to; $i < $from; $i++) {
-                $return = $this->down();
-            }
-        }
-
-        return $return;
-    }
-
     /**
      * Tweaks the edit form.
      *

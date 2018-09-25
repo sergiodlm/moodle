@@ -58,13 +58,15 @@
     {{#categories}}
         <div data-category-name="{{name}}" data-category-id="{{id}}">
         <div class="row align-items-start">
+            <div class="">
+                <a href="#" class="movecategory osep-link-icon">
+                    {{#pix}}i/dragdrop, core, {{#str}}move{{/str}}{{/pix}}
+                </a>
+            </div>
             <div class="col-auto">
                 <h3>{{{name}}}</h3>
             </div>
             <div class="col-6">
-                <a href="#" class="movecategory osep-link-icon">
-                    {{#pix}}i/dragdrop, core, {{#str}}move{{/str}}{{/pix}}
-                </a>
                 <a href="{{editcategoryurl}}" data-role="editcategory" data-id="{{id}}">{{#pix}}
                     t/edit, core, {{#str}} edit, moodle {{/str}} {{/pix}}</a>
                 <a href="{{deletecategoryurl}}" class="confirm_delete_category" data-role="deletecategory" data-id="{{id}}">{{#pix}}
