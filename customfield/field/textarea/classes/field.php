@@ -99,7 +99,7 @@ class field extends \core_customfield\field {
      * @param \stdClass $datarecord
      * @return mixed|\stdClass
      */
-    public function edit_save_data_preprocess($data, $datarecord) {
+    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
         if (is_array($data)) {
             $datarecord->dataformat = $data['format'];
             $data                   = $data['text'];
@@ -113,7 +113,7 @@ class field extends \core_customfield\field {
      * @param $data
      * @throws \coding_exception
      */
-    public function edit_load_data($data) {
+    public function edit_load_data(\stdClass $data) {
         if ($this->get('data') !== null) {
             $this->set('dataformat', 1);
             $this->set('data', clean_text($this->get('data'), $this->get('dataformat')));
