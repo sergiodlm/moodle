@@ -339,8 +339,8 @@ abstract class field extends persistent {
      * @throws \coding_exception
      */
     public function edit_load_data(\stdClass $data) {
-        if ($this->data() !== null) {
-            $data->{$this->inputname()} = $this->data();
+        if ($this->get_data() !== null) {
+            $data->{$this->inputname()} = $this->get_data();
         }
     }
 
