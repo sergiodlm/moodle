@@ -30,6 +30,7 @@ Feature: Teachers can edit course custom fields
     When I log in as "teacher1"
      And I am on "Course 1" course homepage
      And I navigate to "Edit settings" in current page administration
+     And I expand all fieldsets
     Then I should see "Category for test"
      And I should see "Test field"
 
