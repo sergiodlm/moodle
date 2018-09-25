@@ -1177,6 +1177,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('moodle/course:update', $contextid);
         $this->assignUserCapability('moodle/course:changecategory', $contextid, $roleid);
+        $this->assignUserCapability('moodle/course:changecustomfields', $contextid, $roleid);
         $this->assignUserCapability('moodle/course:changefullname', $contextid, $roleid);
         $this->assignUserCapability('moodle/course:changeshortname', $contextid, $roleid);
         $this->assignUserCapability('moodle/course:changeidnumber', $contextid, $roleid);
@@ -1414,6 +1415,22 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $this->assertEquals(0, count($updatedcoursewarnings['warnings']));
         $course1['visible'] = 0;
         $courses = array($course1);
+        $updatedcoursewarnings = core_course_external::update_courses($courses);
+        $updatedcoursewarnings = external_api::clean_returnvalue(core_course_external::update_courses_returns(),
+                                                                    $updatedcoursewarnings);
+        $this->assertEquals(1, count($updatedcoursewarnings['warnings']));
+
+        // Try update course custom fields without capability.
+        $this->unassignUserCapability('moodle/course:changecustomfields', $contextid, $roleid);
+        $user = self::getDataGenerator()->create_user();
+        $this->setUser($user);
+        self::getDataGenerator()->enrol_user($user->id, $course3['id'], $roleid);
+        $updatedcoursewarnings = core_course_external::update_courses([$course3]);
+        $updatedcoursewarnings = external_api::clean_returnvalue(core_course_external::update_courses_returns(),
+                                                                    $updatedcoursewarnings);
+        $this->assertEquals(0, count($updatedcoursewarnings['warnings']));
+        $course3['customfields'] = [['shortname' => 'test', 'value' => 'Testing customfield without permission']];
+        $courses = array($course3);
         $updatedcoursewarnings = core_course_external::update_courses($courses);
         $updatedcoursewarnings = external_api::clean_returnvalue(core_course_external::update_courses_returns(),
                                                                     $updatedcoursewarnings);

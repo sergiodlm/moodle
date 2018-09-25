@@ -910,6 +910,17 @@ class core_course_external extends external_api {
                     $course['category'] = $course['categoryid'];
                 }
 
+                // Check if user can change customfields.
+                if (array_key_exists('customfields', $course)) {
+                    $customfields = [];
+                    foreach($oldcourse->customfields as $field) {
+                        $customfields[] = ['shortname' => $field['shortname'], 'value' => $field['value']];
+                    }
+                    if ($course['customfields'] != $customfields) {
+                        require_capability('moodle/course:changecustomfields', $context);
+                    }
+                }
+
                 // Check if the user can change fullname.
                 if (array_key_exists('fullname', $course) && ($oldcourse->fullname != $course['fullname'])) {
                     require_capability('moodle/course:changefullname', $context);

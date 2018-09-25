@@ -158,6 +158,7 @@ $string['course:create'] = 'Create courses';
 $string['course:delete'] = 'Delete courses';
 $string['course:viewsuspendedusers'] = 'View suspended users';
 $string['course:changecategory'] = 'Change course category';
+$string['course:changecustomfields'] = 'Change custom fields';
 $string['course:changefullname'] = 'Change course full name';
 $string['course:changeidnumber'] = 'Change course ID number';
 $string['course:changeshortname'] = 'Change course short name';
