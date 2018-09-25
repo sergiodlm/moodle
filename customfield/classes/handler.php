@@ -74,6 +74,13 @@ abstract class handler {
         return $this->area;
     }
 
+    /**
+     * Context that should be used for new categories created by this handler
+     *
+     * @return \context
+     */
+    abstract public function get_configuration_context() : \context;
+
     abstract public function get_configuration_url() : \moodle_url;
 
     /**
@@ -91,12 +98,16 @@ abstract class handler {
         return true;
     }
 
-    public function get_category_config_form(): \core_customfield\category_config_form {
-        return new \core_customfield\category_config_form(null, ['handler' => $this]);
+    public function get_category_config_form(category $category): category_config_form {
+        $form = new category_config_form(null, ['handler' => $this, 'category' => $category]);
+        $form->set_data($this->prepare_category_for_form($category));
+        return $form;
     }
 
     public function get_field_config_form(field $field): field_config_form {
-         return new field_config_form(null, ['handler' => $this, 'field' => $field]);
+         $form = new field_config_form(null, ['handler' => $this, 'field' => $field]);
+         $form->set_data($this->prepare_field_for_form($field));
+         return $form;
     }
 
     public function new_field(category $category, string $type) : field {
@@ -105,21 +116,16 @@ abstract class handler {
         return $field;
     }
 
-    public function new_category($name) : category {
+    public function new_category() : category {
         $categorydata = new stdClass();
-        $categorydata->name = $name;
         $categorydata->component = $this->get_component();
         $categorydata->area = $this->get_area();
         $categorydata->itemid = $this->get_item_id();
+        $categorydata->contextid = $this->get_configuration_context()->id;
 
         $category = new category(0, $categorydata);
 
         return $category;
-    }
-
-    public function load_category($id) {
-        // TODO remove
-        return new \core_customfield\category($id);
     }
 
     public function categories_list() {
@@ -262,5 +268,78 @@ abstract class handler {
 
     public function field_types() {
         return api::field_types();
+    }
+
+    /**
+     * Options for processing embedded files in the field description.
+     *
+     * Handlers may want to extend it to disable files support and/or specify 'noclean'=>true
+     * Context is not necessary here
+     *
+     * @return array
+     */
+    public function get_description_text_options() {
+        return [
+            'maxfiles' => EDITOR_UNLIMITED_FILES,
+        ];
+    }
+
+    /**
+     * Save the field configuration with the data from the form
+     *
+     * @param field $field
+     * @param stdClass $data data from the form
+     */
+    public function save_field(field $field, stdClass $data) {
+        try {
+            api::save_field($field, $data, $this->get_description_text_options());
+        \core\notification::success(get_string('fieldsaved', 'core_customfield'));
+        } catch (\moodle_exception $exception) {
+            \core\notification::error(get_string('fieldsavefailed', 'core_customfield'));
+        }
+    }
+
+    /**
+     * Prepare the field data to set in the configuration form
+     *
+     * @param field $field
+     * @return stdClass
+     */
+    protected function prepare_field_for_form(field $field) : stdClass {
+        $data = $field->to_record();
+        $context = $this->get_configuration_context();
+        $textoptions = ['context' => $context] + $this->get_description_text_options();
+        $data->configdata = json_decode($data->configdata, true);
+        if ($data->id) {
+            file_prepare_standard_editor($data, 'description', $textoptions, $context, 'core_customfield',
+                'description', $data->id);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Prepare category data to set in the configuration form
+     *
+     * @param category $category
+     * @return stdClass
+     */
+    protected function prepare_category_for_form(category $category) : stdClass {
+        return $category->to_record();
+    }
+
+    /**
+     * Save the category configuration using the data from the form
+     *
+     * @param category $category
+     * @param stdClass $data data from the form
+     */
+    public function save_category(category $category, stdClass $data) {
+        try {
+            api::save_category($category, $data);
+            \core\notification::success(get_string('categorysaved', 'core_customfield'));
+        } catch (\moodle_exception $exception) {
+            \core\notification::error(get_string('categorysavefailed', 'core_customfield'));
+        }
     }
 }

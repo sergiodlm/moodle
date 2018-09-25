@@ -311,11 +311,11 @@ abstract class field extends persistent {
     /**
      * Tweaks the edit form.
      *
-     * @param \moodleform $mform
+     * @param \MoodleQuickForm $mform
      * @return bool
      * @throws \moodle_exception
      */
-    public function edit_after_data(\moodleform $mform) {
+    public function edit_after_data(\MoodleQuickForm $mform) {
         if (!$this->is_editable()) {
             return false;
         }
@@ -344,10 +344,10 @@ abstract class field extends persistent {
     /**
      * HardFreeze the field if locked.
      *
-     * @param \moodleform $mform
+     * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
-    public function edit_field_set_locked(\moodleform $mform) {
+    public function edit_field_set_locked(\MoodleQuickForm $mform) {
         if (!$mform->elementExists($this->inputname())) {
             return;
         }
@@ -440,7 +440,7 @@ abstract class field extends persistent {
     }
 
     public function inputname() {
-        return 'customfield_' . $this->shortname();
+        return 'customfield_' . $this->get('shortname');
     }
 
 }
