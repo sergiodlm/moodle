@@ -335,7 +335,7 @@ abstract class field extends persistent {
         }
         if ($this->is_locked() and !has_capability('moodle/course:update', context_course::instance($this->get('courseid')))) {
             $mform->hardFreeze($this->inputname());
-            $mform->setConstant($this->inputname(), $this->data());
+            $mform->setConstant($this->inputname(), $this->get_data());
         }
     }
 
