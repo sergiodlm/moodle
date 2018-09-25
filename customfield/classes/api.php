@@ -35,7 +35,7 @@ class api {
      * @return category[]
      */
     public static function get_fields_definitions(string $component, string $area = null, int $itemid = null) : array {
-         return category::list([
+        return category::list([
                 'component' => $component,
                 'area' => $area,
                 'itemid' => $itemid
@@ -60,7 +60,7 @@ class api {
         $fieldsdata = $DB->get_records_sql($sql, $where);
 
         $formfields = [];
-        foreach($fieldsdata as $data) {
+        foreach ($fieldsdata as $data) {
             $field = new \stdclass();
             $field->id = $data->field_id;
             $field->shortname = $data->shortname;

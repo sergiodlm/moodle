@@ -22,6 +22,8 @@
 
 namespace customfield_date;
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * Class field
  *
@@ -58,9 +60,9 @@ class field extends \core_customfield\field{
         $attributes = ['optional' => $optional];
 
         if (!empty($config->dateincludetime)) {
-            $mform->addElement('date_time_selector', $this->inputname(), format_string($this->get('name'), $attributes);
+            $mform->addElement('date_time_selector', $this->inputname(), format_string($this->get('name'), $attributes));
         } else {
-            $mform->addElement('date_selector', $this->inputname(), format_string($this->get('name'), $attributes);
+            $mform->addElement('date_selector', $this->inputname(), format_string($this->get('name'), $attributes));
         }
         $mform->setType($this->inputname(), PARAM_INT);
         $mform->setDefault($this->inputname(), time());
@@ -93,7 +95,7 @@ class field extends \core_customfield\field{
      * @since Moodle 2.5
      * @throws \coding_exception
      */
-    public function edit_save_data_preprocess($datetime, $datarecord) {
+    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
         if (!$datetime) {
             return 0;
         }

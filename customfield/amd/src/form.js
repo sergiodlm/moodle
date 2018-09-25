@@ -126,7 +126,7 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                 destinationNameCallback: function(parentElement, afterElement) {
                     if (!afterElement.length) {
                         return str.get_string('totopofsection', 'moodle', sectionName(parentElement));
-                   } else if (afterElement.attr('data-field-name')) {
+                    } else if (afterElement.attr('data-field-name')) {
                         return str.get_string('afterresource', 'moodle', afterElement.attr('data-field-name'));
                     } else {
                         return '';
@@ -151,8 +151,8 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                             },
                         ]);
                     }
-                evt.stopPropagation(); // Important for nested lists to prevent multiple targets.
-            });
+                    evt.stopPropagation(); // Important for nested lists to prevent multiple targets.
+                });
         }
     };
 });

@@ -22,12 +22,14 @@
 
 namespace customfield_select;
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * Class field
  *
  * @package customfield_select
  */
-class field extends \core_customfield\field{
+class field extends \core_customfield\field {
 
     const TYPE = 'select';
     const SIZE = 40;
@@ -96,7 +98,7 @@ class field extends \core_customfield\field{
      * @param $data
      * @throws \coding_exception
      */
-    public function edit_load_data($data) {
+    public function edit_load_data(\stdClass $data) {
         if ($this->get('data') !== null) {
             $data->{$this->inputname()} = $this->get('data');
         }

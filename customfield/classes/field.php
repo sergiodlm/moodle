@@ -208,12 +208,7 @@ abstract class field extends persistent {
     private static function static_reorder($categoryid): bool {
         global $DB;
 
-        $fieldneighbours = $DB->get_records(
-                self::TABLE,
-                [
-                        'categoryid' => $categoryid
-                ],
-                'sortorder DESC');
+        $fieldneighbours = $DB->get_records(self::TABLE, ['categoryid' => $categoryid], 'sortorder DESC');
 
         $neworder = count($fieldneighbours);
 
@@ -410,7 +405,7 @@ abstract class field extends persistent {
     }
 
     public function should_display() {
-        // TODO: text config/attribute;
+        // TODO: text config/attribute.
         return true;
     }
 

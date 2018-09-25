@@ -24,9 +24,6 @@ namespace core_customfield;
 
 defined('MOODLE_INTERNAL') || die;
 
-global $CFG;
-
-require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/formslib.php');
 
 class field_config_form extends \moodleform {
@@ -115,17 +112,16 @@ class field_config_form extends \moodleform {
 
         $errors = array();
 
-        //If we need create Other Fields.
-        if (! isset( $data['categoryid'] ) ) {
-            $data['categoryid'] = 0;
+        if (!isset($data['categoryid']) || !$DB->record_exists('customfield_category', array('id' => $data['categoryid']))) {
+            $errors['categoryid'] = get_string('formfieldcheckcategoryid', 'core_customfield');
         }
 
         if (!empty($data['id'])) {
-            if ( $DB->record_exists_select('customfield_field', 'shortname = ? AND id <> ? AND categoryid = ?', array($data['shortname'], $data['id'], $data['categoryid']) )) {
+            if ($DB->record_exists_select('customfield_field', 'shortname = ? AND id <> ? AND categoryid = ?', array($data['shortname'], $data['id'], $data['categoryid']) )) {
                 $errors['shortname'] = get_string('formfieldcheckshortname', 'core_customfield');
             }
         } else {
-            if ( $DB->record_exists_select('customfield_field', 'shortname = ? AND categoryid = ?', array($data['shortname'], $data['categoryid']) )) {
+            if ($DB->record_exists_select('customfield_field', 'shortname = ? AND categoryid = ?', array($data['shortname'], $data['categoryid']) )) {
                 $errors['shortname'] = get_string('formfieldcheckshortname', 'core_customfield');
             }
         }

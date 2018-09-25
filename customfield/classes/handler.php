@@ -293,7 +293,7 @@ abstract class handler {
     public function save_field(field $field, stdClass $data) {
         try {
             api::save_field($field, $data, $this->get_description_text_options());
-        \core\notification::success(get_string('fieldsaved', 'core_customfield'));
+            \core\notification::success(get_string('fieldsaved', 'core_customfield'));
         } catch (\moodle_exception $exception) {
             \core\notification::error(get_string('fieldsavefailed', 'core_customfield'));
         }
@@ -347,8 +347,8 @@ abstract class handler {
         $fields = $this->get_fields_with_data($courseid);
         $fieldsforws = array();
         foreach ($fields as $field) {
-            $fieldsforws[]= ['type' => $field->get('type'), 'value' => $field->get_data(),
-                             'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
+            $fieldsforws[] = ['type' => $field->get('type'), 'value' => $field->get_data(),
+                              'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
         }
         return $fieldsforws;
     }

@@ -22,6 +22,8 @@
 
 namespace customfield_textarea;
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * Class field
  *
@@ -86,7 +88,7 @@ class field extends \core_customfield\field {
     /**
      * @return string
      */
-    public function datafield() :string  {
+    public function datafield() :string {
         return 'value';
     }
 

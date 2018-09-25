@@ -22,8 +22,6 @@
 
 namespace core_customfield;
 
-use Horde\Socket\Client\Exception;
-
 defined('MOODLE_INTERNAL') || die;
 
 class field_factory {
@@ -57,20 +55,14 @@ class field_factory {
         return $field;
     }
 
-    public static function get_fiedls_from_category_array(int $categoryid) :array {
+    public static function get_fields_from_category_array(int $categoryid) :array {
         global $DB;
 
         $fields = array();
-        foreach ( $DB->get_records(
-                self::CUSTOMFIELD_TABLE,
-                [
-                        'categoryid' => $categoryid
-                ],
-                'sortorder DESC'
-        ) as $fielddata) {
+        $records = $DB->get_records(self::CUSTOMFIELD_TABLE, ['categoryid' => $categoryid], 'sortorder DESC');
+        foreach ($records as $fielddata) {
             $fields[] = self::load($fielddata->id);
         }
-
         return $fields;
     }
 
@@ -99,12 +91,12 @@ class field_factory {
         $fieldfrom = self::load($from);
         $fieldto   = self::load($to);
 
-        //TODO: refactoting this
+        // TODO: refactor this.
         if ($fieldfrom->get('sortorder') < $fieldto->get('sortorder')) {
             for ($i = $fieldfrom->get('sortorder'); $i < $fieldto->get('sortorder'); $i++) {
                 $fieldfrom->up();
             }
-        } elseif ($fieldfrom->get('sortorder') > $fieldto->get('sortorder')) {
+        } else if ($fieldfrom->get('sortorder') > $fieldto->get('sortorder')) {
             for ($i = $fieldfrom->get('sortorder'); $i > $fieldto->get('sortorder'); $i--) {
                 $fieldfrom->down();
             }
@@ -112,5 +104,4 @@ class field_factory {
 
         return true;
     }
-
 }

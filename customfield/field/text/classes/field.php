@@ -22,6 +22,8 @@
 
 namespace customfield_text;
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * Class field
  *
@@ -39,7 +41,6 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function add_field_to_edit_form(\MoodleQuickForm $mform) {
-        //public static function add_fields_edit_form(\core_customfield\field $fielddefinition, \moodleform $form, \MoodleQuickForm $mform) {
 
         $linkstargetlist = array(
                 ''       => get_string('none', 'core_customfield'),
@@ -76,7 +77,7 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function set_data($data) {
-       $this->data = $data->charvalue;
+        $this->data = $data->charvalue;
     }
 
     /**

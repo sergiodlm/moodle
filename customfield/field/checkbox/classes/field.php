@@ -22,6 +22,8 @@
 
 namespace customfield_checkbox;
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * Class field
  *
@@ -39,7 +41,8 @@ class field extends \core_customfield\field{
      * @throws \coding_exception
      */
     public function add_field_to_edit_form( \MoodleQuickForm $mform) {
-        $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));    }
+        $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));
+    }
 
     /**
      * Add fields for editing a textarea field.
