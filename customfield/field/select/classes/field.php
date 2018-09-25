@@ -62,11 +62,10 @@ class field extends \core_customfield\field {
         $formattedoptions = array();
         foreach ($options as $key => $option) {
             // Multilang formatting with filters.
-            $formattedoptions[$option] = format_string($option, true, ['context' => context_system::instance()]);
+            $formattedoptions[$option] = format_string($option, true, ['context' => \context_system::instance()]);
         }
 
         $mform->addElement('select', $this->inputname(), format_string($this->get('name')), $options);
-        $mform->setDefault($this->inputname(), $this->get('data'));
 
         $key = $config->defaultvalue;
         if (isset($formattedoptions[$key]) || ($key = array_search($key, $formattedoptions)) !== false) {
@@ -108,15 +107,5 @@ class field extends \core_customfield\field {
                \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
                \html_writer::tag('span', format_text($options[$this->get('data')]), ['class' => 'customfieldvalue']).
                \html_writer::end_tag('div');
-    }
-
-    /**
-     * @param $data
-     * @throws \coding_exception
-     */
-    public function edit_load_data(\stdClass $data) {
-        if ($this->get('data') !== null) {
-            $data->{$this->inputname()} = $this->get('data');
-        }
     }
 }

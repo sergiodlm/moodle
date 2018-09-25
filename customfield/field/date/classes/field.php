@@ -105,20 +105,26 @@ class field extends \core_customfield\field {
      * @param \moodleform $mform
      * @throws \coding_exception
      */
-    public function edit_field_add(\moodleform $mform) {
+    public function edit_field_add(\MoodleQuickForm $mform) {
         // Get the current calendar in use - see MDL-18375.
         $calendartype = \core_calendar\type_factory::get_calendar_instance();
 
         $config = json_decode($this->get('configdata'));
 
-        $attributes = ['optional' => ($config->required != 1)];
+        // Convert the year stored in the DB as gregorian to that used by the calendar type.
+        $startdate = $calendartype->convert_from_gregorian($config->startyear, 1, 1);
+        $stopdate = $calendartype->convert_from_gregorian($config->endyear, 1, 1);
 
-        if (!empty($config->includetime)) {
-            $element = 'date_time_selector';
-        } else {
+        $attributes = ['startyear' => $startdate['year'],
+                       'stopyear' => $stopdate['year'],
+                       'optional' => ($this->get('required') != 1)];
+
+        if (empty($config->includetime)) {
             $element = 'date_selector';
+        } else {
+            $element = 'date_time_selector';
         }
-        $mform->addElement($element, $this->inputname(), format_string($this->get('name'), $attributes));
+        $mform->addElement($element, $this->inputname(), format_string($this->get('name')), $attributes);
         $mform->setType($this->inputname(), PARAM_INT);
         $mform->setDefault($this->inputname(), time());
     }
@@ -135,9 +141,25 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function display() {
+        $config = json_decode($this->get('configdata'));
+        // Check if time was specified.
+        if (!empty($config->includetime)) {
+            $format = get_string('strftimedaydatetime', 'langconfig');
+        } else {
+            $format = get_string('strftimedate', 'langconfig');
+        }
+
+        // Check if a date has been specified.
+        if (empty($this->data)) {
+            $date = get_string('notset', 'core_customfield');
+        } else {
+            $date = userdate($this->get_data(), $format);
+        }
+
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
-               \html_writer::tag('span', userdate($this->get('data')), ['class' => 'customfieldvalue']).
+               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']) .
+               ' : ' .
+               \html_writer::tag('span', $date, ['class' => 'customfieldvalue']) .
                \html_writer::end_tag('div');
     }
 
@@ -151,13 +173,14 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
-        if (!$datetime) {
+
+        if (!$data) {
             return 0;
         }
 
-        if (is_numeric($datetime)) {
+        if (is_numeric($data)) {
             $gregoriancalendar = \core_calendar\type_factory::get_calendar_instance('gregorian');
-            $datetime = $gregoriancalendar->timestamp_to_date_string($datetime, '%Y-%m-%d-%H-%M-%S', 99, true, true);
+            $datetime = $gregoriancalendar->timestamp_to_date_string($data, '%Y-%m-%d-%H-%M-%S', 99, true, true);
         }
 
         $config = json_decode($this->get('configdata'));
