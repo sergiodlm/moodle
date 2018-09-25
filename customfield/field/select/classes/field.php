@@ -40,6 +40,9 @@ class field extends \core_customfield\field {
      */
     public function add_field_to_config_form( \MoodleQuickForm $mform) {
         $mform->addElement('textarea', 'configdata[options]', 'Menu options (one per line)');
+
+        $mform->addElement('text', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), 'size="50"');
+        $mform->setType('configdata[defaultvalue]', PARAM_TEXT);
     }
 
     /**
@@ -49,16 +52,29 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function edit_field_add($mform) {
-        $configdata = json_decode($this->get('configdata'));
+        $config = json_decode($this->get('configdata'));
 
-        if (isset($configdata->options)) {
-            $options = explode("\n", $configdata->options);
+        if (isset($config->options)) {
+            $options = explode("\n", $config->options);
         } else {
             $options = array();
+        }
+        $formattedoptions = array();
+        foreach ($options as $key => $option) {
+            // Multilang formatting with filters.
+            $formattedoptions[$option] = format_string($option, true, ['context' => context_system::instance()]);
         }
 
         $mform->addElement('select', $this->inputname(), format_string($this->get('name')), $options);
         $mform->setDefault($this->inputname(), $this->get('data'));
+
+        $key = $config->defaultvalue;
+        if (isset($formattedoptions[$key]) || ($key = array_search($key, $formattedoptions)) !== false) {
+            $defaultkey = $key;
+        } else {
+            $defaultkey = '';
+        }
+        $mform->setDefault($this->inputname(), $defaultkey);
     }
 
     /**

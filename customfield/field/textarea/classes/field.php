@@ -51,8 +51,8 @@ class field extends \core_customfield\field {
                 'noclean'               => 0,
                 'enable_filemanagement' => true);
 
-        $mform->addElement('editor', 'textarea_editor', get_string('description', 'core_customfield'), null, $desceditoroptions);
-        $mform->setType('textarea_editor', PARAM_RAW);
+        $mform->addElement('editor', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), null, $desceditoroptions);
+        $mform->setType('configdata[defaultvalue]', PARAM_RAW);
     }
 
     /**

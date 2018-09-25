@@ -93,7 +93,7 @@ class field extends \core_customfield\field {
 
         // Make sure the start year is not greater than the end year.
         if ($data['configdata']['startyear'] > $data['configdata']['endyear']) {
-            $errors['configdata_startyear'] = get_string('startyearafterend', 'core_customfield');
+            $errors['configdata[startyear]'] = get_string('startyearafterend', 'core_customfield');
         }
 
         return $errors;
@@ -121,6 +121,13 @@ class field extends \core_customfield\field {
         $mform->addElement($element, $this->inputname(), format_string($this->get('name'), $attributes));
         $mform->setType($this->inputname(), PARAM_INT);
         $mform->setDefault($this->inputname(), time());
+    }
+
+    /**
+     * @return string
+     */
+    public function datafield() {
+        return 'value';
     }
 
     /**
