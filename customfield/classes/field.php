@@ -56,7 +56,19 @@ abstract class field extends persistent {
      *
      * @param \MoodleQuickForm $mform
      */
-    abstract public function add_field_to_edit_form(\MoodleQuickForm $mform);
+    abstract public function add_field_to_config_form(\MoodleQuickForm $mform);
+
+    /**
+     * Validate the data from the config form.
+     * Sub classes must reimplement it.
+     *
+     * @param stdClass $data from the add/edit profile field form
+     * @param array $files
+     * @return array associative array of error messages
+     */
+    public function validate_config_form(array $data, $files = array()) {
+        return array();
+    }
 
     /**
      * Return the definition of the properties of this model.

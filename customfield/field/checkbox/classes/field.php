@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die;
  *
  * @package customfield_checkbox
  */
-class field extends \core_customfield\field{
+class field extends \core_customfield\field {
 
     const TYPE = 'checkbox';
     const SIZE = 40;
@@ -40,7 +40,7 @@ class field extends \core_customfield\field{
      * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
-    public function add_field_to_edit_form( \MoodleQuickForm $mform) {
+    public function add_field_to_config_form( \MoodleQuickForm $mform) {
         $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));
     }
 

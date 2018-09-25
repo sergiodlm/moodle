@@ -86,7 +86,7 @@ class field_config_form extends \moodleform {
         $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_customfield'));
 
         // We load specific fields from type.
-        $field->add_field_to_edit_form($mform);
+        $field->add_field_to_config_form($mform);
 
         // We add hidden fields.
         $mform->addElement('hidden', 'component', $handler->get_component());
@@ -116,15 +116,21 @@ class field_config_form extends \moodleform {
             $errors['categoryid'] = get_string('formfieldcheckcategoryid', 'core_customfield');
         }
 
-        if (!empty($data['id'])) {
-            if ($DB->record_exists_select('customfield_field', 'shortname = ? AND id <> ? AND categoryid = ?', array($data['shortname'], $data['id'], $data['categoryid']) )) {
-                $errors['shortname'] = get_string('formfieldcheckshortname', 'core_customfield');
-            }
-        } else {
+        if (empty($data['id'])) {
             if ($DB->record_exists_select('customfield_field', 'shortname = ? AND categoryid = ?', array($data['shortname'], $data['categoryid']) )) {
                 $errors['shortname'] = get_string('formfieldcheckshortname', 'core_customfield');
             }
+            $category = new \core_customfield\category($data['categoryid']);
+            $handler = \core_customfield\handler::get_handler_for_category($category);
+            $record = $handler->new_field($category, $data['type']);
+        } else {
+            if ($DB->record_exists_select('customfield_field', 'shortname = ? AND id <> ? AND categoryid = ?', array($data['shortname'], $data['id'], $data['categoryid']) )) {
+                $errors['shortname'] = get_string('formfieldcheckshortname', 'core_customfield');
+            }
+            $record = \core_customfield\api::get_field($data['id']);
         }
+        $errors = array_merge($errors, $record->validate_config_form($data, $files));
+
         return $errors;
     }
 }
