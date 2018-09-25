@@ -118,8 +118,7 @@ class api {
 
         if (isset($formdata->description_editor)) {
             // Find context.
-            $category = new category($field->get('categoryid'));
-            $context = \context::instance_by_id($category->get('contextid'));
+            $context = \context_system::instance();
             $textoptions['context'] = $context;
 
             // Store files.
