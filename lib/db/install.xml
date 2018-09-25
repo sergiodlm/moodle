@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="lib/db" VERSION="20180618" COMMENT="XMLDB file for core Moodle tables"
+<XMLDB PATH="lib/db" VERSION="20180925" COMMENT="XMLDB file for core Moodle tables"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../lib/xmldb/xmldb.xsd"
 >
@@ -3926,9 +3926,6 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="recordid-fieldid" UNIQUE="true" FIELDS="recordid, fieldid"/>
-        <INDEX NAME="fieldid-intvalue" UNIQUE="true" FIELDS="fieldid, intvalue"/>
-        <INDEX NAME="fieldid-decvalue" UNIQUE="true" FIELDS="fieldid, decvalue"/>
-        <INDEX NAME="fieldid-shortcharvalue" UNIQUE="true" FIELDS="fieldid, shortcharvalue"/>
       </INDEXES>
     </TABLE>
   </TABLES>
