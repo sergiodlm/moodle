@@ -77,6 +77,10 @@ class field extends \core_customfield\field {
     public function edit_field_add($mform) {
         $mform->addElement(self::TYPE, $this->inputname(), format_string($this->get('name')), 'size="' . self::SIZE . '" ');
         $mform->setType($this->inputname(), PARAM_TEXT);
+        $config = json_decode($this->get('configdata'));
+        if (empty($this->get_data()) && !empty($config->defaultvalue)) {
+            $mform->setDefault($this->inputname(), $config->defaultvalue);
+        }
     }
 
     /**
