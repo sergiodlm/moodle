@@ -137,7 +137,7 @@ class field extends \core_customfield\field {
      * @return string
      */
     public function datafield() {
-        return 'value';
+        return 'intvalue';
     }
 
     /**
