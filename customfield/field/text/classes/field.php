@@ -22,6 +22,8 @@
 
 namespace customfield_text;
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * Class field
  *
@@ -30,7 +32,7 @@ namespace customfield_text;
 class field extends \core_customfield\field {
 
     const TYPE = 'text';
-    const SIZE = 40;
+    const SIZE = 20;
 
     /**
      * Add fields for editing a text field.
@@ -38,26 +40,32 @@ class field extends \core_customfield\field {
      * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
-    public function add_field_to_edit_form(\MoodleQuickForm $mform) {
-        //public static function add_fields_edit_form(\core_customfield\field $fielddefinition, \moodleform $form, \MoodleQuickForm $mform) {
+    public function add_field_to_config_form(\MoodleQuickForm $mform) {
 
-        $linkstargetlist = array(
+        $mform->addElement('text', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), ['size' => self::SIZE]);
+        $mform->setType('configdata[defaultvalue]', PARAM_TEXT);
+
+        $mform->addElement('text', 'configdata[displaysize]', get_string('displaysize', 'core_customfield'), ['size' => 6]);
+        $mform->setType('configdata[displaysize]', PARAM_INT);
+
+        $mform->addElement('text', 'configdata[maxlength]', get_string('maxlength', 'core_customfield'), ['size' => 6]);
+        $mform->setType('configdata[maxlength]', PARAM_INT);
+
+        $mform->addElement('selectyesno', 'configdata[ispassword]', get_string('profilefieldispassword', 'admin'));
+        $mform->setDefault('configdata[ispassword]', 0); // Defaults to 'no'.
+        $mform->setType('configdata[ispassword]', PARAM_INT);
+
+        $mform->addElement('text', 'configdata[link]', get_string('link', 'core_customfield'));
+        $mform->setType('configdata[link]', PARAM_URL);
+        $mform->addHelpButton('configdata[link]', 'profilefieldlink', 'admin');
+
+        $linkstargetoptions = array(
                 ''       => get_string('none', 'core_customfield'),
                 '_blank' => get_string('newwindow', 'core_customfield'),
                 '_self'  => get_string('sameframe', 'core_customfield'),
                 '_top'   => get_string('samewindow', 'core_customfield')
         );
-
-        // Max length.
-        $mform->addElement('text', 'configdata[maxlength]', get_string('maxlength', 'core_customfield'), ['size' => self::SIZE]);
-        $mform->setType('configdata[maxlength]', PARAM_INT);
-
-        // Link.
-        $mform->addElement('text', 'configdata[link]', get_string('link', 'core_customfield'), ['size' => self::SIZE]);
-        $mform->setType('configdata[link]', PARAM_URL);
-
-        // Link target.
-        $mform->addElement('select', 'configdata[linktarget]', get_string('linktarget', 'core_customfield'), $linkstargetlist);
+        $mform->addElement('select', 'configdata[linktarget]', get_string('linktarget', 'core_customfield'), $linkstargetoptions);
     }
 
     /**
@@ -76,7 +84,7 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function set_data($data) {
-        $this->set('data', $data->charvalue);
+        $this->data = $data->charvalue;
     }
 
     /**
@@ -92,9 +100,9 @@ class field extends \core_customfield\field {
      */
     public function display() {
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname customfieldtext']) .
+               \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname customfieldtext']) .
                ' : ' .
-               \html_writer::tag('span', format_string($this->data()), ['class' => 'customfieldvalue customfieldtext']) .
+               \html_writer::tag('span', format_string($this->get_data()), ['class' => 'customfieldvalue customfieldtext']) .
                \html_writer::end_tag('div');
     }
 }

@@ -201,6 +201,7 @@ abstract class handler {
         return $errors;
     }
 
+    // Add the field to the $data received.
     public function load_data($data) {
         if (!isset($data->id)) {
             $data->id = 0;
@@ -252,14 +253,14 @@ abstract class handler {
             }
 
             // Display the header and the fields.
-            $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->categoryname()));
+            $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->get_categoryname()));
             foreach ($fieldstodisplay as $formfield) {
                 $formfield->edit_field_add($mform);
-                if ($formfield->required()) {
+                if ($formfield->get('required')) {
                     $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
                 }
                 // TODO: move capability check to course handler or get capability from current handler.
-                if ($formfield->locked() and !has_capability('moodle/course:update', \context_system::instance())) {
+                if ($formfield->get('locked') and !has_capability('moodle/course:update', \context_system::instance())) {
                     $mform->hardFreeze($formfield->inputname());
                 }
             }
@@ -293,7 +294,7 @@ abstract class handler {
     public function save_field(field $field, stdClass $data) {
         try {
             api::save_field($field, $data, $this->get_description_text_options());
-        \core\notification::success(get_string('fieldsaved', 'core_customfield'));
+            \core\notification::success(get_string('fieldsaved', 'core_customfield'));
         } catch (\moodle_exception $exception) {
             \core\notification::error(get_string('fieldsavefailed', 'core_customfield'));
         }
@@ -341,5 +342,15 @@ abstract class handler {
         } catch (\moodle_exception $exception) {
             \core\notification::error(get_string('categorysavefailed', 'core_customfield'));
         }
+    }
+
+    public function fields_array($courseid) {
+        $fields = $this->get_fields_with_data($courseid);
+        $fieldsforws = array();
+        foreach ($fields as $field) {
+            $fieldsforws[] = ['type' => $field->get('type'), 'value' => $field->get_data(),
+                              'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
+        }
+        return $fieldsforws;
     }
 }

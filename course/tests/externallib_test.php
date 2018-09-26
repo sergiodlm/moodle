@@ -417,6 +417,12 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
 
         $category  = self::getDataGenerator()->create_category();
 
+        // Custom fields
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+
+        $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
+        $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
+
         // Create base categories.
         $course1['fullname'] = 'Test course 1';
         $course1['shortname'] = 'Testcourse1';
@@ -456,7 +462,12 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         foreach ($course3options as $key => $value) {
             $course3['courseformatoptions'][] = array('name' => $key, 'value' => $value);
         }
-        $courses = array($course1, $course2, $course3);
+        $course4['fullname'] = 'Test course with custom fields';
+        $course4['shortname'] = 'Testcoursecustomfields';
+        $course4['categoryid'] = $category->id;
+        $course4customfields = [$customfield];
+        $course4['customfields'] = $course4customfields;
+        $courses = array($course4, $course1, $course2, $course3);
 
         $createdcourses = core_course_external::create_courses($courses);
 
@@ -464,7 +475,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $createdcourses = external_api::clean_returnvalue(core_course_external::create_courses_returns(), $createdcourses);
 
         // Check that right number of courses were created.
-        $this->assertEquals(3, count($createdcourses));
+        $this->assertEquals(4, count($createdcourses));
 
         // Check that the courses were correctly created.
         foreach ($createdcourses as $createdcourse) {
@@ -520,6 +531,17 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 $this->assertEquals(course_get_format($createdcourse['id'])->get_last_section_number(),
                     $course3options['numsections']);
                 $this->assertEquals($courseinfo->coursedisplay, $course3options['coursedisplay']);
+            } else if ($createdcourse['shortname'] == $course4['shortname']) {
+                $this->assertEquals($courseinfo->fullname, $course4['fullname']);
+                $this->assertEquals($courseinfo->shortname, $course4['shortname']);
+                $this->assertEquals($courseinfo->category, $course4['categoryid']);
+
+                 $handler  = new core_course\customfield\course_handler(null);
+                 $customfields = $handler->get_fields_with_data($createdcourse['id']);
+                 foreach($customfields as $field) {
+                     $fieldarray = ['shortname' => $field->get('shortname'), 'value' => $field->get_data()];
+                     $this->assertTrue(in_array($fieldarray, $course4customfields));
+                 }
             } else {
                 throw new moodle_exception('Unexpected shortname');
             }
@@ -608,11 +630,20 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $coursedata['summaryformat'] = FORMAT_MOODLE;
         $course1  = self::getDataGenerator()->create_course($coursedata);
 
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+
+        $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
+        $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
+
+        $customfieldvalue = ['shortname' => 'test', 'value' => 'Test value'];
+
         $generatedcourses[$course1->id] = $course1;
         $course2  = self::getDataGenerator()->create_course();
         $generatedcourses[$course2->id] = $course2;
         $course3  = self::getDataGenerator()->create_course(array('format' => 'topics'));
         $generatedcourses[$course3->id] = $course3;
+        $course4  = self::getDataGenerator()->create_course(['customfields' => [$customfieldvalue]]);
+        $generatedcourses[$course4->id] = $course4;
 
         // Set the required capabilities by the external function.
         $context = context_system::instance();
@@ -623,15 +654,17 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 context_course::instance($course2->id)->id, $roleid);
         $this->assignUserCapability('moodle/course:update',
                 context_course::instance($course3->id)->id, $roleid);
+        $this->assignUserCapability('moodle/course:update',
+                context_course::instance($course4->id)->id, $roleid);
 
         $courses = core_course_external::get_courses(array('ids' =>
-            array($course1->id, $course2->id)));
+            array($course1->id, $course2->id, $course4->id)));
 
         // We need to execute the return values cleaning process to simulate the web service server.
         $courses = external_api::clean_returnvalue(core_course_external::get_courses_returns(), $courses);
 
-        // Check we retrieve the good total number of categories.
-        $this->assertEquals(2, count($courses));
+        // Check we retrieve the good total number of courses.
+        $this->assertEquals(3, count($courses));
 
         foreach ($courses as $course) {
             $coursecontext = context_course::instance($course['id']);
@@ -667,6 +700,9 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                     array('name' => 'hiddensections', 'value' => $dbcourse->hiddensections),
                     array('name' => 'coursedisplay', 'value' => $dbcourse->coursedisplay),
                 ));
+            }
+            if ($dbcourse->id == 4) {
+                $this->assertEquals($course['customfields'], [array_merge($customfield, $customfieldvalue)]);
             }
         }
 
@@ -725,13 +761,30 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $coursedata2['fullname'] = 'SECOND COURSE';
         $course2  = self::getDataGenerator()->create_course($coursedata2);
 
+        // Custom fields
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+
+        $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
+        $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
+
+        $coursedata3['fullname'] = 'Course with custom fields';
+        $coursedata3['customfields'] = ['shortname' => 'test', 'value' => 'Custom value'];
+        $course3  = self::getDataGenerator()->create_course($coursedata3);
+
         $page = new moodle_page();
         $page->set_course($course2);
         $page->blocks->add_blocks([BLOCK_POS_LEFT => ['news_items'], BLOCK_POS_RIGHT => []], 'course-view-*');
+
         // Search by name.
         $results = core_course_external::search_courses('search', 'FIRST');
         $results = external_api::clean_returnvalue(core_course_external::search_courses_returns(), $results);
         $this->assertEquals($coursedata1['fullname'], $results['courses'][0]['fullname']);
+        $this->assertCount(1, $results['courses']);
+
+        // Search by customfield.
+        $results = core_course_external::search_courses('search', 'Custom');
+        $results = external_api::clean_returnvalue(core_course_external::search_courses_returns(), $results);
+        $this->assertEquals($coursedata3['fullname'], $results['courses'][0]['fullname']);
         $this->assertCount(1, $results['courses']);
 
         // Create the forum.
@@ -782,11 +835,11 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $this->assertEquals(1, $results['total']);
         $this->assertEquals($coursedata1['fullname'], $results['courses'][0]['fullname']);
 
-        // Check that we can see both without the limit to enrolled setting.
+        // Check that we can see all courses without the limit to enrolled setting.
         $results = core_course_external::search_courses('search', 'COURSE', 0, 0, array(), 0);
         $results = external_api::clean_returnvalue(core_course_external::search_courses_returns(), $results);
-        $this->assertCount(2, $results['courses']);
-        $this->assertEquals(2, $results['total']);
+        $this->assertCount(3, $results['courses']);
+        $this->assertEquals(3, $results['total']);
 
         // Check that we only see our enrolled course when limiting.
         $results = core_course_external::search_courses('search', 'COURSE', 0, 0, array(), 1);
@@ -798,7 +851,6 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         // Search by block (use news_items default block). Should fail (only admins allowed).
         $this->expectException('required_capability_exception');
         $results = core_course_external::search_courses('blocklist', $blockid);
-
     }
 
     /**
@@ -1125,6 +1177,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('moodle/course:update', $contextid);
         $this->assignUserCapability('moodle/course:changecategory', $contextid, $roleid);
+        $this->assignUserCapability('moodle/course:changecustomfields', $contextid, $roleid);
         $this->assignUserCapability('moodle/course:changefullname', $contextid, $roleid);
         $this->assignUserCapability('moodle/course:changeshortname', $contextid, $roleid);
         $this->assignUserCapability('moodle/course:changeidnumber', $contextid, $roleid);
@@ -1133,19 +1186,32 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $this->assignUserCapability('moodle/course:viewhiddencourses', $contextid, $roleid);
         $this->assignUserCapability('moodle/course:setforcedlanguage', $contextid, $roleid);
 
+        // Custom fields.
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+
+        $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
+        $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
+
         // Create category and course.
         $category1  = self::getDataGenerator()->create_category();
         $category2  = self::getDataGenerator()->create_category();
+
         $originalcourse1 = self::getDataGenerator()->create_course();
         self::getDataGenerator()->enrol_user($USER->id, $originalcourse1->id, $roleid);
+
         $originalcourse2 = self::getDataGenerator()->create_course();
         self::getDataGenerator()->enrol_user($USER->id, $originalcourse2->id, $roleid);
+
+        $customfieldoriginalvalue = ['shortname' => 'test', 'value' => 'Test value'];
+        $originalcourse3 = self::getDataGenerator()->create_course(['customfields' => [$customfieldoriginalvalue]]);
+        self::getDataGenerator()->enrol_user($USER->id, $originalcourse3->id, $roleid);
 
         // Course values to be updated.
         $course1['id'] = $originalcourse1->id;
         $course1['fullname'] = 'Updated test course 1';
         $course1['shortname'] = 'Udestedtestcourse1';
         $course1['categoryid'] = $category1->id;
+
         $course2['id'] = $originalcourse2->id;
         $course2['fullname'] = 'Updated test course 2';
         $course2['shortname'] = 'Updestedtestcourse2';
@@ -1168,7 +1234,11 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $course2['enablecompletion'] = 1;
         $course2['lang'] = 'en';
         $course2['forcetheme'] = 'bootstrapbase';
-        $courses = array($course1, $course2);
+
+        $course3['id'] = $originalcourse3->id;
+        $updatedcustomfieldvalue = ['shortname' => 'test', 'value' => 'Updated test value'];
+        $course3['customfields'] = [$updatedcustomfieldvalue];
+        $courses = array($course1, $course2, $course3);
 
         $updatedcoursewarnings = core_course_external::update_courses($courses);
         $updatedcoursewarnings = external_api::clean_returnvalue(core_course_external::update_courses_returns(),
@@ -1216,6 +1286,9 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 $this->assertEquals(5, course_get_format($course['id'])->get_last_section_number());
                 $this->assertEquals(0, $courseinfo->newsitems);
                 $this->assertEquals(FORMAT_MOODLE, $courseinfo->summaryformat);
+            } else if ($course['id'] == $course3['id']) {
+                $updatedcustomfields = [array_merge($customfield, $updatedcustomfieldvalue)];
+                $this->assertEquals($updatedcustomfields, $courseinfo->customfields);
             } else {
                 throw new moodle_exception('Unexpected shortname');
             }
@@ -1342,6 +1415,22 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $this->assertEquals(0, count($updatedcoursewarnings['warnings']));
         $course1['visible'] = 0;
         $courses = array($course1);
+        $updatedcoursewarnings = core_course_external::update_courses($courses);
+        $updatedcoursewarnings = external_api::clean_returnvalue(core_course_external::update_courses_returns(),
+                                                                    $updatedcoursewarnings);
+        $this->assertEquals(1, count($updatedcoursewarnings['warnings']));
+
+        // Try update course custom fields without capability.
+        $this->unassignUserCapability('moodle/course:changecustomfields', $contextid, $roleid);
+        $user = self::getDataGenerator()->create_user();
+        $this->setUser($user);
+        self::getDataGenerator()->enrol_user($user->id, $course3['id'], $roleid);
+        $updatedcoursewarnings = core_course_external::update_courses([$course3]);
+        $updatedcoursewarnings = external_api::clean_returnvalue(core_course_external::update_courses_returns(),
+                                                                    $updatedcoursewarnings);
+        $this->assertEquals(0, count($updatedcoursewarnings['warnings']));
+        $course3['customfields'] = [['shortname' => 'test', 'value' => 'Testing customfield without permission']];
+        $courses = array($course3);
         $updatedcoursewarnings = core_course_external::update_courses($courses);
         $updatedcoursewarnings = external_api::clean_returnvalue(core_course_external::update_courses_returns(),
                                                                     $updatedcoursewarnings);

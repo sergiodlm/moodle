@@ -23,7 +23,7 @@
 require_once(__DIR__ . '/../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
-$component = optional_param('component',null, PARAM_COMPONENT);
+$component = optional_param('component', null, PARAM_COMPONENT);
 $area = optional_param('area', null, PARAM_ALPHANUMEXT);
 $itemid = optional_param('itemid', null, PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT);

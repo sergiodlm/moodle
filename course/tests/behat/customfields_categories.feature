@@ -7,7 +7,7 @@ Feature: Managers can manage categories for course custom fields
   Scenario: Create a category for custom course fields
     Given I log in as "admin"
     When I navigate to "Courses > Course custom fields" in site administration
-    And I press "Create a new Category"
+    And I press "Add a new category"
     And I set the following fields to these values:
       | Category Name | Test category |
     And I press "Save changes"

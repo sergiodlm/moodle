@@ -24,9 +24,6 @@ namespace core_customfield;
 
 defined('MOODLE_INTERNAL') || die;
 
-global $CFG;
-
-require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/formslib.php');
 
 class field_config_form extends \moodleform {
@@ -89,7 +86,7 @@ class field_config_form extends \moodleform {
         $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_customfield'));
 
         // We load specific fields from type.
-        $field->add_field_to_edit_form($mform);
+        $field->add_field_to_config_form($mform);
 
         // We add hidden fields.
         $mform->addElement('hidden', 'component', $handler->get_component());
@@ -115,20 +112,25 @@ class field_config_form extends \moodleform {
 
         $errors = array();
 
-        //If we need create Other Fields.
-        if (! isset( $data['categoryid'] ) ) {
-            $data['categoryid'] = 0;
+        if (!isset($data['categoryid']) || !$DB->record_exists('customfield_category', array('id' => $data['categoryid']))) {
+            $errors['categoryid'] = get_string('formfieldcheckcategoryid', 'core_customfield');
         }
 
-        if (!empty($data['id'])) {
-            if ( $DB->record_exists_select('customfield_field', 'shortname = ? AND id <> ? AND categoryid = ?', array($data['shortname'], $data['id'], $data['categoryid']) )) {
+        if (empty($data['id'])) {
+            if ($DB->record_exists_select('customfield_field', 'shortname = ? AND categoryid = ?', array($data['shortname'], $data['categoryid']) )) {
                 $errors['shortname'] = get_string('formfieldcheckshortname', 'core_customfield');
             }
+            $category = new \core_customfield\category($data['categoryid']);
+            $handler = \core_customfield\handler::get_handler_for_category($category);
+            $record = $handler->new_field($category, $data['type']);
         } else {
-            if ( $DB->record_exists_select('customfield_field', 'shortname = ? AND categoryid = ?', array($data['shortname'], $data['categoryid']) )) {
+            if ($DB->record_exists_select('customfield_field', 'shortname = ? AND id <> ? AND categoryid = ?', array($data['shortname'], $data['id'], $data['categoryid']) )) {
                 $errors['shortname'] = get_string('formfieldcheckshortname', 'core_customfield');
             }
+            $record = \core_customfield\api::get_field($data['id']);
         }
+        $errors = array_merge($errors, $record->validate_config_form($data, $files));
+
         return $errors;
     }
 }

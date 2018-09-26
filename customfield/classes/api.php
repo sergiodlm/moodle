@@ -35,7 +35,7 @@ class api {
      * @return category[]
      */
     public static function get_fields_definitions(string $component, string $area = null, int $itemid = null) : array {
-         return category::list([
+        return category::list([
                 'component' => $component,
                 'area' => $area,
                 'itemid' => $itemid
@@ -60,12 +60,12 @@ class api {
         $fieldsdata = $DB->get_records_sql($sql, $where);
 
         $formfields = [];
-        foreach($fieldsdata as $data) {
+        foreach ($fieldsdata as $data) {
             $field = new \stdclass();
             $field->id = $data->field_id;
             $field->shortname = $data->shortname;
             $formfield = self::get_field($field->id, $field);
-            $formfield->categoryname($data->categoryname);
+            $formfield->set_categoryname($data->categoryname);
 
             if ($data->id == null) {
                 $data->fieldid = $data->field_id;
@@ -118,8 +118,7 @@ class api {
 
         if (isset($formdata->description_editor)) {
             // Find context.
-            $category = new category($field->get('categoryid'));
-            $context = \context::instance_by_id($category->get('contextid'));
+            $context = \context_system::instance();
             $textoptions['context'] = $context;
 
             // Store files.

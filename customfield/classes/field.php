@@ -38,11 +38,37 @@ abstract class field extends persistent {
     const TABLE = 'customfield_field';
 
     /**
+     * Name of the category that the field belongs to (used on forms and webservices).
+     *
+     * @var string
+     */
+    protected $categoryname;
+
+    /**
+     * Data for field.
+     *
+     * @var string
+     */
+    protected $data;
+
+    /**
      * Add field parameters to the field configuration form
      *
      * @param \MoodleQuickForm $mform
      */
-    abstract public function add_field_to_edit_form(\MoodleQuickForm $mform);
+    abstract public function add_field_to_config_form(\MoodleQuickForm $mform);
+
+    /**
+     * Validate the data from the config form.
+     * Sub classes must reimplement it.
+     *
+     * @param stdClass $data from the add/edit profile field form
+     * @param array $files
+     * @return array associative array of error messages
+     */
+    public function validate_config_form(array $data, $files = array()) {
+        return array();
+    }
 
     /**
      * Return the definition of the properties of this model.
@@ -194,12 +220,7 @@ abstract class field extends persistent {
     private static function static_reorder($categoryid): bool {
         global $DB;
 
-        $fieldneighbours = $DB->get_records(
-                self::TABLE,
-                [
-                        'categoryid' => $categoryid
-                ],
-                'sortorder DESC');
+        $fieldneighbours = $DB->get_records(self::TABLE, ['categoryid' => $categoryid], 'sortorder DESC');
 
         $neworder = count($fieldneighbours);
 
@@ -314,7 +335,7 @@ abstract class field extends persistent {
         }
         if ($this->is_locked() and !has_capability('moodle/course:update', context_course::instance($this->get('courseid')))) {
             $mform->hardFreeze($this->inputname());
-            $mform->setConstant($this->inputname(), $this->data());
+            $mform->setConstant($this->inputname(), $this->get_data());
         }
     }
 
@@ -325,8 +346,8 @@ abstract class field extends persistent {
      * @throws \coding_exception
      */
     public function edit_load_data(\stdClass $data) {
-        if ($this->data() !== null) {
-            $data->{$this->inputname()} = $this->data();
+        if ($this->get_data() !== null) {
+            $data->{$this->inputname()} = $this->get_data();
         }
     }
 
@@ -391,12 +412,12 @@ abstract class field extends persistent {
      * @throws \moodle_exception
      * @throws \dml_exception
      */
-    public function edit_save_data_preprocess(\stdClass $data, \stdClass $datarecord) {
+    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
         return $data;
     }
 
     public function should_display() {
-        // TODO: text config/attribute;
+        // TODO: text config/attribute.
         return true;
     }
 
@@ -404,4 +425,19 @@ abstract class field extends persistent {
         return 'customfield_' . $this->get('shortname');
     }
 
+    public function set_categoryname($name) {
+        $this->categoryname = $name;
+    }
+
+    public function get_categoryname() {
+        return $this->categoryname;
+    }
+
+    public function set_data($data) {
+        $this->data = $data;
+    }
+
+    public function get_data() {
+        return $this->data;
+    }
 }

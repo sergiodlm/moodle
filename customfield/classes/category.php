@@ -88,7 +88,7 @@ class category extends persistent {
      * @throws \coding_exception
      */
     public function fields() {
-        return field_factory::get_fiedls_from_category_array($this->get('id'));
+        return field_factory::get_fields_from_category_array($this->get('id'));
     }
 
     /**
@@ -103,7 +103,7 @@ class category extends persistent {
         $neworder = count($categoryneighbours);
 
         foreach ($categoryneighbours as $category) {
-            $category->set('sortorder' ,--$neworder);
+            $category->set('sortorder', --$neworder);
             $category->save();
         }
 
@@ -143,8 +143,8 @@ class category extends persistent {
      * @throws \dml_exception
      */
     protected function before_delete() : bool {
-        foreach ( $this->fields() as $field ) {
-            if ( ! $field->delete() ) {
+        foreach ($this->fields() as $field) {
+            if (!$field->delete()) {
                 return false;
             }
         }
@@ -158,7 +158,7 @@ class category extends persistent {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    protected function after_delete($result) :bool  {
+    protected function after_delete($result) :bool {
         return $this->reorder();
     }
 

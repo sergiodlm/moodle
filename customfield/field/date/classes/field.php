@@ -22,12 +22,14 @@
 
 namespace customfield_date;
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * Class field
  *
  * @package customfield_date
  */
-class field extends \core_customfield\field{
+class field extends \core_customfield\field {
     const TYPE = 'date';
     const SIZE = 40;
 
@@ -37,39 +39,104 @@ class field extends \core_customfield\field{
      * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
-    public function add_field_to_edit_form( \MoodleQuickForm $mform) {
-        $mform->addElement('checkbox', 'configdata[dateincludetime]', get_string('includetime', 'core_customfield'));
+    public function add_field_to_config_form( \MoodleQuickForm $mform) {
+        // Get the current calendar in use - see MDL-18375.
+        $calendartype = \core_calendar\type_factory::get_calendar_instance();
+
+        // Create variables to store start and end.
+        list($year, $month, $day) = explode('_', date('Y_m_d'));
+        $currentdate = $calendartype->convert_from_gregorian($year, $month, $day);
+        $currentyear = $currentdate['year'];
+
+        $arryears = $calendartype->get_years();
+
+        $config = json_decode($this->get('configdata'));
+
+        // Add elements.
+        $mform->addElement('select', 'configdata[startyear]', get_string('startyear', 'core_customfield'), $arryears);
+        $mform->setType('configdata[startyear]', PARAM_INT);
+
+        $defaultstart = isset($config->startyear) ? $config->startyear : $currentyear;
+        $mform->setDefault('configdata[startyear]', $defaultstart);
+
+        $mform->addElement('select', 'configdata[endyear]', get_string('endyear', 'core_customfield'), $arryears);
+        $mform->setType('configdata[endyear]', PARAM_INT);
+        $defaultend = isset($config->endyear) ? $config->endyear : $currentyear;
+        $mform->setDefault('configdata[endyear]', $defaultend);
+
+        $mform->addElement('checkbox', 'configdata[includetime]', get_string('includetime', 'core_customfield'));
+        $mform->setDefault('configdata[includetime]', isset($config->includetime));
+
+        $mform->addElement('hidden', 'startday', '1');
+        $mform->setType('startday', PARAM_INT);
+        $mform->addElement('hidden', 'startmonth', '1');
+        $mform->setType('startmonth', PARAM_INT);
+        $mform->addElement('hidden', 'startyear', '1');
+        $mform->setType('startyear', PARAM_INT);
+        $mform->addElement('hidden', 'endday', '1');
+        $mform->setType('endday', PARAM_INT);
+        $mform->addElement('hidden', 'endmonth', '1');
+        $mform->setType('endmonth', PARAM_INT);
+        $mform->addElement('hidden', 'endyear', '1');
+        $mform->setType('endyear', PARAM_INT);
     }
 
     /**
-     * Add fields for editing a textarea field.
+     * Validate the data from the config form.
+     *
+     * @param array data from the add/edit custom field form
+     * @param array $files
+     * @return array associative array of error messages
+     */
+    public function validate_config_form(array $data, $files = array()) : array {
+        $errors = array();
+
+        // Make sure the start year is not greater than the end year.
+        if ($data['configdata']['startyear'] > $data['configdata']['endyear']) {
+            $errors['configdata[startyear]'] = get_string('startyearafterend', 'core_customfield');
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Add fields for editing data of a textarea field on a context.
      *
      * @param \moodleform $mform
      * @throws \coding_exception
      */
-    public function edit_field_add(\moodleform $mform) {
+    public function edit_field_add(\MoodleQuickForm $mform) {
         // Get the current calendar in use - see MDL-18375.
         $calendartype = \core_calendar\type_factory::get_calendar_instance();
 
-        // Check if the field is required.
-        $config = json_decode($this->configdata());
-        $optional = ($config->required != 1);
+        $config = json_decode($this->get('configdata'));
 
-        $attributes = ['optional' => $optional];
+        // Convert the year stored in the DB as gregorian to that used by the calendar type.
+        $startdate = $calendartype->convert_from_gregorian($config->startyear, 1, 1);
+        $stopdate = $calendartype->convert_from_gregorian($config->endyear, 1, 1);
 
-        if (!empty($config->dateincludetime)) {
-            $mform->addElement('date_time_selector', $this->inputname(), format_string($this->name()), $attributes);
+        $attributes = ['startyear' => $startdate['year'],
+                       'stopyear' => $stopdate['year'],
+                       'optional' => ($this->get('required') != 1)];
+
+        if (empty($config->includetime)) {
+            $element = 'date_selector';
         } else {
-            $mform->addElement('date_selector', $this->inputname(), format_string($this->name()), $attributes);
+            $element = 'date_time_selector';
         }
+        $mform->addElement($element, $this->inputname(), format_string($this->get('name')), $attributes);
         $mform->setType($this->inputname(), PARAM_INT);
         $mform->setDefault($this->inputname(), time());
+    }
+
+    public function set_data($data) {
+        $this->data = $data->intvalue;
     }
 
     /**
      * @return string
      */
-    public function data_field() {
+    public function datafield() {
         return 'value';
     }
 
@@ -78,9 +145,25 @@ class field extends \core_customfield\field{
      * @throws \coding_exception
      */
     public function display() {
+        $config = json_decode($this->get('configdata'));
+        // Check if time was specified.
+        if (!empty($config->includetime)) {
+            $format = get_string('strftimedaydatetime', 'langconfig');
+        } else {
+            $format = get_string('strftimedate', 'langconfig');
+        }
+
+        // Check if a date has been specified.
+        if (empty($this->get_data())) {
+            $date = get_string('notset', 'core_customfield');
+        } else {
+            $date = userdate($this->get_data(), $format);
+        }
+
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
-               \html_writer::tag('span', userdate($this->get('data')), ['class' => 'customfieldvalue']).
+               \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname']) .
+               ' : ' .
+               \html_writer::tag('span', $date, ['class' => 'customfieldvalue']) .
                \html_writer::end_tag('div');
     }
 
@@ -93,23 +176,23 @@ class field extends \core_customfield\field{
      * @since Moodle 2.5
      * @throws \coding_exception
      */
-    public function edit_save_data_preprocess($datetime, $datarecord) {
-        if (!$datetime) {
+    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
+
+        if (!$data) {
             return 0;
         }
 
-        if (is_numeric($datetime)) {
+        if (is_numeric($data)) {
             $gregoriancalendar = \core_calendar\type_factory::get_calendar_instance('gregorian');
-            $datetime = $gregoriancalendar->timestamp_to_date_string($datetime, '%Y-%m-%d-%H-%M-%S', 99, true, true);
+            $datetime = $gregoriancalendar->timestamp_to_date_string($data, '%Y-%m-%d-%H-%M-%S', 99, true, true);
         }
 
-        $datetime = explode('-', $datetime);
-        // Bound year with start and end year.
-        // TODO: check it.
-        // $datetime[0] = min(max($datetime[0], $this->data->param1), $this->field->param2);
+        $config = json_decode($this->get('configdata'));
 
-        // !empty($this->field->param3) = configdata['includetime'] ?
-        if (count($datetime) == 6) {
+        $datetime = explode('-', $datetime);
+        $datetime[0] = min(max($datetime[0], $config->startyear), $config->endyear);
+
+        if (!empty($config->includetime) && count($datetime) == 6) {
             return make_timestamp($datetime[0], $datetime[1], $datetime[2], $datetime[3], $datetime[4], $datetime[5]);
         } else {
             return make_timestamp($datetime[0], $datetime[1], $datetime[2]);
