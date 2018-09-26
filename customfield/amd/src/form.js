@@ -112,10 +112,18 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
             });
             $('[data-category-name]').on('sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend', function(evt, info) {
                 if ( evt.type == 'sortablelist-dragend' && info.dropped ) {
-                    alert('CATEGORY');
+                    ajax.call([
+                        {
+                            methodname: 'core_customfield_drag_and_drop_block',
+                            args: {
+                                from: info.draggedElement[0].dataset.categoryId,
+                                to: info.targetList.prevObject[0].dataset.categoryId
+                            }
+                        },
+                    ]);
                 }
-                console.log('Category event ' + evt.type);
-                console.log(info);
+                //console.log('Category event ' + evt.type);
+                //console.log(info);
                 evt.stopPropagation(); // Important for nested lists to prevent multiple targets.
             });
 

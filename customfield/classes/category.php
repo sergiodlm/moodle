@@ -242,6 +242,24 @@ class category extends persistent {
         return $categories;
     }
 
+    public static function drag_and_drop_block($from, $to) {
+        $categoryfrom = new self($from);
+        $categoryto   = new self($to);
+
+        //TODO: refactoting this
+        if ($categoryfrom->get('sortorder') < $categoryto->get('sortorder')) {
+            for ($i = $categoryfrom->get('sortorder'); $i < $categoryto->get('sortorder'); $i++) {
+                $categoryfrom->up();
+            }
+        } elseif ($categoryfrom->get('sortorder') > $categoryto->get('sortorder')) {
+            for ($i = $categoryfrom->get('sortorder'); $i > $categoryto->get('sortorder'); $i--) {
+                $categoryfrom->down();
+            }
+        }
+
+        return true;
+    }
+
 }
 
 

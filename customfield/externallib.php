@@ -213,4 +213,24 @@ class core_customfield_external extends external_api {
     public static function drag_and_drop_returns() {
     }
 
+    /**
+     * @return external_function_parameters
+     */
+    public static function drag_and_drop_block_parameters(): external_function_parameters {
+        return new external_function_parameters(
+                [
+                        'from' => new external_value(PARAM_INT, 'Entry ID to move from', VALUE_REQUIRED),
+                        'to'   => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED)
+                ]
+        );
+    }
+
+    public static function drag_and_drop_block(int $from, int $to) {
+        return \core_customfield\category::drag_and_drop_block($from, $to);
+    }
+
+    public static function drag_and_drop_block_returns() {
+    }
+
+
 }

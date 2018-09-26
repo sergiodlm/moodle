@@ -2166,46 +2166,22 @@ $functions = array(
             'type'        => 'write',
             'ajax'        => 'true'
     ),
-    'core_customfield_move_up_field' => array(
-                'classname'   => 'core_customfield_external',
-                'methodname'  => 'move_up_field',
-                'classpath'   => 'customfield/externallib.php',
-                'description' => 'Moves up a field',
-                'type'        => 'write',
-                'ajax'        => 'true'
-        ),
-        'core_customfield_move_down_field' => array(
-                'classname'   => 'core_customfield_external',
-                'methodname'  => 'move_down_field',
-                'classpath'   => 'customfield/externallib.php',
-                'description' => 'Moves down a field',
-                'type'        => 'write',
-                'ajax'        => 'true'
-        ),
-        'core_customfield_move_up_category' => array(
-                'classname'   => 'core_customfield_external',
-                'methodname'  => 'move_up_category',
-                'classpath'   => 'customfield/externallib.php',
-                'description' => 'Moves up a category',
-                'type'        => 'write',
-                'ajax'        => 'true'
-        ),
-        'core_customfield_move_down_category' => array(
-                'classname'   => 'core_customfield_external',
-                'methodname'  => 'move_down_category',
-                'classpath'   => 'customfield/externallib.php',
-                'description' => 'Moves down a category',
-                'type'        => 'write',
-                'ajax'        => 'true'
-        ),
-        'core_customfield_drag_and_drop' => array(
-                'classname'   => 'core_customfield_external',
-                'methodname'  => 'drag_and_drop',
-                'classpath'   => 'customfield/externallib.php',
-                'description' => 'Drag and drop',
-                'type'        => 'write',
-                'ajax'        => 'true'
-        ),
+    'core_customfield_drag_and_drop'   => array(
+            'classname'   => 'core_customfield_external',
+            'methodname'  => 'drag_and_drop',
+            'classpath'   => 'customfield/externallib.php',
+            'description' => 'Drag and drop',
+            'type'        => 'write',
+            'ajax'        => 'true'
+    ),
+    'core_customfield_drag_and_drop_block' => array(
+            'classname'   => 'core_customfield_external',
+            'methodname'  => 'drag_and_drop_block',
+            'classpath'   => 'customfield/externallib.php',
+            'description' => 'Drag and drop categories',
+            'type'        => 'write',
+            'ajax'        => 'true'
+    ),
 );
 
 $services = array(

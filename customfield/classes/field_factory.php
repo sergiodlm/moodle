@@ -95,6 +95,13 @@ class field_factory {
         return true;
     }
 
+    /**
+     * @param $from
+     * @param $to
+     * @return bool
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public static function drag_and_drop($from, $to) {
         $fieldfrom = self::load($from);
         $fieldto   = self::load($to);
