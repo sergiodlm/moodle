@@ -46,9 +46,14 @@ class api {
         return field_factory::load($id, $record);
     }
 
+    public static function load_data(\stdClass $data, \stdClass $field) {
+        return data_factory::load($data, $field);
+    }
+
     public static function get_fields_with_data($component, $area, $recordid) {
         global $DB;
-        $sql = 'SELECT f.id as field_id, f.shortname, f.categoryid, f.type, c.name as categoryname, d.*
+        $sql = 'SELECT f.id as field_id, f.shortname, f.categoryid, f.type, f.configdata,
+                       c.name as categoryname, d.*
                   FROM {customfield_category} c
                   JOIN {customfield_field} f
                     ON (c.id = f.categoryid)
@@ -64,17 +69,12 @@ class api {
             $field = new \stdclass();
             $field->id = $data->field_id;
             $field->shortname = $data->shortname;
-            $formfield = self::get_field($field->id, $field);
-            $formfield->set_categoryname($data->categoryname);
-
-            if ($data->id == null) {
-                $data->fieldid = $data->field_id;
-                $data->recordid = $recordid;
-            }
-            $formfield->set_data($data);
-            $formfields[] = $formfield;
+            $field->type = $data->type;
+            $field->configdata = $data->configdata;
+            $field->categoryid = $data->categoryid;
+            unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata);
+            $formfields[] = self::load_data($data, $field);
         }
-
         return $formfields;
     }
 

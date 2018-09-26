@@ -31,7 +31,6 @@ defined('MOODLE_INTERNAL') || die;
  */
 class field extends \core_customfield\field {
 
-    const TYPE = 'text';
     const SIZE = 20;
 
     /**
@@ -66,47 +65,5 @@ class field extends \core_customfield\field {
                 '_top'   => get_string('samewindow', 'core_customfield')
         );
         $mform->addElement('select', 'configdata[linktarget]', get_string('linktarget', 'core_customfield'), $linkstargetoptions);
-    }
-
-    /**
-     * Add fields for editing a text profile field.
-     *
-     * @param moodleform $mform
-     * @throws \coding_exception
-     */
-    public function edit_field_add($mform) {
-        $mform->addElement(self::TYPE, $this->inputname(), format_string($this->get('name')), 'size="' . self::SIZE . '" ');
-        $mform->setType($this->inputname(), PARAM_TEXT);
-        $config = json_decode($this->get('configdata'));
-        if (empty($this->get_data()) && !empty($config->defaultvalue)) {
-            $mform->setDefault($this->inputname(), $config->defaultvalue);
-        }
-    }
-
-    /**
-     * @param $data
-     * @throws \coding_exception
-     */
-    public function set_data($data) {
-        $this->data = $data->charvalue;
-    }
-
-    /**
-     * @return string
-     */
-    public function datafield() {
-        return 'charvalue';
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function display() {
-        return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname customfieldtext']) .
-               ' : ' .
-               \html_writer::tag('span', format_string($this->get_data()), ['class' => 'customfieldvalue customfieldtext']) .
-               \html_writer::end_tag('div');
     }
 }

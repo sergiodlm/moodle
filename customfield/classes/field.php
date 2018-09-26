@@ -38,13 +38,6 @@ abstract class field extends persistent {
     const TABLE = 'customfield_field';
 
     /**
-     * Name of the category that the field belongs to (used on forms and webservices).
-     *
-     * @var string
-     */
-    protected $categoryname;
-
-    /**
      * Data for field.
      *
      * @var string
@@ -290,67 +283,6 @@ abstract class field extends persistent {
         return $this->move(-1);
     }
 
-    /**
-     * Tweaks the edit form.
-     *
-     * @param \MoodleQuickForm $mform
-     * @return bool
-     * @throws \moodle_exception
-     */
-    public function edit_after_data(\MoodleQuickForm $mform) {
-        if (!$this->is_editable()) {
-            return false;
-        }
-        $this->edit_field_set_locked($mform);
-        return true;
-    }
-
-    /**
-     * TODO: check capabilities.
-     *
-     * @return field
-     */
-    public function is_editable() {
-        return true;
-    }
-
-    /**
-     * TODO: check locked status.
-     *
-     * @return field
-     */
-    public function is_locked() {
-        return false;
-    }
-
-    /**
-     * HardFreeze the field if locked.
-     *
-     * @param \MoodleQuickForm $mform
-     * @throws \coding_exception
-     */
-    public function edit_field_set_locked(\MoodleQuickForm $mform) {
-        if (!$mform->elementExists($this->inputname())) {
-            return;
-        }
-        if ($this->is_locked() and !has_capability('moodle/course:update', context_course::instance($this->get('courseid')))) {
-            $mform->hardFreeze($this->inputname());
-            $mform->setConstant($this->inputname(), $this->get_data());
-        }
-    }
-
-    /**
-     * Loads an object with data for this field.
-     *
-     * @param \stdClass $data
-     * @throws \coding_exception
-     */
-    public function edit_load_data(\stdClass $data) {
-        if ($this->get_data() !== null) {
-            $data->{$this->inputname()} = $this->get_data();
-        }
-    }
-
     public function set_datarecord($datavalues) {
         $data = data::load($datavalues->recordid, $datavalues->fieldid);
 
@@ -362,82 +294,5 @@ abstract class field extends persistent {
         $data->valueformat($datavalues->valueformat);
         $data->contextid($datavalues->contextid);
         $data->save();
-    }
-
-    /**
-     * Saves the data coming from form
-     *
-     * @param \stdClass $datanew data coming from the form
-     * @return mixed returns data id if success of db insert/update, false on fail, 0 if not permitted
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    public function edit_save_data(\stdClass $datanew) {
-        global $DB;
-
-        // TODO: handle unchecked checkboxes.
-        if (!isset($datanew->{$this->inputname()})) {
-            // Field not present in form, probably locked and invisible - skip it.
-            return;
-        }
-
-        $datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->get('id')));
-
-        $datanew->{$this->inputname()} = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
-
-        if ($datarecord) {
-            $datarecord->{$this->datafield()} = $datanew->{$this->inputname()};
-            $datarecord->timemodified         = time();
-            $result                           = $DB->update_record('customfield_data', $datarecord);
-        } else {
-            $now                              = time();
-            $datarecord                       = new \stdclass();
-            $datarecord->{$this->datafield()} = $datanew->{$this->inputname()};
-            $datarecord->fieldid              = $this->get('id');
-            $datarecord->recordid             = $datanew->id;
-            $datarecord->timecreated          = $now;
-            $datarecord->timemodified         = $now;
-            $result                           = $DB->insert_record('customfield_data', $datarecord);
-        }
-        return $result;
-    }
-
-    /**
-     * Hook for child classess to process the data before it gets saved in database
-     *
-     * @param \stdClass $data
-     * @param \stdClass $datarecord The object that will be used to save the record
-     * @return  mixed
-     * @return int
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
-        return $data;
-    }
-
-    public function should_display() {
-        // TODO: text config/attribute.
-        return true;
-    }
-
-    public function inputname() {
-        return 'customfield_' . $this->get('shortname');
-    }
-
-    public function set_categoryname($name) {
-        $this->categoryname = $name;
-    }
-
-    public function get_categoryname() {
-        return $this->categoryname;
-    }
-
-    public function set_data($data) {
-        $this->data = $data;
-    }
-
-    public function get_data() {
-        return $this->data;
     }
 }
