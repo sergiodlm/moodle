@@ -42,7 +42,7 @@ class field extends \core_customfield\field {
      */
     public function add_field_to_config_form( \MoodleQuickForm $mform) {
         $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));
-        $form->setType('defaultdata', PARAM_BOOL);
+        $mform->setType('defaultdata', PARAM_BOOL);
     }
 
     /**
@@ -52,8 +52,9 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function edit_field_add($mform) {
+        $config = json_decode($this->get('configdata'));
         $checkbox = $mform->addElement('advcheckbox', $this->inputname(), format_string($this->get('name')));
-        if ($this->get_data() == '1') {
+        if (($this->get_data() == '1') || $config->checkbydefault == 1) {
             $checkbox->setChecked(true);
         }
         $mform->setType($this->inputname(), PARAM_BOOL);
