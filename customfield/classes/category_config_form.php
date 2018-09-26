@@ -24,8 +24,6 @@ namespace core_customfield;
 
 defined('MOODLE_INTERNAL') || die;
 
-global $CFG;
-require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/formslib.php');
 
 /**
@@ -47,8 +45,7 @@ class category_config_form extends \moodleform {
             throw new \coding_exception('Handler must be passed in customdata');
         }
 
-        // Form definition with new course defaults.
-        $mform->addElement('header','general', get_string('general', 'form'));
+        $mform->addElement('header', 'general', get_string('general', 'form'));
 
         $mform->addElement('text', 'name', get_string('categoryname', 'core_customfield'));
         $mform->setType('name', PARAM_NOTAGS);

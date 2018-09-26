@@ -22,12 +22,14 @@
 
 namespace customfield_select;
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * Class field
  *
  * @package customfield_select
  */
-class field extends \core_customfield\field{
+class field extends \core_customfield\field {
 
     const TYPE = 'select';
     const SIZE = 40;
@@ -36,8 +38,11 @@ class field extends \core_customfield\field{
      * Add fields for editing a text field.
      * @param moodleform $mform
      */
-    public function add_field_to_edit_form( \MoodleQuickForm $mform) {
+    public function add_field_to_config_form( \MoodleQuickForm $mform) {
         $mform->addElement('textarea', 'configdata[options]', 'Menu options (one per line)');
+
+        $mform->addElement('text', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), 'size="50"');
+        $mform->setType('configdata[defaultvalue]', PARAM_TEXT);
     }
 
     /**
@@ -47,16 +52,27 @@ class field extends \core_customfield\field{
      * @throws \coding_exception
      */
     public function edit_field_add($mform) {
-        $configdata = json_decode($this->get('configdata'));
+        $config = json_decode($this->get('configdata'));
 
-        if (isset($configdata->options)) {
-            $options = explode("\n", $configdata->options);
+        if (isset($config->options)) {
+            $options = explode("\r\n", $config->options);
         } else {
             $options = array();
         }
+        $formattedoptions = array();
+        foreach ($options as $key => $option) {
+            // Multilang formatting with filters.
+            $formattedoptions[$key] = format_string($option);
+        }
 
-        $mform->addElement('select', $this->inputname(), format_string($this->get('name')), $options);
-        $mform->setDefault($this->inputname(), $this->get('data'));
+        $mform->addElement('select', $this->inputname(), format_string($this->get('name')), $formattedoptions);
+
+        if (is_null($this->get_data())) {
+            $defaultkey = array_search($config->defaultvalue, $options);
+        } else {
+            $defaultkey = $this->get_data();
+        }
+        $mform->setDefault($this->inputname(), $defaultkey);
     }
 
     /**
@@ -64,7 +80,7 @@ class field extends \core_customfield\field{
      * @throws \coding_exception
      */
     public function set_data($data) {
-        $this->set('data', $data->intvalue);
+        $this->data = $data->intvalue;
     }
 
     /**
@@ -86,19 +102,15 @@ class field extends \core_customfield\field{
         } else {
             $options = array();
         }
-        return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
-               \html_writer::tag('span', format_text($options[$this->get('data')]), ['class' => 'customfieldvalue']).
-               \html_writer::end_tag('div');
-    }
-
-    /**
-     * @param $data
-     * @throws \coding_exception
-     */
-    public function edit_load_data($data) {
-        if ($this->get('data') !== null) {
-            $data->{$this->inputname()} = $this->get('data');
+        if (is_null($this->get_data())) {
+            $displaydata = get_string('notset', 'core_customfield');
+        } else {
+            $displaydata = format_string($options[$this->get_data()]);
         }
+        return \html_writer::start_tag('div') .
+               \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname']) .
+               ' : ' .
+               \html_writer::tag('span', $displaydata, ['class' => 'customfieldvalue']) .
+               \html_writer::end_tag('div');
     }
 }

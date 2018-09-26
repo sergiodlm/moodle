@@ -22,12 +22,14 @@
 
 namespace customfield_checkbox;
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * Class field
  *
  * @package customfield_checkbox
  */
-class field extends \core_customfield\field{
+class field extends \core_customfield\field {
 
     const TYPE = 'checkbox';
     const SIZE = 40;
@@ -38,8 +40,9 @@ class field extends \core_customfield\field{
      * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
-    public function add_field_to_edit_form( \MoodleQuickForm $mform) {
-        $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));    }
+    public function add_field_to_config_form( \MoodleQuickForm $mform) {
+        $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));
+    }
 
     /**
      * Add fields for editing a textarea field.
@@ -56,8 +59,7 @@ class field extends \core_customfield\field{
      * @throws \coding_exception
      */
     public function set_data($data) {
-        // TODO: verify if should support checkboxes with custom values.
-        $this->set('data', $data->intvalue);
+        $this->data = $data->intvalue;
     }
 
     /**
@@ -72,10 +74,16 @@ class field extends \core_customfield\field{
      * @throws \coding_exception
      */
     public function display() {
+        global $OUTPUT;
+        if ($this->get_data()) {
+            $displaydata = $OUTPUT->pix_icon('checked', get_string('checked', 'core_customfield'), 'customfield_date');
+        } else {
+            $displaydata = $OUTPUT->pix_icon('notchecked', get_string('notchecked', 'core_customfield'), 'customfield_date');
+        }
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->name()), ['class' => 'customfieldname']).
-               // TODO: show as checkbox, disabled or icon.
-               \html_writer::tag('span', $this->get('data'), ['class' => 'customfieldvalue']).
+               \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname']).
+               ' : '.
+               \html_writer::tag('span', $displaydata, ['class' => 'customfieldvalue']).
                \html_writer::end_tag('div');
     }
 }

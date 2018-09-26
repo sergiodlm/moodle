@@ -52,7 +52,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
 
     }
 
-    //  Deletes all records for a user from a list of approved contexts.
+    // Deletes all records for a user from a list of approved contexts.
     public static function delete_customfield_for_user(\core_privacy\local\request\approved_contextlist $contextlist,
             string $component, string $commentarea = null, int $itemid = null) {
 

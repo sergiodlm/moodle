@@ -426,6 +426,12 @@ EOD;
             $record['numsections'] = get_config('moodlecourse', 'numsections');
         }
 
+        if (!empty($options['customfields'])) {
+            foreach($options['customfields'] as $field) {
+                $record['customfield_'.$field['shortname']] = $field['value'];
+            }
+        }
+
         $course = create_course((object)$record);
         context_course::instance($course->id);
 
@@ -1173,6 +1179,21 @@ EOD;
         $category->set('name', $data['name']);
         $category->save();
         return $category;
+    }
+
+    /**
+     * Create a new course custom field category with the given name.
+     *
+     * @param   array $data Array with 'name', 'shortname' and 'type' of the field
+     * @return  \stdClass   The created field
+     */
+    public function create_custom_field($category, $data) {
+        $handler = new \core_course\customfield\course_handler();
+        $field = $handler->new_field($category, $data['type']);
+        $field->set('shortname', $data['shortname']);
+        $field->set('name', $data['name']);
+        $field->save();
+        return $field;
     }
 
 

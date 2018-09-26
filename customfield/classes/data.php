@@ -117,7 +117,10 @@ class data extends persistent {
 
         $dbdata = $DB->get_record(self::TABLE, ['fieldid' => $fieldid]);
 
-        return new self($dbdata->id);
+        if ($dbdata) {
+            return new self($dbdata->id);
+        } else {
+            return new self();
+        }
     }
 }
-
