@@ -88,7 +88,7 @@
                 </thead>
                 <tbody>
                 {{#fields}}
-                    <tr data-field-name="{{name}}" data-field-id="{{id}}">
+                    <tr data-field-name="{{name}}" data-field-id="{{id}}"  class="field">
                         <td class="text-left">
                             <a href="#" class="movefield osep-link-icon">
                                 {{#pix}}i/dragdrop, core, {{#str}}move{{/str}}{{/pix}}
@@ -112,7 +112,7 @@
                     </tr>
                 {{/fields}}
                 {{^fields}}
-                    <tr><td colspan="5">There are no fields on this category.</td></tr>
+                    <tr class="nofields"><td colspan="5">There are no fields on this category.</td></tr>
                 {{/fields}}
                 </tbody>
             </table>

@@ -160,6 +160,15 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                         ]);
                     }
                     evt.stopPropagation(); // Important for nested lists to prevent multiple targets.
+                    // Refreshing fields tables.
+                    $('#customfield_catlist').children().each( function( ) {
+                        if ( ! $(this).find( $('.field') ).length && ! $(this).find( $('.nofields') ).length ) {
+                            $(this).find('tbody').append('<tr class="nofields"><td colspan="5">There are no fields on this category.</td></tr>');
+                        }
+                        if ( $(this).find( $('.field') ).length && $(this).find( $('.nofields') ).length ) {
+                            $(this).find( $('.nofields') ).remove();
+                        }
+                    });
                 });
         }
     };
