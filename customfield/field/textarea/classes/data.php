@@ -55,14 +55,6 @@ class data extends \core_customfield\data {
     }
 
     /**
-     * @param $data
-     * @throws \coding_exception
-     */
-    public function set_data($data) {
-        $this->data = $data->value;
-    }
-
-    /**
      * @return string
      */
     public function datafield() :string {

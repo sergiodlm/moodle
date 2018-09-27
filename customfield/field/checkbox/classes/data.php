@@ -49,14 +49,6 @@ class data extends \core_customfield\data {
     }
 
     /**
-     * @param $data
-     * @throws \coding_exception
-     */
-    public function set_data($data) {
-        $this->data = $data->intvalue;
-    }
-
-    /**
      * @return string
      */
     public function datafield() {

@@ -63,10 +63,6 @@ class data extends \core_customfield\data {
         $mform->setDefault($this->inputname(), time());
     }
 
-    public function set_data($data) {
-        $this->data = $data->intvalue;
-    }
-
     /**
      * @return string
      */
