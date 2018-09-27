@@ -46,11 +46,21 @@ class api {
         return field_factory::load($id, $record);
     }
 
-    public static function load_data(\stdClass $data, \stdClass $field) {
+    public static function load_data(\stdClass $data, field $field) : data {
         return data_factory::load($data, $field);
     }
 
-    public static function get_fields_with_data($component, $area, $recordid) {
+    /**
+     * Retrieves list of all fields and the data associated with them
+     *
+     * @param string $component
+     * @param string $area
+     * @param int|null $itemid
+     * @param \context $datacontext context to use for data that does not yet exist
+     * @param int $recordid
+     * @return array
+     */
+    public static function get_fields_with_data(string $component, string $area, $itemid, \context $datacontext, int $recordid) : array {
         global $DB;
         $sql = 'SELECT f.id as field_id, f.shortname, f.categoryid, f.type, f.configdata,
                        c.name as categoryname, d.*
@@ -60,19 +70,26 @@ class api {
              LEFT JOIN {customfield_data} d
                     ON (f.id = d.fieldid AND d.recordid = :recordid)
                  WHERE c.component = :component
-                   AND c.area = :area';
-        $where = ['component' => $component, 'area' => $area, 'recordid' => $recordid];
+                   AND c.area = :area
+                   AND c.itemid ' . ($itemid ? '=:itemid' : ' IS NULL ') . '
+              ORDER BY c.sortorder, f.sortorder';
+        $where = ['component' => $component, 'area' => $area, 'itemid' => $itemid, 'recordid' => $recordid];
         $fieldsdata = $DB->get_records_sql($sql, $where);
 
         $formfields = [];
         foreach ($fieldsdata as $data) {
-            $field = new \stdclass();
-            $field->id = $data->field_id;
-            $field->shortname = $data->shortname;
-            $field->type = $data->type;
-            $field->configdata = $data->configdata;
-            $field->categoryid = $data->categoryid;
-            unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata);
+            $fieldobj = (object)['id' => $data->field_id, 'shortname' => $data->shortname, 'type' => $data->type,
+                'configdata' => $data->configdata, 'categoryid' => $data->categoryid];
+            $field = self::get_field(0, $fieldobj);
+            $categoryobj = (object)['id' => $data->categoryid, 'name' => $data->categoryname,
+                'component' => $component, 'area' => $area, 'itemid' => $itemid];
+            $field->set_category(new category(0, $categoryobj));
+            unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata, $data->categoryname);
+            if (empty($data->id)) {
+                $data->fieldid = $field->get('id');
+                $data->contextid = $datacontext->id;
+                $data->recordid = $recordid;
+            }
             $formfields[] = self::load_data($data, $field);
         }
         return $formfields;

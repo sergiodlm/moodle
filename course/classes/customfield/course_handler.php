@@ -71,4 +71,8 @@ class course_handler extends \core_customfield\handler {
     public function get_configuration_url(): \moodle_url {
         return new \moodle_url('/course/customfield.php');
     }
+
+    public function get_data_context(int $recordid): \context {
+        return \context_course::instance($recordid);
+    }
 }

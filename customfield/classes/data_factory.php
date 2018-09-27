@@ -27,46 +27,17 @@ defined('MOODLE_INTERNAL') || die;
 class data_factory {
     const CUSTOMFIELD_TABLE = 'customfield_field';
 
-    public static function load(\stdClass $data, \stdClass $field) : data {
-        global $DB;
-
-        if (!$data) {
-            $data = $DB->get_record(self::CUSTOMFIELD_TABLE, ['id' => $id]);
-        }
-
-        $customfieldtype = "\\customfield_{$field->type}\\field";
-        if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
-            throw new \coding_exception( get_string('errorfieldtypenotfound', 'core_customfield', s($field->type)) );
-        }
-
-        $customdatatype = "\\customfield_{$field->type}\\data";
+    public static function load(\stdClass $data, field $field) : data {
+        $fieldtype = $field->get('type');
+        $customdatatype = "\\customfield_{$fieldtype}\\data";
         if (!class_exists($customdatatype) || !is_subclass_of($customdatatype, data::class)) {
-            throw new \coding_exception( get_string('errordatatypenotfound', 'core_customfield', s($field->type)) );
+            throw new \moodle_exception( get_string('errordatatypenotfound', 'core_customfield', s($fieldtype)) );
         }
 
-        $data->fieldid = $field->id;
-        $categoryname = $data->categoryname;
-        unset($data->categoryname);
-
-        $field = new $customfieldtype($field->id, $field);
-        $dataobject = new $customdatatype($data->id, $data);
+        $dataobject = new $customdatatype(0, $data);
         $dataobject->set_field($field);
-        $dataobject->set_data($data);
-        $dataobject->set_categoryname($categoryname);
 
         return $dataobject;
-    }
-
-    public static function create(string $type) : field {
-
-        $customfieldtype = "\\customfield_{$type}\\field";
-        if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
-            throw new \coding_exception( get_string('errorfieldtypenotfound', 'core_customfield', s($type)) );
-        }
-
-        $field = new $customfieldtype();
-        $field->set('type', $type);
-        return $field;
     }
 
 }
