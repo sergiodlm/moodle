@@ -45,6 +45,11 @@ abstract class field extends persistent {
     protected $data;
 
     /**
+     * @var category
+     */
+    protected $category;
+
+    /**
      * Add field parameters to the field configuration form
      *
      * @param \MoodleQuickForm $mform
@@ -271,5 +276,16 @@ abstract class field extends persistent {
         $data->valueformat($datavalues->valueformat);
         $data->contextid($datavalues->contextid);
         $data->save();
+    }
+
+    public function set_category(category $category) {
+        $this->category = $category;
+    }
+
+    public function get_category() : category {
+        if (!$this->category) {
+            $this->category = new category($this->get('categoryid'));
+        }
+        return $this->category;
     }
 }

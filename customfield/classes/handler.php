@@ -84,6 +84,14 @@ abstract class handler {
     abstract public function get_configuration_url() : \moodle_url;
 
     /**
+     * Context that should be used for data stored for the given record
+     *
+     * @param int $recordid
+     * @return \context
+     */
+    abstract public function get_data_context(int $recordid) : \context;
+
+    /**
      * @return int|null
      */
     public function get_item_id() {
@@ -173,8 +181,15 @@ abstract class handler {
         // return array_filter($fields, [$this, 'is_field_supported']);
     }
 
-    public function get_fields_with_data($recordid) {
-        return api::get_fields_with_data($this->get_component(), $this->get_area(), $recordid);
+    /**
+     * List of fields with their data
+     *
+     * @param int $recordid
+     * @return data[]
+     */
+    public function get_fields_with_data(int $recordid) : array {
+        return api::get_fields_with_data($this->get_component(), $this->get_area(), $this->get_item_id(),
+            $this->get_data_context($recordid), $recordid);
     }
 
     /**
@@ -253,7 +268,8 @@ abstract class handler {
             }
 
             // Display the header and the fields.
-            $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->get_categoryname()));
+            $formfield = reset($fieldstodisplay);
+            $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->get_field()->get_category()->get('name')));
             foreach ($fieldstodisplay as $formfield) {
                 $formfield->edit_field_add($mform);
                 if ($formfield->get_field()->get('required')) {

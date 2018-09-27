@@ -40,16 +40,9 @@ class data extends persistent {
     /**
      * Field that this data belongs to.
      *
-     * @var core_customfield\field
+     * @var field
      */
     protected $field;
-
-    /**
-     * Name of the category that the related field belongs to (used on forms and webservices).
-     *
-     * @var string
-     */
-    protected $categoryname;
 
     /**
      * Data from the form.
@@ -143,20 +136,12 @@ class data extends persistent {
         }
     }
 
-    public function set_field($field) {
+    public function set_field(field $field) {
         $this->field = $field;
     }
 
-    public function get_field() {
+    public function get_field() : field {
         return $this->field;
-    }
-
-    public function set_categoryname($name) {
-        $this->categoryname = $name;
-    }
-
-    public function get_categoryname() {
-        return $this->categoryname;
     }
 
     public function set_data($data) {
