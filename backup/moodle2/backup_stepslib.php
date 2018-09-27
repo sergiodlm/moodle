@@ -418,6 +418,10 @@ class backup_course_structure_step extends backup_structure_step {
         // can save course data if required.
         $this->add_plugin_structure('tool', $course, true);
 
+        // Attach custom fields plugin structure to $course element; multiple plugins
+        // can save course data if required.
+        $this->add_plugin_structure('customfield', $course, true);
+
         // Build the tree
 
         $course->add_child($category);

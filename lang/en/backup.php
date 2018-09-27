@@ -287,6 +287,7 @@ $string['rootsettingactivities'] = 'Include activities and resources';
 $string['rootsettingbadges'] = 'Include badges';
 $string['rootsettingblocks'] = 'Include blocks';
 $string['rootsettingcompetencies'] = 'Include competencies';
+$string['rootsettingcustomfields'] = 'Include custom fields';
 $string['rootsettingfilters'] = 'Include filters';
 $string['rootsettingcomments'] = 'Include comments';
 $string['rootsettingcalendarevents'] = 'Include calendar events';
