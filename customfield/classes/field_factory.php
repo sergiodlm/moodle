@@ -24,10 +24,24 @@ namespace core_customfield;
 
 defined('MOODLE_INTERNAL') || die;
 
+/**
+ * Class field_factory
+ *
+ * @package core_customfield
+ */
 class field_factory {
 
     const CUSTOMFIELD_TABLE = 'customfield_field';
 
+    /**
+     * Returns a correct class field.
+     *
+     * @param int $id
+     * @param \stdClass|null $field
+     * @return field
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public static function load(int $id, \stdClass $field = null) : field {
         global $DB;
 
@@ -43,6 +57,11 @@ class field_factory {
         return new $customfieldtype($field->id, $field);
     }
 
+    /**
+     * @param string $type
+     * @return field
+     * @throws \coding_exception
+     */
     public static function create(string $type) : field {
 
         $customfieldtype = "\\customfield_{$type}\\field";
@@ -55,6 +74,12 @@ class field_factory {
         return $field;
     }
 
+    /**
+     * @param int $categoryid
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public static function get_fields_from_category_array(int $categoryid) :array {
         global $DB;
 
@@ -66,45 +91,43 @@ class field_factory {
         return $fields;
     }
 
-    public static function bulk_delete(array $ids) {
-        global $DB;
-
-        if (!empty($ids)) {
-            if (!data::bulk_delete_from_fields($ids)) {
-                return false;
-            }
-
-            $where = 'id<0';
-            foreach ($ids as $id) {
-                $where .= " OR id=$id";
-            }
-
-            if (! $DB->delete_records_select(self::CUSTOMFIELD_TABLE, $where)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     /**
-     * @param $from
-     * @param $to
+     * @param int $from
+     * @param int $to
+     * @param int $category
      * @return bool
      * @throws \coding_exception
      * @throws \dml_exception
+     * @throws \moodle_exception
      */
-    public static function drag_and_drop($from, $to) {
+    public static function drag_and_drop(int $from, int $to, int $category) : bool {
         $fieldfrom = self::load($from);
-        $fieldto   = self::load($to);
 
-        // TODO: refactor this.
-        if ($fieldfrom->get('sortorder') < $fieldto->get('sortorder')) {
-            for ($i = $fieldfrom->get('sortorder'); $i < $fieldto->get('sortorder'); $i++) {
-                $fieldfrom->up();
+        // TODO: Refactor this:
+        if ( $fieldfrom->get('categoryid') != $category ) {
+            $oldcategory = $fieldfrom->get('categoryid');
+
+            $fieldfrom->set('categoryid', $category);
+            $fieldfrom->set('sortorder', -1);
+            $fieldfrom->save();
+
+            category::reorder_fields($oldcategory);
+            category::reorder_fields($fieldfrom->get('categoryid'));
+        }
+
+        if ( $to > 0 ) {
+            $fieldto   = self::load($to);
+            if ($fieldfrom->get('sortorder') < $fieldto->get('sortorder')) {
+                for ($i = $fieldfrom->get('sortorder'); $i < $fieldto->get('sortorder'); $i++) {
+                    $fieldfrom->up();
+                }
+            } else if ($fieldfrom->get('sortorder') > $fieldto->get('sortorder')) {
+                for ($i = $fieldfrom->get('sortorder'); $i > $fieldto->get('sortorder')+1; $i--) {
+                    $fieldfrom->down();
+                }
             }
-        } else if ($fieldfrom->get('sortorder') > $fieldto->get('sortorder')) {
-            for ($i = $fieldfrom->get('sortorder'); $i > $fieldto->get('sortorder'); $i--) {
+        } else {
+            for ($i = $fieldfrom->get('sortorder'); $i > 0; $i--) {
                 $fieldfrom->down();
             }
         }
