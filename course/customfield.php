@@ -25,6 +25,8 @@ require_once($CFG->libdir.'/adminlib.php');
 
 admin_externalpage_setup('course_customfield');
 
+$PAGE->requires->string_for_js('errorreloadpage', 'core_customfield');
+
 $output = $PAGE->get_renderer('core_customfield');
 $handler = new  \core_course\customfield\course_handler();
 $outputpage = new \core_customfield\output\management($handler);

@@ -90,3 +90,4 @@ $string['type'] = 'Type';
 $string['unknownhandler'] = 'Unable to find handler for custom fields for component {$a->component} and area {$a->area}';
 $string['visibility'] = ' Who is this field visible to?';
 $string['yes'] = 'Yes';
+$string['errorreloadpage'] = 'Error, please press F5 for reloading this page';
