@@ -42,48 +42,6 @@ class field extends \core_customfield\field {
      */
     public function add_field_to_config_form( \MoodleQuickForm $mform) {
         $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));
-    }
-
-    /**
-     * Add fields for editing a textarea field.
-     *
-     * @param moodleform $mform
-     * @throws \coding_exception
-     */
-    public function edit_field_add($mform) {
-        $mform->addElement('checkbox', $this->inputname(), format_string($this->get('name')));
-    }
-
-    /**
-     * @param $data
-     * @throws \coding_exception
-     */
-    public function set_data($data) {
-        $this->data = $data->intvalue;
-    }
-
-    /**
-     * @return string
-     */
-    public function datafield() {
-        return 'intvalue';
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function display() {
-        global $OUTPUT;
-        if ($this->get_data()) {
-            $displaydata = $OUTPUT->pix_icon('checked', get_string('checked', 'core_customfield'), 'customfield_date');
-        } else {
-            $displaydata = $OUTPUT->pix_icon('notchecked', get_string('notchecked', 'core_customfield'), 'customfield_date');
-        }
-        return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname']).
-               ' : '.
-               \html_writer::tag('span', $displaydata, ['class' => 'customfieldvalue']).
-               \html_writer::end_tag('div');
+        $mform->setType('defaultdata', PARAM_BOOL);
     }
 }

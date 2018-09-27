@@ -31,9 +31,6 @@ defined('MOODLE_INTERNAL') || die;
  */
 class field extends \core_customfield\field {
 
-    const TYPE = 'select';
-    const SIZE = 40;
-
     /**
      * Add fields for editing a text field.
      * @param moodleform $mform
@@ -43,74 +40,5 @@ class field extends \core_customfield\field {
 
         $mform->addElement('text', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), 'size="50"');
         $mform->setType('configdata[defaultvalue]', PARAM_TEXT);
-    }
-
-    /**
-     * Add fields for editing a textarea field.
-     *
-     * @param moodleform $mform
-     * @throws \coding_exception
-     */
-    public function edit_field_add($mform) {
-        $config = json_decode($this->get('configdata'));
-
-        if (isset($config->options)) {
-            $options = explode("\r\n", $config->options);
-        } else {
-            $options = array();
-        }
-        $formattedoptions = array();
-        foreach ($options as $key => $option) {
-            // Multilang formatting with filters.
-            $formattedoptions[$key] = format_string($option);
-        }
-
-        $mform->addElement('select', $this->inputname(), format_string($this->get('name')), $formattedoptions);
-
-        if (is_null($this->get_data())) {
-            $defaultkey = array_search($config->defaultvalue, $options);
-        } else {
-            $defaultkey = $this->get_data();
-        }
-        $mform->setDefault($this->inputname(), $defaultkey);
-    }
-
-    /**
-     * @param $data
-     * @throws \coding_exception
-     */
-    public function set_data($data) {
-        $this->data = $data->intvalue;
-    }
-
-    /**
-     * @return string
-     */
-    public function datafield() {
-        return 'intvalue';
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function display() {
-        $configdata = json_decode($this->get('configdata'));
-
-        if (isset($configdata->options)) {
-            $options = explode("\n", $configdata->options);
-        } else {
-            $options = array();
-        }
-        if (is_null($this->get_data())) {
-            $displaydata = get_string('notset', 'core_customfield');
-        } else {
-            $displaydata = format_string($options[$this->get_data()]);
-        }
-        return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->get('name')), ['class' => 'customfieldname']) .
-               ' : ' .
-               \html_writer::tag('span', $displaydata, ['class' => 'customfieldvalue']) .
-               \html_writer::end_tag('div');
     }
 }

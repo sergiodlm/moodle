@@ -235,8 +235,8 @@ abstract class handler {
 
         $fieldswithdata = $this->get_fields_with_data($recordid);
         $categories = [];
-        foreach ($fieldswithdata as $field) {
-            $categories[$field->get('categoryid')][] = $field;
+        foreach ($fieldswithdata as $data) {
+            $categories[$data->get_field()->get('categoryid')][] = $data;
         }
         foreach ($categories as $categoryid => $fields) {
             // Check first if *any* fields will be displayed.
@@ -256,11 +256,11 @@ abstract class handler {
             $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->get_categoryname()));
             foreach ($fieldstodisplay as $formfield) {
                 $formfield->edit_field_add($mform);
-                if ($formfield->get('required')) {
+                if ($formfield->get_field()->get('required')) {
                     $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
                 }
                 // TODO: move capability check to course handler or get capability from current handler.
-                if ($formfield->get('locked') and !has_capability('moodle/course:update', \context_system::instance())) {
+                if ($formfield->get_field()->get('locked') and !has_capability('moodle/course:update', \context_system::instance())) {
                     $mform->hardFreeze($formfield->inputname());
                 }
             }
@@ -345,10 +345,11 @@ abstract class handler {
     }
 
     public function fields_array($courseid) {
-        $fields = $this->get_fields_with_data($courseid);
+        $datafields = $this->get_fields_with_data($courseid);
         $fieldsforws = array();
-        foreach ($fields as $field) {
-            $fieldsforws[] = ['type' => $field->get('type'), 'value' => $field->get_data(),
+        foreach ($datafields as $data) {
+            $field = $data->get_field();
+            $fieldsforws[] = ['type' => $field->get('type'), 'value' => $data->get_data(),
                               'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
         }
         return $fieldsforws;
