@@ -112,15 +112,15 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
             });
             $('[data-category-name]').on('sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend', function(evt, info) {
                 if ( evt.type == 'sortablelist-dragend' && info.dropped ) {
-                    ajax.call([
-                        {
-                            methodname: 'core_customfield_drag_and_drop_block',
-                            args: {
-                                from: info.draggedElement[0].dataset.categoryId,
-                                to: info.targetList.prevObject[0].dataset.categoryId
-                            }
-                        },
-                    ]);
+                     ajax.call([
+                         {
+                             methodname: 'core_customfield_drag_and_drop_block',
+                             args: {
+                                 from: info.draggedElement.data('category-id'),
+                                 to: info.targetNextElement.data('category-id') || 0
+                             }
+                         },
+                     ]);
                 }
                 //console.log('Category event ' + evt.type);
                 //console.log(info);
@@ -145,16 +145,16 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                 'sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend',
                 function (evt, info
                 ) {
-                    console.log('Field event ' + evt.type);
-                    console.log(info);
-
+                    //console.log('Field event ' + evt.type);
+                    //console.log(info);
                     if (evt.type == 'sortablelist-dragend' && info.dropped) {
                         ajax.call([
                             {
                                 methodname: 'core_customfield_drag_and_drop',
                                 args: {
-                                    from: info.draggedElement[0].dataset.fieldId,
-                                    to: info.targetList.prevObject[0].dataset.fieldId
+                                    from: info.draggedElement.data('field-id'),
+                                    to: info.targetNextElement.data('field-id') || 0,
+                                    category: Number(info.targetList.closest('[data-category-id]').attr('data-category-id'))
                                 }
                             },
                         ]);

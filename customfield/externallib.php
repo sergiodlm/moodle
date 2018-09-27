@@ -200,14 +200,15 @@ class core_customfield_external extends external_api {
         return new external_function_parameters(
                 [
                         'from' => new external_value(PARAM_INT, 'Entry ID to move from', VALUE_REQUIRED),
-                        'to'   => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED)
+                        'to'   => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED),
+                        'category' => new external_value(PARAM_INT, 'Entry new CategoryId', VALUE_REQUIRED)
                 ]
         );
     }
 
 
-    public static function drag_and_drop(int $from, int $to) {
-        return \core_customfield\field_factory::drag_and_drop($from, $to);
+    public static function drag_and_drop(int $from, int $to, int $category) {
+        return \core_customfield\field_factory::drag_and_drop($from, $to, $category);
     }
 
     public static function drag_and_drop_returns() {
@@ -219,8 +220,8 @@ class core_customfield_external extends external_api {
     public static function drag_and_drop_block_parameters(): external_function_parameters {
         return new external_function_parameters(
                 [
-                        'from' => new external_value(PARAM_INT, 'Entry ID to move from', VALUE_REQUIRED),
-                        'to'   => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED)
+                        'from'     => new external_value(PARAM_INT, 'Entry ID to move from', VALUE_REQUIRED),
+                        'to'       => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED),
                 ]
         );
     }

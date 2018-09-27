@@ -210,31 +210,8 @@ abstract class field extends persistent {
      * @throws \moodle_exception
      * @throws \dml_exception
      */
-    private static function static_reorder($categoryid): bool {
-        global $DB;
-
-        $fieldneighbours = $DB->get_records(self::TABLE, ['categoryid' => $categoryid], 'sortorder DESC');
-
-        $neworder = count($fieldneighbours);
-
-        foreach ($fieldneighbours as $field) {
-            $dataobject            = new \stdClass();
-            $dataobject->id        = $field->id;
-            $dataobject->sortorder = --$neworder;
-            if (!$DB->update_record(self::TABLE, $dataobject)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * @return bool
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
     private function reorder(): bool {
-        return $this::static_reorder($this->get('categoryid'));
+        return category::reorder_fields($this->get('categoryid'));
     }
 
     /**
