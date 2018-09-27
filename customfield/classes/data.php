@@ -45,13 +45,6 @@ class data extends persistent {
     protected $field;
 
     /**
-     * Data from the form.
-     *
-     * @var string
-     */
-    protected $formvalue;
-
-    /**
      * Return the definition of the properties of this model.
      *
      * @return array
@@ -145,7 +138,7 @@ class data extends persistent {
     }
 
     public function set_formvalue($value) {
-        $this->set($this->datafield(), $value);
+        $this->set($this->datafield(), $value->{$this->datafield()});
     }
 
     public function get_formvalue() {
