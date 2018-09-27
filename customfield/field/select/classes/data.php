@@ -55,10 +55,10 @@ class data extends \core_customfield\data {
 
         $mform->addElement('select', $this->inputname(), format_string($this->get_field()->get('name')), $formattedoptions);
 
-        if (is_null($this->get_data())) {
+        if (is_null($this->get_formvalue())) {
             $defaultkey = array_search($config->defaultvalue, $options);
         } else {
-            $defaultkey = $this->get_data();
+            $defaultkey = $this->get_formvalue();
         }
         $mform->setDefault($this->inputname(), $defaultkey);
     }
@@ -90,10 +90,10 @@ class data extends \core_customfield\data {
         } else {
             $options = array();
         }
-        if (is_null($this->get_data())) {
+        if (is_null($this->get_formvalue())) {
             $displaydata = get_string('notset', 'core_customfield');
         } else {
-            $displaydata = format_string($options[$this->get_data()]);
+            $displaydata = format_string($options[$this->get_formvalue()]);
         }
         return \html_writer::start_tag('div') .
                \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname']) .

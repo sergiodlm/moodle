@@ -50,7 +50,7 @@ class data extends \core_customfield\data {
     public function display() {
         return \html_writer::start_tag('div') .
                \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname']) .
-               \html_writer::tag('span', format_text($this->get_data()), ['class' => 'customfieldvalue']) .
+               \html_writer::tag('span', format_text($this->get_formvalue()), ['class' => 'customfieldvalue']) .
                \html_writer::end_tag('div');
     }
 

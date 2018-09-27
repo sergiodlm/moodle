@@ -88,10 +88,10 @@ class data extends \core_customfield\data {
         }
 
         // Check if a date has been specified.
-        if (empty($this->get_data())) {
+        if (empty($this->get_formvalue())) {
             $date = get_string('notset', 'core_customfield');
         } else {
-            $date = userdate($this->get_data(), $format);
+            $date = userdate($this->get_formvalue(), $format);
         }
 
         return \html_writer::start_tag('div') .

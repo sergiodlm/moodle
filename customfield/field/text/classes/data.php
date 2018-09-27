@@ -43,7 +43,7 @@ class data extends \core_customfield\data {
         $mform->addElement('text', $this->inputname(), format_string($this->get_field()->get('name')));
         $mform->setType($this->inputname(), PARAM_TEXT);
         $config = $this->get_field_configdata();
-        if (empty($this->get_data()) && !empty($config->defaultvalue)) {
+        if (empty($this->get_formvalue()) && !empty($config->defaultvalue)) {
             $mform->setDefault($this->inputname(), $config->defaultvalue);
         }
     }
@@ -71,7 +71,7 @@ class data extends \core_customfield\data {
         return \html_writer::start_tag('div') .
                \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname customfieldtext']) .
                ' : ' .
-               \html_writer::tag('span', format_string($this->get_data()), ['class' => 'customfieldvalue customfieldtext']) .
+               \html_writer::tag('span', format_string($this->get_formvalue()), ['class' => 'customfieldvalue customfieldtext']) .
                \html_writer::end_tag('div');
     }
 }
