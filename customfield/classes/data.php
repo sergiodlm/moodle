@@ -106,7 +106,7 @@ class data extends persistent {
      * @param int $fieldid
      * @param int $recordid
      * @return data|null
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     public static function load(int $recordid, int $fieldid) : self {
@@ -117,6 +117,11 @@ class data extends persistent {
         return new self($dbdata->id);
     }
 
+    /**
+     * @param int $fieldid
+     * @return data
+     * @throws \dml_exception
+     */
     public static function fieldload(int $fieldid) : self {
         global $DB;
 
@@ -129,22 +134,40 @@ class data extends persistent {
         }
     }
 
+    /**
+     * @param field $field
+     */
     public function set_field(field $field) {
         $this->field = $field;
     }
 
+    /**
+     * @return field
+     */
     public function get_field() : field {
         return $this->field;
     }
 
+    /**
+     * @param $value
+     * @throws \moodle_exception
+     */
     public function set_formvalue($value) {
         $this->set($this->datafield(), $value->{$this->datafield()});
     }
 
+    /**
+     * @return mixed
+     * @throws \moodle_exception
+     */
     public function get_formvalue() {
         return $this->get($this->datafield());
     }
 
+    /**
+     * @return string
+     * @throws \moodle_exception
+     */
     public function inputname() {
         return 'customfield_' . $this->get_field()->get('shortname');
     }
@@ -162,7 +185,7 @@ class data extends persistent {
 
         if (!isset($datanew->{$this->inputname()})) {
             // Field not present in form, probably locked and invisible - skip it.
-            return;
+            return false;
         }
 
         $datanew->{$this->inputname()} = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
@@ -180,24 +203,27 @@ class data extends persistent {
         $this->set('fieldid', $this->get_field()->get('id'));
         $this->set('recordid', $datanew->id);
         $this->set('timemodified', $now);
-        return $this->save();
+        $this->save();
+        return $this;
     }
 
-    public function validate_data($value) {
+    /**
+     * @param $value
+     * @return bool
+     */
+    public function validate_data($value) : bool {
         return true;
     }
 
     /**
      * Hook for child classess to process the data before it gets saved in database
      *
-     * @param \stdClass $data
+     * @param string $data
      * @param \stdClass $datarecord The object that will be used to save the record
      * @return  mixed
      * @return int
-     * @throws \moodle_exception
-     * @throws \dml_exception
      */
-    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
+    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) : int {
         return $data;
     }
 
@@ -205,7 +231,7 @@ class data extends persistent {
      * Loads an object with data for this field.
      *
      * @param \stdClass $data
-     * @throws \coding_exception
+     * @throws \moodle_exception
      */
     public function edit_load_data(\stdClass $data) {
         if ($this->get_formvalue() !== null) {
@@ -213,11 +239,19 @@ class data extends persistent {
         }
     }
 
+    /**
+     * @return mixed
+     * @throws \moodle_exception
+     */
     public function get_field_configdata() {
         return json_decode($this->get_field()->get('configdata'));
     }
 
-    public function should_display() {
+    /**
+     * @return bool
+     * @throws \moodle_exception
+     */
+    public function should_display() : bool {
         $visibility = $this->get_field()->get('visibility');
         if ($visibility == 0) {
             return false;
@@ -235,7 +269,7 @@ class data extends persistent {
      * @return bool
      * @throws \moodle_exception
      */
-    public function edit_after_data(\MoodleQuickForm $mform) {
+    public function edit_after_data(\MoodleQuickForm $mform) : bool {
         if (!$this->is_editable()) {
             return false;
         }
@@ -246,18 +280,18 @@ class data extends persistent {
     /**
      * TODO: check capabilities.
      *
-     * @return field
+     * @return bool
      */
-    public function is_editable() {
+    public function is_editable() : bool {
         return true;
     }
 
     /**
      * TODO: check locked status.
      *
-     * @return field
+     * @return bool
      */
-    public function is_locked() {
+    public function is_locked() : bool {
         return false;
     }
 
@@ -265,7 +299,7 @@ class data extends persistent {
      * HardFreeze the field if locked.
      *
      * @param \MoodleQuickForm $mform
-     * @throws \coding_exception
+     * @throws \moodle_exception
      */
     public function edit_field_set_locked(\MoodleQuickForm $mform) {
         if (!$mform->elementExists($this->inputname())) {
