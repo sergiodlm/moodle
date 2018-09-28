@@ -40,12 +40,12 @@ class backup_customfield_text_plugin extends backup_customfield_plugin {
      *
      * @return backup_plugin_element
      */
-    public function define_enrol_plugin_structure() : backup_plugin_element {
+    public function define_customfield_plugin_structure() : backup_plugin_element {
         // Get the parent we will be adding these elements to.
         $plugin = $this->get_plugin_element();
 
         // Define our elements.
-        $categories= new backup_nested_element('categories');
+        $categories = new backup_nested_element('categories');
 
         $category = new backup_nested_element('category', array('id'), array(
             'name', 'description', 'descriptionformat', 'sortorder', 'component', 'area', 'itemid',

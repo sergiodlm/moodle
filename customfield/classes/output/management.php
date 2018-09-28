@@ -108,7 +108,7 @@ class management implements renderable, templatable {
             $menu->set_menu_trigger(get_string('createnewcustomfield', 'core_customfield'));
 
             $baseaddfieldurl = new \moodle_url('/customfield/edit.php',
-                    array('action' => 'editfield', 'categoryid' => $category->get('id'),));
+                    array('action' => 'editfield', 'categoryid' => $category->get('id')));
             foreach ($fieldtypes as $type => $fieldname) {
                 $addfieldurl = new \moodle_url($baseaddfieldurl, array('type' => $type));
                 $action = new \action_menu_link_secondary($addfieldurl, null, $fieldname);

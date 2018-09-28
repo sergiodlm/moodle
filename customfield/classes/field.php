@@ -170,6 +170,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Call count_fields()
+     *
      * @return int
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -179,6 +181,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Delete associated data before delete field
+     *
      * @return bool
      * @throws \moodle_exception
      */
@@ -191,6 +195,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Update sort order after create
+     *
      * @return bool
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -200,6 +206,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Update sort order after delete
+     *
      * @param bool $result
      * @return bool
      * @throws \moodle_exception
@@ -210,6 +218,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Call category::reorder_fields
+     *
      * @return bool
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -219,6 +229,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Update sort order (used on drag and drop)
+     *
      * @param int $position
      * @return field
      * @throws \moodle_exception
@@ -247,6 +259,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Update sort order (used on drag and drop)
+     *
      * @return self
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -256,6 +270,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Update sort order (used on drag and drop)
+     *
      * @return self
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -265,6 +281,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Set the category associated with this field
+     *
      * @param category $category
      */
     public function set_category(category $category) {
@@ -272,6 +290,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Get the category associated with this field
+     *
      * @return category
      * @throws \moodle_exception
      */

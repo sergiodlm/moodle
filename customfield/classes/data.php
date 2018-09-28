@@ -136,6 +136,8 @@ class data extends persistent {
     }
 
     /**
+     * Set the field associated with this data
+     *
      * @param field $field
      */
     public function set_field(field $field) {
@@ -143,6 +145,8 @@ class data extends persistent {
     }
 
     /**
+     * Field associated with this data
+     *
      * @return field
      */
     public function get_field() : field {
@@ -150,6 +154,8 @@ class data extends persistent {
     }
 
     /**
+     * Save the value to be used/submitted on form
+     *
      * @param $value
      * @throws \moodle_exception
      */
@@ -158,6 +164,8 @@ class data extends persistent {
     }
 
     /**
+     * Return the value to be used/submitted on form
+     *
      * @return mixed
      * @throws \moodle_exception
      */
@@ -200,8 +208,6 @@ class data extends persistent {
             return false;
         }
 
-        $datanew->{$this->inputname()} = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
-
         $datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->get_field()->get('id')));
 
         $now = time();
@@ -209,17 +215,20 @@ class data extends persistent {
             $this->set('id', $datarecord->id);
         } else {
             $this->set('id', 0);
+            $this->set('fieldid', $this->get_field()->get('id'));
+            $this->set('recordid', $datanew->id);
+            $this->set('contextid', $datanew->contextid);
             $this->set('timecreated', $now);
         }
-        $this->set($this->datafield(), $datanew->{$this->inputname()});
-        $this->set('fieldid', $this->get_field()->get('id'));
-        $this->set('recordid', $datanew->id);
+        $this->set($this->datafield(), $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew));
         $this->set('timemodified', $now);
         $this->save();
         return $this;
     }
 
     /**
+     * Validate the data from form
+     *
      * @param $value
      * @return bool
      */
@@ -251,26 +260,13 @@ class data extends persistent {
     }
 
     /**
-     * @return mixed
+     * The configurations of the field as object
+     *
+     * @return \stdClass
      * @throws \moodle_exception
      */
     public function get_field_configdata() {
         return json_decode($this->get_field()->get('configdata'));
-    }
-
-    /**
-     * @return bool
-     * @throws \moodle_exception
-     */
-    public function should_display() : bool {
-        $visibility = $this->get_field()->get('visibility');
-        if ($visibility == 0) {
-            return false;
-        } else if ($visibility == 1) {
-            return true; //has_capability('moodle/course:update', \context::instance_by_id($this->get('contextid')));
-        } else {
-            return true;
-        }
     }
 
     /**
@@ -290,6 +286,7 @@ class data extends persistent {
 
     /**
      * TODO: check capabilities.
+     * TODO: need context and capabilities from handler to check capabilities here?
      *
      * @return bool
      */
@@ -298,12 +295,12 @@ class data extends persistent {
     }
 
     /**
-     * TODO: check locked status.
+     * Field data is locked (not editable)
      *
      * @return bool
      */
     public function is_locked() : bool {
-        return false;
+        return $this->get_field->get('locked');
     }
 
     /**
@@ -316,7 +313,7 @@ class data extends persistent {
         if (!$mform->elementExists($this->inputname())) {
             return;
         }
-        if ($this->is_locked() and !has_capability('moodle/course:update', context_course::instance($this->get('courseid')))) {
+        if ($this->is_locked() and !is_editable()) {
             $mform->hardFreeze($this->inputname());
             $mform->setConstant($this->inputname(), $this->get_formvalue());
         }

@@ -30,7 +30,6 @@ defined('MOODLE_INTERNAL') || die;
  * @package core_customfield
  */
 class data_factory {
-    const CUSTOMFIELD_TABLE = 'customfield_field';
 
     /**
      * @param \stdClass $data

@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * The abstract custom fields handler
+ *
  * @package   core_customfield
  * @copyright 2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,27 +29,35 @@ use stdClass;
 defined('MOODLE_INTERNAL') || die;
 
 /**
- * Class handler
+ * The abstract custom fields handler
  *
  * @package core_customfield
  */
 abstract class handler {
 
     /**
-     * @var int
-     */
-    private $itemid;
-    /**
-     * @var string
+     * The component this handler handles
+     *
+     * @var string $component
      */
     private $component;
+
     /**
-     * @var string
+     * The area within the component
+     *
+     * @var string $area
      */
     private $area;
 
     /**
-     * handler constructor.
+     * The id of the item within the area and component
+
+     * @var int $itemid
+     */
+    private $itemid;
+
+    /**
+     * Handler constructor.
      *
      * @param int $itemid
      * @throws \coding_exception
@@ -80,6 +90,8 @@ abstract class handler {
     }
 
     /**
+     * Return handler for a given field
+     *
      * @param field $field
      * @return handler
      * @throws \moodle_exception
@@ -90,6 +102,8 @@ abstract class handler {
     }
 
     /**
+     * Return the handler for a given category
+     *
      * @param category $category
      * @return handler
      * @throws \moodle_exception
@@ -120,6 +134,8 @@ abstract class handler {
     abstract public function get_configuration_context() : \context;
 
     /**
+     * URL for configuration of the fields on this handler.
+     *
      * @return \moodle_url
      */
     abstract public function get_configuration_url() : \moodle_url;
@@ -135,14 +151,14 @@ abstract class handler {
     /**
      * @return int|null
      */
-    public function get_item_id() : int {
+    public function get_itemid() : int {
         return $this->itemid;
     }
 
     /**
      * @return bool
      */
-    public function uses_item_id(): bool {
+    public function uses_itemid(): bool {
         return false;
     }
 
@@ -154,6 +170,20 @@ abstract class handler {
     }
 
     /**
+     * The form to create or edit a category
+     *
+     * @param category $category
+     * @return category_config_form
+     */
+    public function get_category_config_form(category $category): category_config_form {
+        $form = new category_config_form(null, ['handler' => $this, 'category' => $category]);
+        $form->set_data($this->prepare_category_for_form($category));
+        return $form;
+    }
+
+    /**
+     * The form to create or edit a field
+     *
      * @param field $field
      * @return field_config_form
      * @throws \moodle_exception
@@ -191,7 +221,7 @@ abstract class handler {
         $categorydata = new stdClass();
         $categorydata->component = $this->get_component();
         $categorydata->area = $this->get_area();
-        $categorydata->itemid = $this->get_item_id();
+        $categorydata->itemid = $this->get_itemid();
         $categorydata->contextid = $this->get_configuration_context()->id;
 
         $category = new category(0, $categorydata);
@@ -217,13 +247,14 @@ abstract class handler {
         $options = [
                 'component' => $this->get_component(),
                 'area' => $this->get_area(),
-                'itemid' => $this->get_item_id()
+                'itemid' => $this->get_itemid()
         ];
-
         return \core_customfield\category::list($options);
     }
 
     /**
+     * Array with categories list for select menus.
+     *
      * @return array
      * @throws \coding_exception
      * @throws \dml_exception
@@ -238,17 +269,23 @@ abstract class handler {
     }
 
     /**
+     * The current user can configure custom fields on this component.
+     *
      * @return bool
      */
     abstract public function can_configure(): bool;
 
     /**
+     * The current user can edit custom fields on the given record on this component.
+     *
      * @param null $recordid
      * @return bool
      */
     abstract public function can_edit($recordid = null): bool;
 
     /**
+     * The given field is supported on by this handler
+     *
      * @param field $field
      * @return bool
      */
@@ -266,11 +303,11 @@ abstract class handler {
         $fields = api::get_fields_definitions(
                 $this->get_component(),
                 $this->get_area(),
-                $this->get_item_id()
+                $this->get_itemid()
         );
         if (!$fields && !$this->uses_categories()) {
             $this->new_category()->save();
-            $fields = api::get_fields_definitions($this->get_component(), $this->get_area(), $this->get_item_id());
+            $fields = api::get_fields_definitions($this->get_component(), $this->get_area(), $this->get_itemid());
         }
         return $fields;
     }
@@ -282,12 +319,12 @@ abstract class handler {
      * @return data[]
      */
     public function get_fields_with_data(int $recordid) : array {
-        return api::get_fields_with_data($this->get_component(), $this->get_area(), $this->get_item_id(),
+        return api::get_fields_with_data($this->get_component(), $this->get_area(), $this->get_itemid(),
             $this->get_data_context($recordid), $recordid);
     }
 
     /**
-     * Custom fields definition after data
+     * Custom fields definition after data was submitted on data form
      *
      * @param \MoodleQuickForm $mform
      * @param int $recordid
@@ -319,6 +356,8 @@ abstract class handler {
     }
 
     /**
+     * Saves the given data for custom fields
+     *
      * @param $data
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -370,11 +409,11 @@ abstract class handler {
             $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->get_field()->get_category()->get('name')));
             foreach ($fieldstodisplay as $formfield) {
                 $formfield->edit_field_add($mform);
+                // TODO: looks like it is being done here and also on data class on callbacks?
                 if ($formfield->get_field()->get('required')) {
                     $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
                 }
-                // TODO: move capability check to course handler or get capability from current handler.
-                if ($formfield->get_field()->get('locked') and !has_capability('moodle/course:update', \context_system::instance())) {
+                if ($formfield->get_field()->get('locked') and !$this->can_edit()) {
                     $mform->hardFreeze($formfield->inputname());
                 }
             }
@@ -465,19 +504,19 @@ abstract class handler {
     }
 
     /**
-     * @param $courseid
-     * @return array
-     * @throws \coding_exception
-     * @throws \moodle_exception
+     * Returns get_fields_with_data as an array for webservices use.
+     *
+     * @param int $recordid id of the record to get fields for
+     * @return array custom fields with it's values for the specified recordid
      */
-    public function fields_array($courseid) : array {
-        $datafields = $this->get_fields_with_data($courseid);
-        $fieldsforws = array();
+    public function fields_array($recordid) : array {
+        $datafields = $this->get_fields_with_data($recordid);
+        $fieldsarray = array();
         foreach ($datafields as $data) {
             $field = $data->get_field();
-            $fieldsforws[] = ['type' => $field->get('type'), 'value' => $data->get_formvalue(),
+            $fieldsarray[] = ['type' => $field->get('type'), 'value' => $data->get_formvalue(),
                               'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
         }
-        return $fieldsforws;
+        return $fieldsarray;
     }
 }

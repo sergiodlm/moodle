@@ -42,10 +42,24 @@ class api {
         ]);
     }
 
-    public static function get_field(int $id, \stdClass $record = null) : field {
-        return field_factory::load($id, $record);
+    /**
+     * Fetch a field from database or create a new one if $field is given
+     *
+     * @param int $id id of the field (0 for new field)
+     * @param \stdClass $record a pre-fetched record
+     * @return field
+     */
+    public static function get_field(int $id, \stdClass $field = null) : field {
+        return field_factory::load($id, $field);
     }
 
+    /**
+     * Fetch a data from database or create a new one if $data is given
+     *
+     * @param int $id id of the field (0 for new field)
+     * @param \stdClass $record a pre-fetched record
+     * @return field
+     */
     public static function load_data(\stdClass $data, field $field) : data {
         return data_factory::load($data, $field);
     }
@@ -97,6 +111,7 @@ class api {
 
     /**
      * Retrieve a list of all available custom field types
+     *
      * @return   array   a list of the fieldtypes suitable to use in a select statement
      */
     public static function field_types() {
