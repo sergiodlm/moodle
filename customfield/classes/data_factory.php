@@ -24,9 +24,21 @@ namespace core_customfield;
 
 defined('MOODLE_INTERNAL') || die;
 
+/**
+ * Class data_factory
+ *
+ * @package core_customfield
+ */
 class data_factory {
     const CUSTOMFIELD_TABLE = 'customfield_field';
 
+    /**
+     * @param \stdClass $data
+     * @param field $field
+     * @return data
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
     public static function load(\stdClass $data, field $field) : data {
         $fieldtype = $field->get('type');
         $customdatatype = "\\customfield_{$fieldtype}\\data";
