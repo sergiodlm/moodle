@@ -175,9 +175,9 @@ class data extends persistent {
     }
 
     /**
-     * Saves the data coming from form
+     * Must return the name of the field on customfield_data table that is used to store data.
      *
-     * @return string name o the field on customfield_data table that is used to store data.
+     * @return string field name of customfield_data table used to store data.
      */
     public function datafield() : string {
         throw new coding_exception('datafield() method needs to be overridden in each subclass of \core_customfield\data');
