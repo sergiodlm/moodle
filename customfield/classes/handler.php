@@ -26,12 +26,32 @@ use stdClass;
 
 defined('MOODLE_INTERNAL') || die;
 
+/**
+ * Class handler
+ *
+ * @package core_customfield
+ */
 abstract class handler {
 
+    /**
+     * @var null
+     */
     private $itemid;
+    /**
+     * @var
+     */
     private $component;
+    /**
+     * @var
+     */
     private $area;
 
+    /**
+     * handler constructor.
+     *
+     * @param null $itemid
+     * @throws \coding_exception
+     */
     public final function __construct($itemid = null) {
         if (!preg_match('|^(\w+_[\w_]+)\\\\customfield\\\\([\w_]+)_handler$|', static::class, $matches)) {
             throw new \coding_exception('Handler class name must have format: <PLUGIN>\\customfield\\<AREA>_handler');
@@ -44,7 +64,9 @@ abstract class handler {
     /**
      * Returns an instance of handler by it's class name
      *
-     * @param string $classname
+     * @param string $component
+     * @param string $area
+     * @param int|null $itemid
      * @return handler
      * @throws \moodle_exception
      */
@@ -57,19 +79,35 @@ abstract class handler {
         throw new \moodle_exception('unknownhandler', 'core_customfield', (object)$a);
     }
 
+    /**
+     * @param field $field
+     * @return handler
+     * @throws \moodle_exception
+     */
     public static function get_handler_for_field(field $field) : handler {
         $category = new category($field->get('categoryid'));
         return self::get_handler_for_category($category);
     }
 
+    /**
+     * @param category $category
+     * @return handler
+     * @throws \moodle_exception
+     */
     public static function get_handler_for_category(category $category) : handler {
         return self::get_handler($category->get('component'), $category->get('area'), $category->get('itemid'));
     }
 
+    /**
+     * @return string
+     */
     public function get_component() : string {
         return $this->component;
     }
 
+    /**
+     * @return string
+     */
     public function get_area() : string {
         return $this->area;
     }
@@ -81,6 +119,9 @@ abstract class handler {
      */
     abstract public function get_configuration_context() : \context;
 
+    /**
+     * @return \moodle_url
+     */
     abstract public function get_configuration_url() : \moodle_url;
 
     /**
@@ -98,32 +139,56 @@ abstract class handler {
         return $this->itemid;
     }
 
+    /**
+     * @return bool
+     */
     public function uses_item_id(): bool {
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function uses_categories(): bool {
         return true;
     }
 
+    /**
+     * @param category $category
+     * @return category_config_form
+     */
     public function get_category_config_form(category $category): category_config_form {
         $form = new category_config_form(null, ['handler' => $this, 'category' => $category]);
         $form->set_data($this->prepare_category_for_form($category));
         return $form;
     }
 
+    /**
+     * @param field $field
+     * @return field_config_form
+     * @throws \moodle_exception
+     */
     public function get_field_config_form(field $field): field_config_form {
          $form = new field_config_form(null, ['handler' => $this, 'field' => $field]);
          $form->set_data($this->prepare_field_for_form($field));
          return $form;
     }
 
+    /**
+     * @param category $category
+     * @param string $type
+     * @return field
+     * @throws \coding_exception
+     */
     public function new_field(category $category, string $type) : field {
         $field = field_factory::create($type);
         $field->set('categoryid', $category->get('id'));
         return $field;
     }
 
+    /**
+     * @return category
+     */
     public function new_category() : category {
         $categorydata = new stdClass();
         $categorydata->component = $this->get_component();
@@ -136,7 +201,12 @@ abstract class handler {
         return $category;
     }
 
-    public function categories_list() {
+    /**
+     * @return array|category[]
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function categories_list() : array {
         $options = [
                 'component' => $this->get_component(),
                 'area' => $this->get_area(),
@@ -146,7 +216,13 @@ abstract class handler {
         return \core_customfield\category::list($options);
     }
 
-    public function categories_list_for_select() {
+    /**
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function categories_list_for_select(): array {
         $categorylist = array();
         foreach ($this->categories_list() as $category) {
             $categorylist[$category->get('id')] = $category->get('name');
@@ -154,21 +230,29 @@ abstract class handler {
         return $categorylist;
     }
 
+    /**
+     * @return bool
+     */
     abstract public function can_configure(): bool;
 
+    /**
+     * @param null $recordid
+     * @return bool
+     */
     abstract public function can_edit($recordid = null): bool;
 
+    /**
+     * @param field $field
+     * @return bool
+     */
     public function is_field_supported(\core_customfield\field $field): bool {
-        // Placeholder for now to allow in the future components to decide that they don't want to support some field types.
+        // TODO: Placeholder for now to allow in the future components to decide that they don't want to support some field types.
         return true;
     }
 
     /**
      * Returns array of categories, each of them contains a list of fields definitions.
      *
-     * @param string $component
-     * @param string|null $area
-     * @param int|null $itemid
      * @return category[]
      */
     public function get_fields_definitions() : array {
@@ -178,7 +262,6 @@ abstract class handler {
                 $this->get_item_id()
         );
         return $fields;
-        // return array_filter($fields, [$this, 'is_field_supported']);
     }
 
     /**
@@ -195,12 +278,11 @@ abstract class handler {
     /**
      * Custom fields definition after data
      *
-     * @param moodleform $mform
-     * @param int $userid
+     * @param \MoodleQuickForm $mform
+     * @param int $recordid
+     * @throws \moodle_exception
      */
-    public function definition_after_data($mform, $recordid) {
-        global $CFG;
-
+    public function definition_after_data(\MoodleQuickForm $mform, int $recordid) {
         $fields = $this->get_fields_with_data($recordid);
 
         foreach ($fields as $formfield) {
@@ -208,15 +290,12 @@ abstract class handler {
         }
     }
 
-    public function validate_data($mform, $data, $files) {
-        $fields = $this->get_fields_with_data($data['id']);
-        foreach ($fields as $formfield) {
-            $errors += $formfield->edit_validate_field($data, $files);
-        }
-        return $errors;
-    }
-
-    // Add the field to the $data received.
+    /**
+     * Add the field to the $data received
+     *
+     * @param $data
+     * @throws \moodle_exception
+     */
     public function load_data($data) {
         if (!isset($data->id)) {
             $data->id = 0;
@@ -228,6 +307,11 @@ abstract class handler {
         }
     }
 
+    /**
+     * @param $data
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
     public function save_customfield_data($data) {
         $fields = $this->get_fields_with_data($data->id);
         foreach ($fields as $formfield) {
@@ -238,9 +322,12 @@ abstract class handler {
     /**
      * Adds custom fields to edit forms.
      *
-     * @param moodleform $mform
+     * @param \MoodleQuickForm $mform
+     * @param $record
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
-    public function add_custom_fields($mform, $record) {
+    public function add_custom_fields(\MoodleQuickForm $mform, $record) {
 
         if (isset($record->id)) {
             $recordid = $record->id;
@@ -283,7 +370,10 @@ abstract class handler {
         }
     }
 
-    public function field_types() {
+    /**
+     * @return array
+     */
+    public function field_types() :array {
         return api::field_types();
     }
 
@@ -295,7 +385,7 @@ abstract class handler {
      *
      * @return array
      */
-    public function get_description_text_options() {
+    public function get_description_text_options() : array {
         return [
             'maxfiles' => EDITOR_UNLIMITED_FILES,
         ];
@@ -306,6 +396,7 @@ abstract class handler {
      *
      * @param field $field
      * @param stdClass $data data from the form
+     * @throws \moodle_exception
      */
     public function save_field(field $field, stdClass $data) {
         try {
@@ -321,6 +412,7 @@ abstract class handler {
      *
      * @param field $field
      * @return stdClass
+     * @throws \moodle_exception
      */
     protected function prepare_field_for_form(field $field) : stdClass {
         $data = $field->to_record();
@@ -350,6 +442,7 @@ abstract class handler {
      *
      * @param category $category
      * @param stdClass $data data from the form
+     * @throws \moodle_exception
      */
     public function save_category(category $category, stdClass $data) {
         try {
@@ -360,7 +453,13 @@ abstract class handler {
         }
     }
 
-    public function fields_array($courseid) {
+    /**
+     * @param $courseid
+     * @return array
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public function fields_array($courseid) : array {
         $datafields = $this->get_fields_with_data($courseid);
         $fieldsforws = array();
         foreach ($datafields as $data) {
