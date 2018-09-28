@@ -232,9 +232,8 @@ class data extends persistent {
      * @param string $data
      * @param \stdClass $datarecord The object that will be used to save the record
      * @return  mixed
-     * @return int
      */
-    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) : int {
+    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
         return $data;
     }
 
