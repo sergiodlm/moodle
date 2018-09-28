@@ -165,11 +165,22 @@ class data extends persistent {
     }
 
     /**
+     * Returns the name of the field to be used on HTML forms.
+     *
      * @return string
      * @throws \moodle_exception
      */
-    public function inputname() {
+    public function inputname() : string {
         return 'customfield_' . $this->get_field()->get('shortname');
+    }
+
+    /**
+     * Must return the name of the field on customfield_data table that is used to store data.
+     *
+     * @return string field name of customfield_data table used to store data.
+     */
+    public function datafield() : string {
+        throw new coding_exception('datafield() method needs to be overridden in each subclass of \core_customfield\data');
     }
 
     /**
@@ -221,9 +232,8 @@ class data extends persistent {
      * @param string $data
      * @param \stdClass $datarecord The object that will be used to save the record
      * @return  mixed
-     * @return int
      */
-    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) : int {
+    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
         return $data;
     }
 
