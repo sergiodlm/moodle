@@ -139,7 +139,7 @@ if (!empty($course)) {
 }
 
 // Load custom fields data.
-$handler  = new core_course\customfield\course_handler(null);
+$handler  = new core_course\customfield\course_handler();
 $handler->load_data($course);
 
 // First create the form.

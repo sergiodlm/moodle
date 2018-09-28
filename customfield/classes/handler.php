@@ -34,31 +34,31 @@ defined('MOODLE_INTERNAL') || die;
 abstract class handler {
 
     /**
-     * @var null
+     * @var int
      */
     private $itemid;
     /**
-     * @var
+     * @var string
      */
     private $component;
     /**
-     * @var
+     * @var string
      */
     private $area;
 
     /**
      * handler constructor.
      *
-     * @param null $itemid
+     * @param int $itemid
      * @throws \coding_exception
      */
-    public final function __construct($itemid = null) {
+    public final function __construct(int $itemid = 0) {
         if (!preg_match('|^(\w+_[\w_]+)\\\\customfield\\\\([\w_]+)_handler$|', static::class, $matches)) {
             throw new \coding_exception('Handler class name must have format: <PLUGIN>\\customfield\\<AREA>_handler');
         }
         $this->component = $matches[1];
         $this->area = $matches[2];
-        $this->itemid = $itemid ?: null;
+        $this->itemid = $itemid;
     }
 
     /**
@@ -66,11 +66,11 @@ abstract class handler {
      *
      * @param string $component
      * @param string $area
-     * @param int|null $itemid
+     * @param int $itemid
      * @return handler
      * @throws \moodle_exception
      */
-    public static function get_handler(string $component, string $area, int $itemid = null) : handler {
+    public static function get_handler(string $component, string $area, int $itemid = 0) : handler {
         $classname = $component . '\\customfield\\' . $area . '_handler';
         if (class_exists($classname) && is_subclass_of($classname, self::class)) {
             return new $classname($itemid);
@@ -135,7 +135,7 @@ abstract class handler {
     /**
      * @return int|null
      */
-    public function get_item_id() {
+    public function get_item_id() : int {
         return $this->itemid;
     }
 

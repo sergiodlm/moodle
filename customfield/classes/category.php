@@ -67,14 +67,11 @@ class category extends persistent {
                 'itemid' => [
                         'type' => PARAM_INT,
                         'optional' => true,
-                        'default' => null,
-                        'null' => NULL_ALLOWED
+                        'default' => 0
                 ],
                 'contextid' => [
                         'type' => PARAM_INT,
-                        'optional' => true,
-                        'default' => null,
-                        'null' => NULL_ALLOWED
+                        'optional' => false
                 ],
                 'sortorder' => [
                         'type' => PARAM_INT,

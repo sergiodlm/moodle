@@ -25,7 +25,7 @@ require_once($CFG->libdir.'/adminlib.php');
 
 $component = optional_param('component', null, PARAM_COMPONENT);
 $area = optional_param('area', null, PARAM_ALPHANUMEXT);
-$itemid = optional_param('itemid', null, PARAM_INT);
+$itemid = optional_param('itemid', 0, PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT);
 
 require_login();
@@ -47,7 +47,7 @@ $PAGE->set_url($url);
 if (!$handler->can_configure()) {
     print_error('nopermissionconfigure', 'core_customfield');
 }
-$PAGE->set_context($handler->get_configuration_context());
+$PAGE->set_context(context_system::instance());
 
 $mform = $handler->get_category_config_form($record);
 // Process Form data.

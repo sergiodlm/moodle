@@ -2348,7 +2348,7 @@ function xmldb_main_upgrade($oldversion) {
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('component', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
         $table->add_field('area', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
         $table->add_field('contextid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
 
         // Adding keys to table customfield_category.
@@ -2356,7 +2356,7 @@ function xmldb_main_upgrade($oldversion) {
         $table->add_key('contextid', XMLDB_KEY_FOREIGN, ['contextid'], 'context', ['id']);
 
         // Adding indexes to table customfield_category.
-        $table->add_index('component_area_itemid_sortorder', XMLDB_INDEX_UNIQUE, ['component', 'area', 'itemid', 'sortorder']);
+        $table->add_index('component_area_itemid', XMLDB_INDEX_NOTUNIQUE, ['component', 'area', 'itemid']);
 
         // Conditionally launch create table for customfield_category.
         if (!$dbman->table_exists($table)) {
@@ -2396,6 +2396,39 @@ function xmldb_main_upgrade($oldversion) {
         // Text savepoint reached.
         upgrade_main_savepoint(true, 2018081000.01);
     }
+
+    if ($oldversion < 2018091400.11) {
+
+        // TODO remove after everybody in dev team upgrades!
+
+        // Define index component_area_itemid_sortorder (unique) to be dropped form customfield_category.
+        $table = new xmldb_table('customfield_category');
+        $index = new xmldb_index('component_area_itemid_sortorder', XMLDB_INDEX_UNIQUE, ['component', 'area', 'itemid', 'sortorder']);
+
+        // Conditionally launch drop index component_area_itemid_sortorder.
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        // Changing the default of field itemid on table customfield_category to 0.
+        $table = new xmldb_table('customfield_category');
+        $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'area');
+
+        $DB->execute('UPDATE {customfield_category} SET itemid=0 WHERE itemid IS NULL');
+
+        // Launch change of default for field itemid.
+        $dbman->change_field_default($table, $field);
+
+        // Launch change of nullability for field itemid.
+        $dbman->change_field_notnull($table, $field);
+
+        // Add back index
+        $table->add_index('component_area_itemid', XMLDB_INDEX_NOTUNIQUE, ['component', 'area', 'itemid']);
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2018091400.11);
+    }
+
 
     return true;
 }

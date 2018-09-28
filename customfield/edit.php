@@ -50,7 +50,7 @@ $PAGE->set_url($url);
 if (!$handler->can_configure()) {
     print_error('nopermissionconfigure', 'core_customfield');
 }
-$PAGE->set_context($handler->get_configuration_context());
+$PAGE->set_context(context_system::instance());
 
 $mform = $handler->get_field_config_form($record);
 // Process Form data.

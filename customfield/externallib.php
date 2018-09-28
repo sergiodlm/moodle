@@ -45,6 +45,8 @@ class core_customfield_external extends external_api {
      * @throws moodle_exception
      */
     public static function delete_entry($id) {
+        // TODO clean parameters
+
         $record = \core_customfield\field_factory::load($id);
         $handler = \core_customfield\handler::get_handler_for_field($record);
         if (!$handler->can_configure()) {
@@ -67,15 +69,15 @@ class core_customfield_external extends external_api {
             array(
                 'component' => new external_value(PARAM_COMPONENT, 'component', VALUE_REQUIRED),
                 'area' => new external_value(PARAM_ALPHANUMEXT, 'area', VALUE_REQUIRED),
-                'itemid' => new external_value(PARAM_INT, 'itemid', VALUE_OPTIONAL)
+                'itemid' => new external_value(PARAM_INT, 'itemid', VALUE_REQUIRED)
             )
         );
     }
 
     /**
-     * @param $component
-     * @param $area
-     * @param $itemid
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
      * @return array|object|stdClass
      * @throws coding_exception
      * @throws dml_exception
@@ -84,6 +86,8 @@ class core_customfield_external extends external_api {
      */
     public static function reload_template($component, $area, $itemid) {
         global $PAGE;
+
+        // TODO clean parameters
 
         require_login();
         $PAGE->set_context(context_system::instance());
@@ -104,7 +108,7 @@ class core_customfield_external extends external_api {
             array(
                 'component' => new external_value(PARAM_COMPONENT, 'component'),
                 'area' => new external_value(PARAM_ALPHANUMEXT, 'area'),
-                'itemid' => new external_value(PARAM_INT, 'id'),
+                'itemid' => new external_value(PARAM_INT, 'itemid'),
                 'categories' => new external_multiple_structure(
                     new external_single_structure(
                         array(

@@ -42,7 +42,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
 
     // Deletes all custom fields for a specified context, component, and commentarea.
     public static function delete_customfield_for_all_users(\context $context, string $component, string $commentarea = null,
-            int $itemid = null) {
+            int $itemid = 0) {
 
     }
 
@@ -54,7 +54,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
 
     // Deletes all records for a user from a list of approved contexts.
     public static function delete_customfield_for_user(\core_privacy\local\request\approved_contextlist $contextlist,
-            string $component, string $commentarea = null, int $itemid = null) {
+            string $component, string $commentarea = null, int $itemid = 0) {
 
     }
 }

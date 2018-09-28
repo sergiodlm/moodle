@@ -102,8 +102,7 @@ class data extends \core_customfield\data {
      *
      * @param string|int $datetime datetime to be converted.
      * @param stdClass $datarecord The object that will be used to save the record
-     * @return int timestamp
-     * @since Moodle 2.5
+     * @return mixed
      * @throws \coding_exception
      */
     public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {

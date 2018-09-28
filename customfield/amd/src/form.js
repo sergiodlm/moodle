@@ -78,26 +78,6 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     confirmDelete($(this).attr('data-id'), 'category', component, area, itemid);
                     e.preventDefault();
                 });
-                $(".move_up_field").on('click', function (e) {
-                    var handler = $('#customfield_catlist').attr('data-handler');
-                    move($(this).attr('data-id'), handler, 'field_up');
-                    e.preventDefault();
-                });
-                $(".move_down_field").on('click', function (e) {
-                    var handler = $('#customfield_catlist').attr('data-handler');
-                    move($(this).attr('data-id'), handler, 'field_down');
-                    e.preventDefault();
-                });
-                $(".move_up_category").on('click', function (e) {
-                    var handler = $('#customfield_catlist').attr('data-handler');
-                    move($(this).attr('data-id'), handler, 'category_up');
-                    e.preventDefault();
-                });
-                $(".move_down_category").on('click', function (e) {
-                    var handler = $('#customfield_catlist').attr('data-handler');
-                    move($(this).attr('data-id'), handler, 'category_down');
-                    e.preventDefault();
-                });
 
                 var sectionName = function (element) {
                     return element.closest('[data-category-name]').attr('data-category-name');
