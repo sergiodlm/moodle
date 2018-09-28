@@ -24,14 +24,26 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . "/externallib.php");
 
+/**
+ * Class core_customfield_external
+ */
 class core_customfield_external extends external_api {
 
+    /**
+     * @return external_function_parameters
+     */
     public static function delete_entry_parameters() {
         return new external_function_parameters(
                 array('id' => new external_value(PARAM_INT, 'Entry ID to delete', VALUE_REQUIRED))
         );
     }
 
+    /**
+     * @param $id
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     public static function delete_entry($id) {
         $record = \core_customfield\field_factory::load($id);
         $handler = \core_customfield\handler::get_handler_for_field($record);
@@ -41,9 +53,15 @@ class core_customfield_external extends external_api {
         $record->delete();
     }
 
+    /**
+     *
+     */
     public static function delete_entry_returns() {
     }
 
+    /**
+     * @return external_function_parameters
+     */
     public static function reload_template_parameters() {
         return new external_function_parameters(
             array(
@@ -54,6 +72,16 @@ class core_customfield_external extends external_api {
         );
     }
 
+    /**
+     * @param $component
+     * @param $area
+     * @param $itemid
+     * @return array|object|stdClass
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     * @throws require_login_exception
+     */
     public static function reload_template($component, $area, $itemid) {
         global $PAGE;
 
@@ -68,6 +96,9 @@ class core_customfield_external extends external_api {
         return $outputpage->export_for_template($output);
     }
 
+    /**
+     * @return external_single_structure
+     */
     public static function reload_template_returns() {
         return new external_single_structure(
             array(
@@ -103,12 +134,20 @@ class core_customfield_external extends external_api {
         );
     }
 
+    /**
+     * @return external_function_parameters
+     */
     public static function delete_category_parameters() {
         return new external_function_parameters(
                 array('id' => new external_value(PARAM_INT, 'category ID to delete', VALUE_REQUIRED))
         );
     }
 
+    /**
+     * @param $id
+     * @throws coding_exception
+     * @throws moodle_exception
+     */
     public static function delete_category($id) {
         $category = new \core_customfield\category($id);
         $handler = \core_customfield\handler::get_handler_for_category($category);
@@ -118,9 +157,15 @@ class core_customfield_external extends external_api {
         $category->delete();
     }
 
+    /**
+     *
+     */
     public static function delete_category_returns() {
     }
 
+    /**
+     * @return external_function_parameters
+     */
     public static function move_up_field_parameters() {
         return new external_function_parameters(
                 array('id' => new external_value(PARAM_INT, 'Entry ID to move up', VALUE_REQUIRED),
@@ -128,6 +173,12 @@ class core_customfield_external extends external_api {
         );
     }
 
+    /**
+     * @param $id
+     * @param $handler
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public static function move_up_field($id, $handler) {
         $handler1 = \core_customfield\handler::get_instance($handler);
         if ($handler1->can_configure($id)) {
@@ -136,9 +187,15 @@ class core_customfield_external extends external_api {
         }
     }
 
+    /**
+     *
+     */
     public static function move_up_field_returns() {
     }
 
+    /**
+     * @return external_function_parameters
+     */
     public static function move_down_field_parameters() {
         return new external_function_parameters(
                 array('id' => new external_value(PARAM_INT, 'Entry ID to move down', VALUE_REQUIRED),
@@ -146,6 +203,12 @@ class core_customfield_external extends external_api {
         );
     }
 
+    /**
+     * @param $id
+     * @param $handler
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public static function move_down_field($id, $handler) {
         $handler1 = \core_customfield\handler::get_instance($handler);
         if ($handler1->can_configure()) {
@@ -154,9 +217,15 @@ class core_customfield_external extends external_api {
         }
     }
 
+    /**
+     *
+     */
     public static function move_down_field_returns() {
     }
 
+    /**
+     * @return external_function_parameters
+     */
     public static function move_up_category_parameters() {
         return new external_function_parameters(
                 array('id' => new external_value(PARAM_INT, 'Entry ID to move up', VALUE_REQUIRED),
@@ -164,6 +233,12 @@ class core_customfield_external extends external_api {
         );
     }
 
+    /**
+     * @param $id
+     * @param $handler
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public static function move_up_category($id, $handler) {
         $handler1 = \core_customfield\handler::get_instance($handler);
         if ($handler1->can_configure()) {
@@ -172,9 +247,15 @@ class core_customfield_external extends external_api {
         }
     }
 
+    /**
+     *
+     */
     public static function move_up_category_returns() {
     }
 
+    /**
+     * @return external_function_parameters
+     */
     public static function move_down_category_parameters() {
         return new external_function_parameters(
                 array('id' => new external_value(PARAM_INT, 'Entry ID to move down', VALUE_REQUIRED),
@@ -182,6 +263,12 @@ class core_customfield_external extends external_api {
         );
     }
 
+    /**
+     * @param $id
+     * @param $handler
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public static function move_down_category($id, $handler) {
         $handler1 = \core_customfield\handler::get_instance($handler);
         if ($handler1->can_configure()) {
@@ -190,6 +277,9 @@ class core_customfield_external extends external_api {
         }
     }
 
+    /**
+     *
+     */
     public static function move_down_category_returns() {
     }
 
@@ -206,11 +296,22 @@ class core_customfield_external extends external_api {
         );
     }
 
-
+    /**
+     * @param int $from
+     * @param int $to
+     * @param int $category
+     * @return bool
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     public static function drag_and_drop(int $from, int $to, int $category) {
         return \core_customfield\field_factory::drag_and_drop($from, $to, $category);
     }
 
+    /**
+     *
+     */
     public static function drag_and_drop_returns() {
     }
 
@@ -226,10 +327,20 @@ class core_customfield_external extends external_api {
         );
     }
 
+    /**
+     * @param int $from
+     * @param int $to
+     * @return bool
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public static function drag_and_drop_block(int $from, int $to) {
         return \core_customfield\category::drag_and_drop_block($from, $to);
     }
 
+    /**
+     *
+     */
     public static function drag_and_drop_block_returns() {
     }
 

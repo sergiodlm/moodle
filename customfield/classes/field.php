@@ -60,11 +60,11 @@ abstract class field extends persistent {
      * Validate the data from the config form.
      * Sub classes must reimplement it.
      *
-     * @param stdClass $data from the add/edit profile field form
+     * @param array $data from the add/edit profile field form
      * @param array $files
      * @return array associative array of error messages
      */
-    public function validate_config_form(array $data, $files = array()) {
+    public function validate_config_form(array $data, $files = array()) : array {
         return array();
     }
 
@@ -132,7 +132,7 @@ abstract class field extends persistent {
      *
      * @param int $value The value.
      * @return true|\lang_string
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_write_exception
      */
     protected function validate_shortname($value) {
@@ -145,16 +145,15 @@ abstract class field extends persistent {
 
     /**
      * @return data|null
-     * @throws \coding_exception
+     * @throws \moodle_exception
      */
     public function data(): data {
         return data::fieldload($this->get('id'));
     }
 
-
-    // Get total count of fields for this category.
-
     /**
+     * Get total count of fields for this category
+     *
      * @param int $categoryid
      * @return int
      * @throws \dml_exception
@@ -172,7 +171,7 @@ abstract class field extends persistent {
 
     /**
      * @return int
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     public function get_count_fields(): int {
@@ -181,7 +180,7 @@ abstract class field extends persistent {
 
     /**
      * @return bool
-     * @throws \coding_exception
+     * @throws \moodle_exception
      */
     protected function before_delete(): bool {
         if ($this->data()->get('id') > 0) {
@@ -222,7 +221,7 @@ abstract class field extends persistent {
     /**
      * @param int $position
      * @return field
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     private function move(int $position): self {
@@ -249,7 +248,7 @@ abstract class field extends persistent {
 
     /**
      * @return self
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     public function up(): self {
@@ -258,30 +257,24 @@ abstract class field extends persistent {
 
     /**
      * @return self
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     public function down(): self {
         return $this->move(-1);
     }
 
-    public function set_datarecord($datavalues) {
-        $data = data::load($datavalues->recordid, $datavalues->fieldid);
-
-        $data->intvalue($datavalues->intvalue);
-        $data->decvalue($datavalues->decvalue);
-        $data->shortcharvalue($datavalues->shortcharvalue);
-        $data->charvalue($datavalues->charvalue);
-        $data->value($datavalues->value);
-        $data->valueformat($datavalues->valueformat);
-        $data->contextid($datavalues->contextid);
-        $data->save();
-    }
-
+    /**
+     * @param category $category
+     */
     public function set_category(category $category) {
         $this->category = $category;
     }
 
+    /**
+     * @return category
+     * @throws \moodle_exception
+     */
     public function get_category() : category {
         if (!$this->category) {
             $this->category = new category($this->get('categoryid'));

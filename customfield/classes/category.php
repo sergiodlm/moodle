@@ -85,7 +85,8 @@ class category extends persistent {
 
     /**
      * @return array|null
-     * @throws \coding_exception
+     * @throws \moodle_exception
+     * @throws \dml_exception
      */
     public function fields() {
         return field_factory::get_fields_from_category_array($this->get('id'));
@@ -94,7 +95,7 @@ class category extends persistent {
     /**
      * @param $options
      * @return bool
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     protected static function static_reorder($options): bool {
@@ -112,7 +113,7 @@ class category extends persistent {
 
     /**
      * @return bool
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     public function reorder(): bool {
@@ -129,8 +130,8 @@ class category extends persistent {
 
     /**
      * @return bool
-     * @throws \coding_exception
      * @throws \dml_exception
+     * @throws \moodle_exception
      */
     protected function after_create() : bool {
         return $this->reorder();
@@ -139,7 +140,7 @@ class category extends persistent {
     /**
      * @param $result
      * @return bool
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     protected function before_delete() : bool {
@@ -155,7 +156,7 @@ class category extends persistent {
     /**
      * @param bool $result
      * @return bool
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     protected function after_delete($result) :bool {
@@ -165,7 +166,7 @@ class category extends persistent {
     /**
      * @return int
      * @throws \dml_exception
-     * @throws \coding_exception
+     * @throws \moodle_exception
      */
     public function get_count_categories(): int {
         global $DB;
@@ -181,7 +182,7 @@ class category extends persistent {
     /**
      * @param int $position
      * @return category
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     private function move(int $position): self {
@@ -205,8 +206,10 @@ class category extends persistent {
     }
 
     /**
+     * Move the category one position up
+     *
      * @return category
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     public function up(): self {
@@ -214,8 +217,10 @@ class category extends persistent {
     }
 
     /**
+     * Mode a category one position down
+     *
      * @return category
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
     public function down(): self {
@@ -228,7 +233,7 @@ class category extends persistent {
      * @param array $options
      * @return category[]
      * @throws \dml_exception
-     * @throws \coding_exception
+     * @throws \moodle_exception
      */
     public static function list(array $options): array {
         global $DB;
@@ -248,10 +253,10 @@ class category extends persistent {
      * @param $from
      * @param $to
      * @return bool
-     * @throws \coding_exception
+     * @throws \moodle_exception
      * @throws \dml_exception
      */
-    public static function drag_and_drop_block($from, $to) {
+    public static function drag_and_drop_block(int $from, int $to) : bool {
         $categoryfrom = new self($from);
         $categoryto   = new self($to);
 
@@ -270,10 +275,11 @@ class category extends persistent {
 
     /**
      * @return bool
+     * @param int $categoryid
      * @throws \moodle_exception
      * @throws \dml_exception
      */
-    public static function reorder_fields($categoryid): bool {
+    public static function reorder_fields(int $categoryid): bool {
         global $DB;
 
         $fieldneighbours = $DB->get_records(field::TABLE, ['categoryid' => $categoryid], 'sortorder DESC');
