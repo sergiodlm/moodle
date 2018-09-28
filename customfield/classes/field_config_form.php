@@ -100,14 +100,14 @@ class field_config_form extends \moodleform {
         }
 
         if (empty($data['id'])) {
-            if ($DB->record_exists_select('customfield_field', 'shortname = ? AND categoryid = ?', array($data['shortname'], $data['categoryid']) )) {
+            if ($DB->record_exists('customfield_field', array('shortname' => $data['shortname']))) {
                 $errors['shortname'] = get_string('formfieldcheckshortname', 'core_customfield');
             }
             $category = new \core_customfield\category($data['categoryid']);
             $handler = \core_customfield\handler::get_handler_for_category($category);
             $record = $handler->new_field($category, $data['type']);
         } else {
-            if ($DB->record_exists_select('customfield_field', 'shortname = ? AND id <> ? AND categoryid = ?', array($data['shortname'], $data['id'], $data['categoryid']) )) {
+            if ($DB->record_exists_select('customfield_field', 'shortname = ? AND id <> ?', array($data['shortname'], $data['id']))) {
                 $errors['shortname'] = get_string('formfieldcheckshortname', 'core_customfield');
             }
             $record = \core_customfield\api::get_field($data['id']);

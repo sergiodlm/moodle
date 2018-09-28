@@ -121,7 +121,7 @@ class field_factory {
                     $fieldfrom->up();
                 }
             } else if ($fieldfrom->get('sortorder') > $fieldto->get('sortorder')) {
-                for ($i = $fieldfrom->get('sortorder'); $i > $fieldto->get('sortorder')+1; $i--) {
+                for ($i = $fieldfrom->get('sortorder'); $i > $fieldto->get('sortorder') + 1; $i--) {
                     $fieldfrom->down();
                 }
             }
