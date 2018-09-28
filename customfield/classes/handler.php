@@ -154,16 +154,6 @@ abstract class handler {
     }
 
     /**
-     * @param category $category
-     * @return category_config_form
-     */
-    public function get_category_config_form(category $category): category_config_form {
-        $form = new category_config_form(null, ['handler' => $this, 'category' => $category]);
-        $form->set_data($this->prepare_category_for_form($category));
-        return $form;
-    }
-
-    /**
      * @param field $field
      * @return field_config_form
      * @throws \moodle_exception
@@ -187,6 +177,14 @@ abstract class handler {
     }
 
     /**
+     * Generates a name for the new category
+     */
+    protected function generate_category_name($suffix = 0) : string {
+        $basename = get_string('otherfields', 'core_customfield');
+        return $basename . ($suffix ? (' ' . $suffix) : '');
+    }
+
+    /**
      * @return category
      */
     public function new_category() : category {
@@ -198,11 +196,20 @@ abstract class handler {
 
         $category = new category(0, $categorydata);
 
-        return $category;
+        $suffix = 0;
+        while (true) {
+            try {
+                $category->set('name', $this->generate_category_name($suffix));
+                return $category;
+            } catch (\moodle_exception $exception) {
+
+            }
+            $suffix++;
+        }
     }
 
     /**
-     * @return array|category[]
+     * @return category[]
      * @throws \dml_exception
      * @throws \moodle_exception
      */
@@ -261,6 +268,10 @@ abstract class handler {
                 $this->get_area(),
                 $this->get_item_id()
         );
+        if (!$fields && !$this->uses_categories()) {
+            $this->new_category()->save();
+            $fields = api::get_fields_definitions($this->get_component(), $this->get_area(), $this->get_item_id());
+        }
         return $fields;
     }
 

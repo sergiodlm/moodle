@@ -89,9 +89,9 @@ class core_customfield_external extends external_api {
 
         // TODO clean parameters
 
-        require_login();
         $PAGE->set_context(context_system::instance());
         $handler = \core_customfield\handler::get_handler($component, $area, $itemid);
+        self::validate_context($handler->get_configuration_context());
         if (!$handler->can_configure()) {
             throw new moodle_exception('nopermissionconfigure', 'core_customfield');
         }
@@ -109,15 +109,12 @@ class core_customfield_external extends external_api {
                 'component' => new external_value(PARAM_COMPONENT, 'component'),
                 'area' => new external_value(PARAM_ALPHANUMEXT, 'area'),
                 'itemid' => new external_value(PARAM_INT, 'itemid'),
+                'usescategories' => new external_value(PARAM_INT, 'view has categories'),
                 'categories' => new external_multiple_structure(
                     new external_single_structure(
                         array(
                             'id' => new external_value(PARAM_INT, 'id'),
-                            'name' => new external_value(PARAM_NOTAGS, 'name'),
-                            'customfield' => new external_value(PARAM_NOTAGS, 'customfield'),
-                            'action' => new external_value(PARAM_RAW, 'action'),
-                            'editcategoryurl' => new external_value(PARAM_URL, 'edit category url'),
-                            'deletecategoryurl' => new external_value(PARAM_URL, 'delete category url'),
+                            'nameeditable' => new external_value(PARAM_RAW, 'inplace editable name'),
                             'addfieldmenu' => new external_value(PARAM_RAW, 'addfieldmenu'),
                             'fields' => new external_multiple_structure(
                                 new external_single_structure(
@@ -155,6 +152,7 @@ class core_customfield_external extends external_api {
     public static function delete_category($id) {
         $category = new \core_customfield\category($id);
         $handler = \core_customfield\handler::get_handler_for_category($category);
+        self::validate_context($handler->get_configuration_context());
         if (!$handler->can_configure()) {
             throw new moodle_exception('nopermissionconfigure', 'core_customfield');
         }
@@ -165,6 +163,46 @@ class core_customfield_external extends external_api {
      *
      */
     public static function delete_category_returns() {
+    }
+
+
+    /**
+     * @return external_function_parameters
+     */
+    public static function create_category_parameters() {
+        return new external_function_parameters(
+            array(
+                'component' => new external_value(PARAM_COMPONENT, 'component', VALUE_REQUIRED),
+                'area' => new external_value(PARAM_ALPHANUMEXT, 'area', VALUE_REQUIRED),
+                'itemid' => new external_value(PARAM_INT, 'itemid', VALUE_REQUIRED)
+            )
+        );
+    }
+
+    /**
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     */
+    public static function create_category($component, $area, $itemid) {
+        $params = self::validate_parameters(self::create_category_parameters(),
+            ['component' => $component, 'area' => $area, 'itemid' => $itemid]);
+
+        $handler = \core_customfield\handler::get_handler($params['component'], $params['area'], $params['itemid']);
+        self::validate_context($handler->get_configuration_context());
+        if (!$handler->can_configure()) {
+            throw new moodle_exception('nopermissionconfigure', 'core_customfield');
+        }
+        $category = $handler->new_category();
+        $category->save();
+        return $category->get('id');
+    }
+
+    /**
+     *
+     */
+    public static function create_category_returns() {
+        return new external_value(PARAM_INT, 'Id of the category');
     }
 
     /**
@@ -178,6 +216,7 @@ class core_customfield_external extends external_api {
     }
 
     /**
+     * TODO remove all move_up and move_down services from here and from lib/db/services.php
      * @param $id
      * @param $handler
      * @throws coding_exception

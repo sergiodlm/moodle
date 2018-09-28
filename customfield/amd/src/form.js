@@ -65,22 +65,49 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                 // Do something with the exception.
             });
         };
+        var createNewCategory = function(component, area, itemid) {
+            var promises = ajax.call([
+                    {methodname: 'core_customfield_create_category', args: {component: component, area: area, itemid: itemid}},
+                    {methodname: 'core_customfield_reload_template', args: {component: component, area: area, itemid: itemid}}
+                ]),
+                categoryid;
+            promises[0].then(function(response) {
+                categoryid = response;
+                return;
+            }).catch(notification.exception);
+            promises[1].then(function(response) {
+                templates.render('core_customfield/customfield', response).then(function(html, js) {
+                    $('[data-region="list-page"]').replaceWith(html);
+                    templates.runTemplateJS(js);
+                    window.location.href = '#category-' + categoryid;
+                    return;
+                }).catch(notification.exception);
+                return;
+            }).catch(notification.exception);
+        };
+
         return {
             init: function () {
                 var component = $('#customfield_catlist').attr('data-component'),
                     area = $('#customfield_catlist').attr('data-area'),
                     itemid = $('#customfield_catlist').attr('data-itemid');
-                $(".confirm_delete").on('click', function (e) {
+                $("[data-role=deletefield]").on('click', function (e) {
                     confirmDelete($(this).attr('data-id'), 'field', component, area, itemid);
                     e.preventDefault();
                 });
-                $(".confirm_delete_category").on('click', function (e) {
+                $("[data-role=deletecategory]").on('click', function (e) {
                     confirmDelete($(this).attr('data-id'), 'category', component, area, itemid);
                     e.preventDefault();
                 });
+                $('[data-role=addnewcategory]').on('click', function(e) {
+                    createNewCategory(component, area, itemid);
+                });
 
-                var sectionName = function (element) {
-                    return element.closest('[data-category-name]').attr('data-category-name');
+                var categoryName = function (element) {
+                    return element
+                        .closest('[data-category-id]')
+                        .find('[data-inplaceeditable][data-itemtype=category][data-component=core_customfield]')
+                        .attr('data-value');
                 };
 
                 // Sort category.
@@ -90,10 +117,10 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     elementNameCallback: function (el) {
                         //console.log('elementnamecallback');
                         //console.log(el);
-                        return sectionName(el);
+                        return categoryName(el);
                     }
                 });
-                $('[data-category-name]').on(
+                $('[data-category-id]').on(
                     'sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend',
                     function(evt, info) {
                         if (evt.type == 'sortablelist-dragend' && info.dropped) {
@@ -126,8 +153,9 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     listSelector: '#customfield_catlist .fieldslist tbody',
                     moveHandlerSelector: '.movefield',
                     destinationNameCallback: function (parentElement, afterElement) {
+                        // TODO use correct strings.
                         if (!afterElement.length) {
-                            return str.get_string('totopofsection', 'moodle', sectionName(parentElement));
+                            return str.get_string('totopofsection', 'moodle', categoryName(parentElement));
                         } else if (afterElement.attr('data-field-name')) {
                             return str.get_string('afterresource', 'moodle', afterElement.attr('data-field-name'));
                         } else {
@@ -177,7 +205,7 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                         }).fail(notification.exception);
                     });
 
-                $('[data-category-name], [data-field-name]').on(
+                $('[data-category-id], [data-field-name]').on(
                     'sortablelist-dragstart',
                     function (evt, info) {
                         setTimeout(function () {

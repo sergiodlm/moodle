@@ -22,6 +22,7 @@
 
 namespace core_customfield\output;
 
+use core_customfield\handler;
 use renderable;
 use templatable;
 use renderer_base;
@@ -36,7 +37,7 @@ defined('MOODLE_INTERNAL') || die;
 class management implements renderable, templatable {
 
     /**
-     * @var \core_customfield\handler
+     * @var handler
      */
     protected $handler;
     /**
@@ -68,6 +69,7 @@ class management implements renderable, templatable {
         $data->component = $this->handler->get_component();
         $data->area = $this->handler->get_area();
         $data->itemid = $this->handler->get_item_id();
+        $data->usescategories = $this->handler->uses_categories();
         $categories = $this->handler->get_fields_definitions();
 
         $categoriesarray = array();
@@ -76,18 +78,7 @@ class management implements renderable, templatable {
 
             $categoryarray = array();
             $categoryarray['id'] = $category->get('id');
-            $categoryarray['name'] = $category->get('name');
-            $categoryarray['customfield'] = get_string('customfield', 'core_customfield');
-            $categoryarray['action'] = get_string('action', 'core_customfield');
-
-            $categoryarray['deletecategoryurl'] = (new \moodle_url('/customfield/edit_category.php', [
-                    'deletecategory' => $categoryarray['id'],
-                    'sesskey' => sesskey()
-            ]))->out(false);
-
-            $categoryarray['editcategoryurl'] = (new \moodle_url('/customfield/edit_category.php', [
-                    'id' => $categoryarray['id']
-            ]))->out(false);
+            $categoryarray['nameeditable'] = $output->render($category->get_inplace_editable(true));
 
             $categoryarray['fields'] = array();
 
@@ -137,12 +128,6 @@ class management implements renderable, templatable {
                 array('component' => $data->component, 'area' => $data->area, 'itemid' => $data->itemid));
             $data->nocategories = get_string('nocategories', 'core_customfield', (string)$url);
         }
-
-        // Create a new category link.
-        $newcategoryurl = new \moodle_url('/customfield/edit_category.php',
-            array('component' => $data->component, 'area' => $data->area, 'itemid' => $data->itemid));
-        $data->addcategorybutton = $OUTPUT->single_button($newcategoryurl, get_string('addnewcategory', 'core_customfield'),
-                'post', array('class' => 'float-right'));
 
         return $data;
     }

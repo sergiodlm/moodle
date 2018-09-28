@@ -22,6 +22,7 @@
 
 namespace core_customfield;
 
+use core\output\inplace_editable;
 use core\persistent;
 
 defined('MOODLE_INTERNAL') || die;
@@ -81,7 +82,7 @@ class category extends persistent {
     }
 
     /**
-     * @return array|null
+     * @return field[]
      * @throws \moodle_exception
      * @throws \dml_exception
      */
@@ -294,6 +295,45 @@ class category extends persistent {
         return true;
     }
 
+    /**
+     * Set category name
+     *
+     * @param string $name
+     * @throws \moodle_exception
+     */
+    protected function set_name($name) {
+        global $DB;
+        $name = trim($name);
+        if ($name === '') {
+            throw new \moodle_exception('fieldrequired', 'core_customfield');
+        }
+        $select = 'component = :component AND area = :area AND itemid = :itemid AND name = :name';
+        if ($this->get('id')) {
+            $select .= ' AND id <> :id';
+        }
+        if ($DB->record_exists_select(self::TABLE, $select, ['name' => $name] + (array)$this->to_record())) {
+            throw new \moodle_exception('formcategorycheckname', 'core_customfield');
+        }
+        $this->raw_set('name', $name);
+    }
+
+    /**
+     * Returns an object for inplace editable
+     *
+     * @param bool $editable
+     * @return inplace_editable
+     */
+    public function get_inplace_editable(bool $editable = true) : inplace_editable {
+        return new inplace_editable('core_customfield',
+            'category',
+            $this->get('id'),
+            $editable,
+            format_string($this->get('name')),
+            $this->get('name'),
+            get_string('editcategoryname', 'core_customfield'),
+            get_string('newvaluefor', 'core_form', format_string($this->get('name')))
+        );
+    }
 }
 
 
