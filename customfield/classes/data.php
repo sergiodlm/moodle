@@ -45,13 +45,6 @@ class data extends persistent {
     protected $field;
 
     /**
-     * Data from the form.
-     *
-     * @var string
-     */
-    protected $data;
-
-    /**
      * Return the definition of the properties of this model.
      *
      * @return array
@@ -144,12 +137,12 @@ class data extends persistent {
         return $this->field;
     }
 
-    public function set_data($data) {
-        $this->data = $data;
+    public function set_formvalue($value) {
+        $this->set($this->datafield(), $value->{$this->datafield()});
     }
 
-    public function get_data() {
-        return $this->data;
+    public function get_formvalue() {
+        return $this->get($this->datafield());
     }
 
     public function inputname() {
@@ -172,28 +165,26 @@ class data extends persistent {
             return;
         }
 
-        $datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->get_field()->get('id')));
-
         $datanew->{$this->inputname()} = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
 
+        $datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->get_field()->get('id')));
 
-        // TODO: Refactor to use this->set and persistent stuff.
-        // TODO: get and save contextid;
+        $now = time();
         if ($datarecord) {
-            $datarecord->{$this->datafield()} = $datanew->{$this->inputname()};
-            $datarecord->timemodified         = time();
-            $result                           = $DB->update_record('customfield_data', $datarecord);
+            $this->set('id', $datarecord->id);
         } else {
-            $now                              = time();
-            $datarecord                       = new \stdclass();
-            $datarecord->{$this->datafield()} = $datanew->{$this->inputname()};
-            $datarecord->fieldid              = $this->get('id');
-            $datarecord->recordid             = $datanew->id;
-            $datarecord->timecreated          = $now;
-            $datarecord->timemodified         = $now;
-            $result                           = $DB->insert_record('customfield_data', $datarecord);
+            $this->set('id', 0);
+            $this->set('timecreated', $now);
         }
-        return $result;
+        $this->set($this->datafield(), $datanew->{$this->inputname()});
+        $this->set('fieldid', $this->get_field()->get('id'));
+        $this->set('recordid', $datanew->id);
+        $this->set('timemodified', $now);
+        return $this->save();
+    }
+
+    public function validate_data($value) {
+        return true;
     }
 
     /**
@@ -217,8 +208,8 @@ class data extends persistent {
      * @throws \coding_exception
      */
     public function edit_load_data(\stdClass $data) {
-        if ($this->get_data() !== null) {
-            $data->{$this->inputname()} = $this->get_data();
+        if ($this->get_formvalue() !== null) {
+            $data->{$this->inputname()} = $this->get_formvalue();
         }
     }
 
@@ -282,7 +273,7 @@ class data extends persistent {
         }
         if ($this->is_locked() and !has_capability('moodle/course:update', context_course::instance($this->get('courseid')))) {
             $mform->hardFreeze($this->inputname());
-            $mform->setConstant($this->inputname(), $this->get_data());
+            $mform->setConstant($this->inputname(), $this->get_formvalue());
         }
     }
 }

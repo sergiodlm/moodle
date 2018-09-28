@@ -42,18 +42,10 @@ class data extends \core_customfield\data {
     public function edit_field_add($mform) {
         $config = $this->get_field_configdata();
         $checkbox = $mform->addElement('advcheckbox', $this->inputname(), format_string($this->get_field()->get('name')));
-        if (($this->get_data() == '1') || $config->checkbydefault == 1) {
+        if (($this->get_formvalue() == '1') || $config->checkbydefault == 1) {
             $checkbox->setChecked(true);
         }
         $mform->setType($this->inputname(), PARAM_BOOL);
-    }
-
-    /**
-     * @param $data
-     * @throws \coding_exception
-     */
-    public function set_data($data) {
-        $this->data = $data->intvalue;
     }
 
     /**
@@ -69,7 +61,7 @@ class data extends \core_customfield\data {
      */
     public function display() {
         global $OUTPUT;
-        if ($this->get_data()) {
+        if ($this->get_formvalue()) {
             $displaydata = $OUTPUT->pix_icon('checked', get_string('checked', 'core_customfield'), 'customfield_date');
         } else {
             $displaydata = $OUTPUT->pix_icon('notchecked', get_string('notchecked', 'core_customfield'), 'customfield_date');

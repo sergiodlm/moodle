@@ -36,8 +36,8 @@ class data_factory {
 
         $dataobject = new $customdatatype(0, $data);
         $dataobject->set_field($field);
+        $dataobject->set_formvalue($data);
 
         return $dataobject;
     }
-
 }

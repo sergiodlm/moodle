@@ -365,7 +365,7 @@ abstract class handler {
         $fieldsforws = array();
         foreach ($datafields as $data) {
             $field = $data->get_field();
-            $fieldsforws[] = ['type' => $field->get('type'), 'value' => $data->get_data(),
+            $fieldsforws[] = ['type' => $field->get('type'), 'value' => $data->get_formvalue(),
                               'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
         }
         return $fieldsforws;

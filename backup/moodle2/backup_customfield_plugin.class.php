@@ -15,13 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   customfield_text
- * @copyright 2018 Toni Barbera <toni@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Custom field backup plugin base.
+ *
+ * @package    core_backup
+ * @copyright  2018 Daniel Neis Araujo <danielneis@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'customfield_text';
-$plugin->version   = 2018092700;
-$plugin->requires  = 2018050800;
+/**
+ * Custom field backup plugin base class.
+ *
+ * @package    core_backup
+ */
+abstract class backup_customfield_plugin extends backup_plugin {
+    // Use default parent behaviour.
+}
