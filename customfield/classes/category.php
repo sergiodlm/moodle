@@ -255,7 +255,6 @@ class category extends persistent {
         $categoryfrom = new self($from);
         $categoryto   = new self($to);
 
-        //TODO: refactoting this
         if ($categoryfrom->get('sortorder') < $categoryto->get('sortorder')) {
             for ($i = $categoryfrom->get('sortorder'); $i < $categoryto->get('sortorder'); $i++) {
                 $categoryfrom->up();

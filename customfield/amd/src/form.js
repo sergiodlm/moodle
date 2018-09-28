@@ -108,14 +108,14 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     listSelector: '#customfield_catlist',
                     moveHandlerSelector: '.movecategory',
                     elementNameCallback: function (el) {
-                        console.log('elementnamecallback');
-                        console.log(el);
+                        //console.log('elementnamecallback');
+                        //console.log(el);
                         return sectionName(el);
                     }
                 });
                 $('[data-category-name]').on(
                     'sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend',
-                    function (evt, info) {
+                    function(evt, info) {
                         if (evt.type == 'sortablelist-dragend' && info.dropped) {
                             var promises = ajax.call([
                                 {
@@ -127,17 +127,17 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
 
                                 },
                             ]);
-                            promises[0].fail(function () {
-                                require(["core/notification"], function (notification) {
-                                    notification.addNotification({
-                                        message: str.get_string('errorreloadpage', 'core_customfield'),
-                                        type: "problem"
+                            promises[0].fail(function() {
+                                require(["core/notification"], function(notification) {
+                                    str.get_string('errorreloadpage', 'core_customfield').done(function(s) {
+                                        notification.addNotification({
+                                            message: s,
+                                            type: "problem"
+                                        });
                                     });
                                 });
                             });
                         }
-                        //console.log('Category event ' + evt.type);
-                        //console.log(info);
                         evt.stopPropagation(); // Important for nested lists to prevent multiple targets.
                     });
 
@@ -159,9 +159,7 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     'sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend',
                     function (evt, info
                     ) {
-                        //console.log('Field event ' + evt.type);
-                        //console.log(info);
-                        if (evt.type == 'sortablelist-dragend' && info.dropped) {
+                        if (evt.type === 'sortablelist-dragend' && info.dropped) {
                             var promises = ajax.call([
                                 {
                                     methodname: 'core_customfield_drag_and_drop',
@@ -172,25 +170,31 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                                     },
                                 },
                             ]);
-                            promises[0].fail(function () {
+                            promises[0].fail(function() {
                                 require(["core/notification"], function (notification) {
-                                    notification.addNotification({
-                                        message: str.get_string('errorreloadpage', 'core_customfield'),
-                                        type: "problem"
+                                    str.get_string('errorreloadpage', 'core_customfield').done(function(s) {
+                                        notification.addNotification({
+                                            message: s,
+                                            type: "problem"
+                                        });
                                     });
                                 });
                             });
                         }
                         evt.stopPropagation(); // Important for nested lists to prevent multiple targets.
                         // Refreshing fields tables.
-                        $('#customfield_catlist').children().each(function () {
-                            if (!$(this).find($('.field')).length && !$(this).find($('.nofields')).length) {
-                                $(this).find('tbody').append('<tr class="nofields"><td colspan="5">There are no fields on this category.</td></tr>');
-                            }
-                            if ($(this).find($('.field')).length && $(this).find($('.nofields')).length) {
-                                $(this).find($('.nofields')).remove();
-                            }
-                        });
+                        str.get_string('therearenofields', 'core_customfield').then(function (s) {
+                            $('#customfield_catlist').children().each(function () {
+                                if (!$(this).find($('.field')).length && !$(this).find($('.nofields')).length) {
+                                    $(this).find('tbody').append(
+                                        '<tr class="nofields"><td colspan="5">' + s + '</td></tr>'
+                                    );
+                                }
+                                if ($(this).find($('.field')).length && $(this).find($('.nofields')).length) {
+                                    $(this).find($('.nofields')).remove();
+                                }
+                            });
+                        }).fail(notification.exception);
                     });
 
                 $('[data-category-name], [data-field-name]').on(

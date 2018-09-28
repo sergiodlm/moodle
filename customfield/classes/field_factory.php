@@ -103,7 +103,6 @@ class field_factory {
     public static function drag_and_drop(int $from, int $to, int $category) : bool {
         $fieldfrom = self::load($from);
 
-        // TODO: Refactor this:
         if ( $fieldfrom->get('categoryid') != $category ) {
             $oldcategory = $fieldfrom->get('categoryid');
 

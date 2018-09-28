@@ -15,21 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package core
- * @copyright 2018 Toni Barbera (toni@moodle.com)
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Customfield global search unit tests.
+ *
+ * @package     core_customfield
+ * @category    phpunit
+ * @copyright   Toni Barbera <toni@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once('../config.php');
-require_once($CFG->libdir.'/adminlib.php');
+defined('MOODLE_INTERNAL') || die();
 
-admin_externalpage_setup('course_customfield');
+global $CFG;
+require_once($CFG->dirroot . '/search/tests/fixtures/testable_core_search.php');
 
+/**
+ * Provides the unit tests for customfield global search.
+ *
+ * @package     core_customfield
+ * @category    phpunit
+ * @copyright   Toni Barbera <toni@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class customfield_search_testcase extends advanced_testcase {
 
-$output = $PAGE->get_renderer('core_customfield');
-$handler = new  \core_course\customfield\course_handler();
-$outputpage = new \core_customfield\output\management($handler);
-
-echo $output->header(),
-     $output->render($outputpage),
-     $output->footer();
+}

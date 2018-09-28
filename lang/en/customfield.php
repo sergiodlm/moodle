@@ -91,3 +91,6 @@ $string['unknownhandler'] = 'Unable to find handler for custom fields for compon
 $string['visibility'] = ' Who is this field visible to?';
 $string['yes'] = 'Yes';
 $string['errorreloadpage'] = 'Error, please press F5 for reloading this page';
+$string['therearenofields'] = 'There are no fields on this category';
+
+
