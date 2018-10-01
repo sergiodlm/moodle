@@ -530,4 +530,31 @@ abstract class handler {
         }
         return $fieldsarray;
     }
+
+    /**
+     * Creates or updates custom field data for a recordid from backup data.
+     *
+     * @param int $recordid
+     * @param array $data
+     */
+    public function restore_field_data_from_backup(int $recordid, array $data) {
+        global $DB;
+        if ($field = $DB->get_record('customfield_field', ['shortname' => $data['shortname']])) {
+            $customfieldtype = "\\customfield_{$field->type}\\field";
+            $customdatatype = "\\customfield_{$field->type}\\data";
+            $field = new $customfieldtype($field->id, $field);
+
+            $datarecord = $DB->get_record('customfield_data', array('recordid' => $recordid, 'fieldid' => $field->get('id')));
+            if ($datarecord) {
+                $dataobject = new $customdatatype($datarecord->id, $datarecord);
+            } else {
+                $dataobject = new $customdatatype(0);
+            }
+            $dataobject->set('recordid', $recordid);
+            $dataobject->set('fieldid', $field->get('id'));
+            $dataobject->set('contextid', $field->get_data_context($recordid));
+            $dataobject->set_rawvalue($data['value']);
+            $dataobject->save();
+        }
+    }
 }

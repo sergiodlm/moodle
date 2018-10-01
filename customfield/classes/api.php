@@ -57,11 +57,12 @@ class api {
      * Fetch a data from database or create a new one if $data is given
      *
      * @param int $id id of the field (0 for new field)
-     * @param \stdClass $record a pre-fetched record
+     * @param \stdClass $data a pre-fetched data
+     * @param \stdClass $field a pre-fetched field
      * @return field
      */
-    public static function load_data(\stdClass $data, field $field) : data {
-        return data_factory::load($data, $field);
+    public static function load_data(int $id, \stdClass $data, field $field) : data {
+        return data_factory::load($id, $data, $field);
     }
 
     /**
@@ -100,11 +101,12 @@ class api {
             $field->set_category(new category(0, $categoryobj));
             unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata, $data->categoryname);
             if (empty($data->id)) {
+                $data->id = 0;
                 $data->fieldid = $field->get('id');
                 $data->contextid = $datacontext->id;
                 $data->recordid = $recordid;
             }
-            $formfields[] = self::load_data($data, $field);
+            $formfields[] = self::load_data($data->id, $data, $field);
         }
         return $formfields;
     }
