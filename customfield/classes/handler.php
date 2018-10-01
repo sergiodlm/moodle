@@ -324,6 +324,17 @@ abstract class handler {
     }
 
     /**
+     * List of fields with their data (only fields with data)
+     *
+     * @param int $recordid
+     * @return data[]
+     */
+    public function get_fields_with_data_for_backup(int $recordid) : array {
+        return api::get_fields_with_data_for_backup($this->get_component(), $this->get_area(), $this->get_itemid(),
+            $this->get_data_context($recordid), $recordid);
+    }
+
+    /**
      * Custom fields definition after data was submitted on data form
      *
      * @param \MoodleQuickForm $mform
