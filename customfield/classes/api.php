@@ -110,6 +110,49 @@ class api {
     }
 
     /**
+     * Retrieves list of fields and the data associated with them for backups
+     *
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param \context $datacontext context to use for data that does not yet exist
+     * @param int $recordid
+     * @return array
+     */
+    public static function get_fields_with_data_for_backup(string $component, string $area, int $itemid, \context $datacontext, int $recordid) : array {
+        global $DB;
+        $sql = 'SELECT f.id as field_id, f.shortname, f.type, f.categoryid, d.*
+                  FROM {customfield_category} c
+                  JOIN {customfield_field} f
+                    ON (c.id = f.categoryid)
+                  JOIN {customfield_data} d
+                    ON (f.id = d.fieldid AND d.recordid = :recordid)
+                 WHERE c.component = :component
+                   AND c.area = :area
+                   AND c.itemid = :itemid
+              ORDER BY c.sortorder, f.sortorder';
+        $where = ['component' => $component, 'area' => $area, 'itemid' => $itemid, 'recordid' => $recordid];
+        $fieldsdata = $DB->get_records_sql($sql, $where);
+
+        $finalfields = [];
+        foreach ($fieldsdata as $data) {
+            $fieldobj = (object)['id' => $data->field_id, 'shortname' => $data->shortname,
+                'type' => $data->type, 'categoryid' => $data->categoryid];
+            $field = self::get_field(0, $fieldobj);
+            unset($data->field_id, $data->shortname, $data->type, $data->categoryid);
+            if (empty($data->id)) {
+                $data->fieldid = $field->get('id');
+                $data->contextid = $datacontext->id;
+                $data->recordid = $recordid;
+            }
+            $f = self::load_data($data, $field);
+            $finalfields[] = ['id' => $f->get('id'), 'shortname' => $f->get_field()->get('shortname'),
+                'type' => $f->get_field()->get('type'), 'value' => $f->get_formvalue()];
+        }
+        return $finalfields;
+    }
+
+    /**
      * Retrieve a list of all available custom field types
      *
      * @return   array   a list of the fieldtypes suitable to use in a select statement

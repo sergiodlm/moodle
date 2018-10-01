@@ -107,6 +107,10 @@ class course_handler extends \core_customfield\handler {
      * @return \context the context for the given record
      */
     public function get_data_context(int $recordid): \context {
-        return \context_course::instance($recordid);
+        if ($recordid > 0) {
+            return \context_course::instance($recordid);
+        } else {
+            return \context_system::instance();
+        }
     }
 }

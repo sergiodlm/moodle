@@ -2489,6 +2489,7 @@ function create_course($data, $editoroptions = NULL) {
     // Save custom fields.
     $handler  = new core_course\customfield\course_handler();
     $data->id = $course->id;
+    $data->contextid = $context->id;
     $handler->save_customfield_data($data);
 
     return $course;

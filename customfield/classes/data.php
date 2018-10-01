@@ -300,7 +300,7 @@ class data extends persistent {
      * @return bool
      */
     public function is_locked() : bool {
-        return $this->get_field->get('locked');
+        return $this->get_field()->get('locked');
     }
 
     /**
