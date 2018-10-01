@@ -248,7 +248,7 @@ abstract class field extends persistent {
         );
 
         if (!empty($nextfielddata)) {
-            $previusfield = field::load($nextfielddata->id);
+            $previusfield = field::load_field($nextfielddata->id);
             $previusfield->set('sortorder', $this->get('sortorder'));
             $previusfield->save();
             $this->set('sortorder', $this->get('sortorder') + $position);
@@ -311,7 +311,7 @@ abstract class field extends persistent {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function load(int $id, \stdClass $field = null) : field {
+    public static function load_field(int $id, \stdClass $field = null) : field {
         global $DB;
 
         if (!$field || empty($field->type)) {
@@ -331,7 +331,7 @@ abstract class field extends persistent {
      * @return field
      * @throws \coding_exception
      */
-    public static function create(string $type) : field {
+    public static function create_from_type(string $type) : field {
 
         $customfieldtype = "\\customfield_{$type}\\field";
         if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
@@ -355,7 +355,7 @@ abstract class field extends persistent {
         $fields = array();
         $records = $DB->get_records('customfield_field', ['categoryid' => $categoryid], 'sortorder DESC');
         foreach ($records as $fielddata) {
-            $fields[] = self::load($fielddata->id);
+            $fields[] = self::load_field($fielddata->id);
         }
         return $fields;
     }
@@ -370,7 +370,7 @@ abstract class field extends persistent {
      * @throws \moodle_exception
      */
     public static function drag_and_drop(int $from, int $to, int $category) : bool {
-        $fieldfrom = self::load($from);
+        $fieldfrom = self::load_field($from);
 
         if ( $fieldfrom->get('categoryid') != $category ) {
             $oldcategory = $fieldfrom->get('categoryid');
@@ -384,7 +384,7 @@ abstract class field extends persistent {
         }
 
         if ( $to > 0 ) {
-            $fieldto   = self::load($to);
+            $fieldto   = self::load_field($to);
             if ($fieldfrom->get('sortorder') < $fieldto->get('sortorder')) {
                 for ($i = $fieldfrom->get('sortorder'); $i < $fieldto->get('sortorder'); $i++) {
                     $fieldfrom->up();

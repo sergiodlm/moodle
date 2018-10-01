@@ -336,7 +336,7 @@ class data extends persistent {
      * @throws \coding_exception
      * @throws \moodle_exception
      */
-    public static function load(int $id = 0, \stdClass $data, field $field) : data {
+    public static function load_data(int $id = 0, \stdClass $data, field $field) : data {
         $fieldtype = $field->get('type');
         $customdatatype = "\\customfield_{$fieldtype}\\data";
         if (!class_exists($customdatatype) || !is_subclass_of($customdatatype, data::class)) {
