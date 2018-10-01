@@ -2158,6 +2158,14 @@ $functions = array(
         'type'        => 'read',
         'ajax'        => 'true'
     ),
+    'core_customfield_create_category' => array(
+        'classname'   => 'core_customfield_external',
+        'methodname'  => 'create_category',
+        'classpath'   => 'customfield/externallib.php',
+        'description' => 'Creates a new category',
+        'type'        => 'write',
+        'ajax'        => 'true'
+    ),
     'core_customfield_delete_category' => array(
             'classname'   => 'core_customfield_external',
             'methodname'  => 'delete_category',

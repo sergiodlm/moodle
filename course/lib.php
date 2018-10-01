@@ -2487,7 +2487,7 @@ function create_course($data, $editoroptions = NULL) {
     }
 
     // Save custom fields.
-    $handler  = new core_course\customfield\course_handler(null);
+    $handler  = new core_course\customfield\course_handler();
     $data->id = $course->id;
     $handler->save_customfield_data($data);
 
@@ -2575,7 +2575,7 @@ function update_course($data, $editoroptions = NULL) {
         }
     }
 
-    $handler  = new core_course\customfield\course_handler(null);
+    $handler  = new core_course\customfield\course_handler();
     $handler->save_customfield_data($data);
 
     // Update with the new data

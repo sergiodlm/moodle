@@ -31,5 +31,6 @@ $handler = new  \core_course\customfield\course_handler();
 $outputpage = new \core_customfield\output\management($handler);
 
 echo $output->header(),
+     $output->heading(new lang_string('course_customfield', 'admin')),
      $output->render($outputpage),
      $output->footer();

@@ -1176,7 +1176,9 @@ EOD;
     public function create_custom_field_category($data) {
         $handler = new \core_course\customfield\course_handler();
         $category = $handler->new_category();
-        $category->set('name', $data['name']);
+        if (!empty($data['name'])) {
+            $category->set('name', $data['name']);
+        }
         $category->save();
         return $category;
     }

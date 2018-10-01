@@ -34,31 +34,31 @@ defined('MOODLE_INTERNAL') || die;
 abstract class handler {
 
     /**
-     * @var null
+     * @var int
      */
     private $itemid;
     /**
-     * @var
+     * @var string
      */
     private $component;
     /**
-     * @var
+     * @var string
      */
     private $area;
 
     /**
      * handler constructor.
      *
-     * @param null $itemid
+     * @param int $itemid
      * @throws \coding_exception
      */
-    public final function __construct($itemid = null) {
+    public final function __construct(int $itemid = 0) {
         if (!preg_match('|^(\w+_[\w_]+)\\\\customfield\\\\([\w_]+)_handler$|', static::class, $matches)) {
             throw new \coding_exception('Handler class name must have format: <PLUGIN>\\customfield\\<AREA>_handler');
         }
         $this->component = $matches[1];
         $this->area = $matches[2];
-        $this->itemid = $itemid ?: null;
+        $this->itemid = $itemid;
     }
 
     /**
@@ -66,11 +66,11 @@ abstract class handler {
      *
      * @param string $component
      * @param string $area
-     * @param int|null $itemid
+     * @param int $itemid
      * @return handler
      * @throws \moodle_exception
      */
-    public static function get_handler(string $component, string $area, int $itemid = null) : handler {
+    public static function get_handler(string $component, string $area, int $itemid = 0) : handler {
         $classname = $component . '\\customfield\\' . $area . '_handler';
         if (class_exists($classname) && is_subclass_of($classname, self::class)) {
             return new $classname($itemid);
@@ -135,7 +135,7 @@ abstract class handler {
     /**
      * @return int|null
      */
-    public function get_item_id() {
+    public function get_item_id() : int {
         return $this->itemid;
     }
 
@@ -151,16 +151,6 @@ abstract class handler {
      */
     public function uses_categories(): bool {
         return true;
-    }
-
-    /**
-     * @param category $category
-     * @return category_config_form
-     */
-    public function get_category_config_form(category $category): category_config_form {
-        $form = new category_config_form(null, ['handler' => $this, 'category' => $category]);
-        $form->set_data($this->prepare_category_for_form($category));
-        return $form;
     }
 
     /**
@@ -187,6 +177,14 @@ abstract class handler {
     }
 
     /**
+     * Generates a name for the new category
+     */
+    protected function generate_category_name($suffix = 0) : string {
+        $basename = get_string('otherfields', 'core_customfield');
+        return $basename . ($suffix ? (' ' . $suffix) : '');
+    }
+
+    /**
      * @return category
      */
     public function new_category() : category {
@@ -198,11 +196,20 @@ abstract class handler {
 
         $category = new category(0, $categorydata);
 
-        return $category;
+        $suffix = 0;
+        while (true) {
+            try {
+                $category->set('name', $this->generate_category_name($suffix));
+                return $category;
+            } catch (\moodle_exception $exception) {
+
+            }
+            $suffix++;
+        }
     }
 
     /**
-     * @return array|category[]
+     * @return category[]
      * @throws \dml_exception
      * @throws \moodle_exception
      */
@@ -261,6 +268,10 @@ abstract class handler {
                 $this->get_area(),
                 $this->get_item_id()
         );
+        if (!$fields && !$this->uses_categories()) {
+            $this->new_category()->save();
+            $fields = api::get_fields_definitions($this->get_component(), $this->get_area(), $this->get_item_id());
+        }
         return $fields;
     }
 

@@ -30,11 +30,11 @@ class api {
      * Returns array of categories, each of them contains a list of fields definitions.
      *
      * @param string $component
-     * @param string|null $area
-     * @param int|null $itemid
+     * @param string $area
+     * @param int $itemid
      * @return category[]
      */
-    public static function get_fields_definitions(string $component, string $area = null, int $itemid = null) : array {
+    public static function get_fields_definitions(string $component, string $area, int $itemid) : array {
         return category::list([
                 'component' => $component,
                 'area' => $area,
@@ -55,12 +55,12 @@ class api {
      *
      * @param string $component
      * @param string $area
-     * @param int|null $itemid
+     * @param int $itemid
      * @param \context $datacontext context to use for data that does not yet exist
      * @param int $recordid
      * @return array
      */
-    public static function get_fields_with_data(string $component, string $area, $itemid, \context $datacontext, int $recordid) : array {
+    public static function get_fields_with_data(string $component, string $area, int $itemid, \context $datacontext, int $recordid) : array {
         global $DB;
         $sql = 'SELECT f.id as field_id, f.shortname, f.categoryid, f.type, f.configdata,
                        c.name as categoryname, d.*
@@ -71,7 +71,7 @@ class api {
                     ON (f.id = d.fieldid AND d.recordid = :recordid)
                  WHERE c.component = :component
                    AND c.area = :area
-                   AND c.itemid ' . ($itemid ? '=:itemid' : ' IS NULL ') . '
+                   AND c.itemid = :itemid
               ORDER BY c.sortorder, f.sortorder';
         $where = ['component' => $component, 'area' => $area, 'itemid' => $itemid, 'recordid' => $recordid];
         $fieldsdata = $DB->get_records_sql($sql, $where);

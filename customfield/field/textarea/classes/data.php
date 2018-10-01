@@ -66,7 +66,7 @@ class data extends \core_customfield\data {
      *
      * @param \stdClass $data
      * @param \stdClass $datarecord
-     * @return mixed|\stdClass
+     * @return mixed
      */
     public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
         if (is_array($data)) {

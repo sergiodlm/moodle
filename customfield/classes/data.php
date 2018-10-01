@@ -50,6 +50,7 @@ class data extends persistent {
      * @return array
      */
     protected static function define_properties(): array {
+        // TODO correct all types
         return array(
                 'fieldid' => [
                         'type' => PARAM_TEXT,

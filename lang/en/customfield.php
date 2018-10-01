@@ -48,6 +48,7 @@ $string['delete'] = 'Delete';
 $string['description'] = 'Description';
 $string['displaysize'] = 'Display size';
 $string['edit'] = 'Edit';
+$string['editcategoryname'] = 'Edit category name';
 $string['editingcategory'] = 'Editing category';
 $string['editingfield'] = 'Editing field';
 $string['endyear'] = 'End year';
@@ -78,7 +79,7 @@ $string['nopermissionconfigure'] = 'You don\'t have permission to configure fiel
 $string['notchecked'] = 'Not checked';
 $string['notset'] = 'Not set';
 $string['notvisible'] = 'Not visible';
-$string['otherfields'] = 'Other Fields';
+$string['otherfields'] = 'Other fields';
 $string['sameframe'] = 'Same frame';
 $string['samewindow'] = 'Same window';
 $string['shortname'] = 'Short Name';
@@ -93,4 +94,4 @@ $string['yes'] = 'Yes';
 $string['errorreloadpage'] = 'Error, please press F5 for reloading this page';
 $string['therearenofields'] = 'There are no fields on this category';
 
-
+// TODO remove all CamelCase - only first letter in the sentence can be capital

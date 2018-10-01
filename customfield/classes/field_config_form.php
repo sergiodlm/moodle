@@ -37,16 +37,12 @@ class field_config_form extends \moodleform {
         if (!$handler || !$handler instanceof handler) {
             throw new \coding_exception('Handler must be passed in customdata');
         }
-        $categorylist = $handler->categories_list_for_select();
         $field = $this->_customdata['field'];
         if (!$field || !$field instanceof field) {
             throw new \coding_exception('Field must be passed in customdata');
         }
 
         $mform->addElement('header', '_commonsettings', get_string('commonsettings', 'core_customfield'));
-
-        $mform->addElement('select', 'categoryid', get_string('category', 'core_customfield'), $categorylist);
-        $mform->addRule('categoryid', get_string('categoryidrequired', 'core_customfield'), 'required');
 
         $mform->addElement('text', 'name', get_string('fieldname', 'core_customfield'));
         $mform->setType('name', PARAM_NOTAGS);
@@ -56,15 +52,7 @@ class field_config_form extends \moodleform {
         $mform->setType('shortname', PARAM_NOTAGS);
         $mform->addRule('shortname', get_string('shortname'), 'required');
 
-        $desceditoroptions = array(
-                'trusttext' => true,
-                'subdirs' => true,
-                'maxfiles' => 5,
-                'maxbytes' => 0,
-                'context' => $PAGE->context,
-                'noclean' => 0,
-                'enable_filemanagement' => true);
-
+        $desceditoroptions = ['context' => $handler->get_configuration_context()] + $handler->get_description_text_options() ;
         $mform->addElement('editor', 'description_editor', get_string('description', 'core_customfield'), null, $desceditoroptions);
         $mform->setType('description_editor', PARAM_RAW);
 
@@ -90,14 +78,8 @@ class field_config_form extends \moodleform {
         $field->add_field_to_config_form($mform);
 
         // We add hidden fields.
-        $mform->addElement('hidden', 'component', $handler->get_component());
-        $mform->setType('component', PARAM_COMPONENT);
-
-        $mform->addElement('hidden', 'area', $handler->get_area());
-        $mform->setType('area', PARAM_ALPHANUMEXT);
-
-        $mform->addElement('hidden', 'itemid', $handler->get_item_id());
-        $mform->setType('itemid', PARAM_INT);
+        $mform->addElement('hidden', 'categoryid');
+        $mform->setType('categoryid', PARAM_INT);
 
         $mform->addElement('hidden', 'type');
         $mform->setType('type', PARAM_COMPONENT);
