@@ -50,7 +50,7 @@ class api {
      * @return field
      */
     public static function get_field(int $id, \stdClass $field = null) : field {
-        return field_factory::load($id, $field);
+        return field::load($id, $field);
     }
 
     /**
@@ -62,7 +62,7 @@ class api {
      * @return field
      */
     public static function load_data(int $id, \stdClass $data, field $field) : data {
-        return data_factory::load($id, $data, $field);
+        return data::load($id, $data, $field);
     }
 
     /**
