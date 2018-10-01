@@ -552,7 +552,7 @@ abstract class handler {
             }
             $dataobject->set('recordid', $recordid);
             $dataobject->set('fieldid', $field->get('id'));
-            $dataobject->set('contextid', $field->get_data_context($recordid));
+            $dataobject->set('contextid', $this->get_data_context($recordid)->id);
             $dataobject->set_rawvalue($data['value']);
             $dataobject->save();
         }
