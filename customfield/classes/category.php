@@ -87,7 +87,7 @@ class category extends persistent {
      * @throws \dml_exception
      */
     public function fields() {
-        return field_factory::get_fields_from_category_array($this->get('id'));
+        return field::get_fields_from_category_array($this->get('id'));
     }
 
     /**

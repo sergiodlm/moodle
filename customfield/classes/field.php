@@ -248,7 +248,7 @@ abstract class field extends persistent {
         );
 
         if (!empty($nextfielddata)) {
-            $previusfield = field_factory::load($nextfielddata->id);
+            $previusfield = field::load($nextfielddata->id);
             $previusfield->set('sortorder', $this->get('sortorder'));
             $previusfield->save();
             $this->set('sortorder', $this->get('sortorder') + $position);
@@ -300,5 +300,106 @@ abstract class field extends persistent {
             $this->category = new category($this->get('categoryid'));
         }
         return $this->category;
+    }
+
+    /**
+     * Returns a correct class field.
+     *
+     * @param int $id
+     * @param \stdClass|null $field
+     * @return field
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function load(int $id, \stdClass $field = null) : field {
+        global $DB;
+
+        if (!$field || empty($field->type)) {
+            $field = $DB->get_record('customfield_field', ['id' => $id]);
+        }
+
+        $customfieldtype = "\\customfield_{$field->type}\\field";
+        if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
+            throw new \coding_exception( get_string('errorfieldtypenotfound', 'core_customfield', s($field->type)) );
+        }
+
+        return new $customfieldtype($field->id, $field);
+    }
+
+    /**
+     * @param string $type
+     * @return field
+     * @throws \coding_exception
+     */
+    public static function create(string $type) : field {
+
+        $customfieldtype = "\\customfield_{$type}\\field";
+        if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
+            throw new \coding_exception( get_string('errorfieldtypenotfound', 'core_customfield', s($type)) );
+        }
+
+        $field = new $customfieldtype();
+        $field->set('type', $type);
+        return $field;
+    }
+
+    /**
+     * @param int $categoryid
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function get_fields_from_category_array(int $categoryid) :array {
+        global $DB;
+
+        $fields = array();
+        $records = $DB->get_records('customfield_field', ['categoryid' => $categoryid], 'sortorder DESC');
+        foreach ($records as $fielddata) {
+            $fields[] = self::load($fielddata->id);
+        }
+        return $fields;
+    }
+
+    /**
+     * @param int $from
+     * @param int $to
+     * @param int $category
+     * @return bool
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function drag_and_drop(int $from, int $to, int $category) : bool {
+        $fieldfrom = self::load($from);
+
+        if ( $fieldfrom->get('categoryid') != $category ) {
+            $oldcategory = $fieldfrom->get('categoryid');
+
+            $fieldfrom->set('categoryid', $category);
+            $fieldfrom->set('sortorder', -1);
+            $fieldfrom->save();
+
+            category::reorder_fields($oldcategory);
+            category::reorder_fields($fieldfrom->get('categoryid'));
+        }
+
+        if ( $to > 0 ) {
+            $fieldto   = self::load($to);
+            if ($fieldfrom->get('sortorder') < $fieldto->get('sortorder')) {
+                for ($i = $fieldfrom->get('sortorder'); $i < $fieldto->get('sortorder'); $i++) {
+                    $fieldfrom->up();
+                }
+            } else if ($fieldfrom->get('sortorder') > $fieldto->get('sortorder')) {
+                for ($i = $fieldfrom->get('sortorder'); $i > $fieldto->get('sortorder') + 1; $i--) {
+                    $fieldfrom->down();
+                }
+            }
+        } else {
+            for ($i = $fieldfrom->get('sortorder'); $i > 0; $i--) {
+                $fieldfrom->down();
+            }
+        }
+
+        return true;
     }
 }

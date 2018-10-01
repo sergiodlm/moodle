@@ -328,4 +328,25 @@ class data extends persistent {
             $mform->setConstant($this->inputname(), $this->get_formvalue());
         }
     }
+
+    /**
+     * @param \stdClass $data
+     * @param field $field
+     * @return data
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public static function load(int $id = 0, \stdClass $data, field $field) : data {
+        $fieldtype = $field->get('type');
+        $customdatatype = "\\customfield_{$fieldtype}\\data";
+        if (!class_exists($customdatatype) || !is_subclass_of($customdatatype, data::class)) {
+            throw new \moodle_exception(get_string('errordatatypenotfound', 'core_customfield', s($fieldtype)));
+        }
+
+        $dataobject = new $customdatatype($id, $data);
+        $dataobject->set_field($field);
+        $dataobject->set_formvalue($data);
+
+        return $dataobject;
+    }
 }
