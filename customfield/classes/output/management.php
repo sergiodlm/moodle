@@ -68,7 +68,7 @@ class management implements renderable, templatable {
 
         $data->component = $this->handler->get_component();
         $data->area = $this->handler->get_area();
-        $data->itemid = $this->handler->get_item_id();
+        $data->itemid = $this->handler->get_itemid();
         $data->usescategories = $this->handler->uses_categories();
         $categories = $this->handler->get_fields_definitions();
 
