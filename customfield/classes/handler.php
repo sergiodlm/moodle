@@ -201,7 +201,7 @@ abstract class handler {
      * @throws \coding_exception
      */
     public function new_field(category $category, string $type) : field {
-        $field = field::create($type);
+        $field = field::create_from_type($type);
         $field->set('categoryid', $category->get('id'));
         return $field;
     }
