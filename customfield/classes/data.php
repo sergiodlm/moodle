@@ -164,6 +164,16 @@ class data extends persistent {
     }
 
     /**
+     * Save the value from backup
+     *
+     * @param $value
+     * @throws \moodle_exception
+     */
+    public function set_rawvalue($value) {
+        $this->set($this->datafield(), $value);
+    }
+
+    /**
      * Return the value to be used/submitted on form
      *
      * @return mixed

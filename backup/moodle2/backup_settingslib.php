@@ -78,7 +78,7 @@ class backup_groups_setting extends backup_generic_setting {
  * root setting to control if backup will include custom field information
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright 2014 Matt Sammarco
+ * @copyright 2018 Daniel Neis Araujo
  */
 class backup_customfield_setting extends backup_generic_setting {
 }

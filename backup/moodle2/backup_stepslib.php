@@ -392,7 +392,7 @@ class backup_course_structure_step extends backup_structure_step {
             'name', 'rawname'));
 
         $customfields = new backup_nested_element('customfields');
-        $customfield = new backup_nested_element('data', array('id'), array(
+        $customfield = new backup_nested_element('customfield', array('id'), array(
           'shortname', 'type', 'value'
         ));
 
