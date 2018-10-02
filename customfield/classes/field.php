@@ -170,6 +170,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Call count_fields()
+     *
      * @return int
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -179,6 +181,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Delete associated data before delete field
+     *
      * @return bool
      * @throws \moodle_exception
      */
@@ -191,6 +195,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Update sort order after create
+     *
      * @return bool
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -200,6 +206,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Update sort order after delete
+     *
      * @param bool $result
      * @return bool
      * @throws \moodle_exception
@@ -210,6 +218,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Call category::reorder_fields
+     *
      * @return bool
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -219,6 +229,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Update sort order (used on drag and drop)
+     *
      * @param int $position
      * @return field
      * @throws \moodle_exception
@@ -236,7 +248,7 @@ abstract class field extends persistent {
         );
 
         if (!empty($nextfielddata)) {
-            $previusfield = field_factory::load($nextfielddata->id);
+            $previusfield = field::load_field($nextfielddata->id);
             $previusfield->set('sortorder', $this->get('sortorder'));
             $previusfield->save();
             $this->set('sortorder', $this->get('sortorder') + $position);
@@ -247,6 +259,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Update sort order (used on drag and drop)
+     *
      * @return self
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -256,6 +270,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Update sort order (used on drag and drop)
+     *
      * @return self
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -265,6 +281,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Set the category associated with this field
+     *
      * @param category $category
      */
     public function set_category(category $category) {
@@ -272,6 +290,8 @@ abstract class field extends persistent {
     }
 
     /**
+     * Get the category associated with this field
+     *
      * @return category
      * @throws \moodle_exception
      */
@@ -280,5 +300,106 @@ abstract class field extends persistent {
             $this->category = new category($this->get('categoryid'));
         }
         return $this->category;
+    }
+
+    /**
+     * Returns a correct class field.
+     *
+     * @param int $id
+     * @param \stdClass|null $field
+     * @return field
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function load_field(int $id, \stdClass $field = null) : field {
+        global $DB;
+
+        if (!$field || empty($field->type)) {
+            $field = $DB->get_record('customfield_field', ['id' => $id]);
+        }
+
+        $customfieldtype = "\\customfield_{$field->type}\\field";
+        if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
+            throw new \coding_exception( get_string('errorfieldtypenotfound', 'core_customfield', s($field->type)) );
+        }
+
+        return new $customfieldtype($field->id, $field);
+    }
+
+    /**
+     * @param string $type
+     * @return field
+     * @throws \coding_exception
+     */
+    public static function create_from_type(string $type) : field {
+
+        $customfieldtype = "\\customfield_{$type}\\field";
+        if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
+            throw new \coding_exception( get_string('errorfieldtypenotfound', 'core_customfield', s($type)) );
+        }
+
+        $field = new $customfieldtype();
+        $field->set('type', $type);
+        return $field;
+    }
+
+    /**
+     * @param int $categoryid
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function get_fields_from_category_array(int $categoryid) :array {
+        global $DB;
+
+        $fields = array();
+        $records = $DB->get_records('customfield_field', ['categoryid' => $categoryid], 'sortorder DESC');
+        foreach ($records as $fielddata) {
+            $fields[] = self::load_field($fielddata->id);
+        }
+        return $fields;
+    }
+
+    /**
+     * @param int $from
+     * @param int $to
+     * @param int $category
+     * @return bool
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function drag_and_drop(int $from, int $to, int $category) : bool {
+        $fieldfrom = self::load_field($from);
+
+        if ( $fieldfrom->get('categoryid') != $category ) {
+            $oldcategory = $fieldfrom->get('categoryid');
+
+            $fieldfrom->set('categoryid', $category);
+            $fieldfrom->set('sortorder', -1);
+            $fieldfrom->save();
+
+            category::reorder_fields($oldcategory);
+            category::reorder_fields($fieldfrom->get('categoryid'));
+        }
+
+        if ( $to > 0 ) {
+            $fieldto   = self::load_field($to);
+            if ($fieldfrom->get('sortorder') < $fieldto->get('sortorder')) {
+                for ($i = $fieldfrom->get('sortorder'); $i < $fieldto->get('sortorder'); $i++) {
+                    $fieldfrom->up();
+                }
+            } else if ($fieldfrom->get('sortorder') > $fieldto->get('sortorder')) {
+                for ($i = $fieldfrom->get('sortorder'); $i > $fieldto->get('sortorder') + 1; $i--) {
+                    $fieldfrom->down();
+                }
+            }
+        } else {
+            for ($i = $fieldfrom->get('sortorder'); $i > 0; $i--) {
+                $fieldfrom->down();
+            }
+        }
+
+        return true;
     }
 }

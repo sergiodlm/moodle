@@ -42,12 +42,27 @@ class api {
         ]);
     }
 
-    public static function get_field(int $id, \stdClass $record = null) : field {
-        return field_factory::load($id, $record);
+    /**
+     * Fetch a field from database or create a new one if $field is given
+     *
+     * @param int $id id of the field (0 for new field)
+     * @param \stdClass $record a pre-fetched record
+     * @return field
+     */
+    public static function get_field(int $id, \stdClass $field = null) : field {
+        return field::load_field($id, $field);
     }
 
-    public static function load_data(\stdClass $data, field $field) : data {
-        return data_factory::load($data, $field);
+    /**
+     * Fetch a data from database or create a new one if $data is given
+     *
+     * @param int $id id of the field (0 for new field)
+     * @param \stdClass $data a pre-fetched data
+     * @param \stdClass $field a pre-fetched field
+     * @return field
+     */
+    public static function load_data(int $id, \stdClass $data, field $field) : data {
+        return data::load_data($id, $data, $field);
     }
 
     /**
@@ -86,17 +101,62 @@ class api {
             $field->set_category(new category(0, $categoryobj));
             unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata, $data->categoryname);
             if (empty($data->id)) {
+                $data->id = 0;
                 $data->fieldid = $field->get('id');
                 $data->contextid = $datacontext->id;
                 $data->recordid = $recordid;
             }
-            $formfields[] = self::load_data($data, $field);
+            $formfields[] = self::load_data($data->id, $data, $field);
         }
         return $formfields;
     }
 
     /**
+     * Retrieves list of fields and the data associated with them for backups
+     *
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param \context $datacontext context to use for data that does not yet exist
+     * @param int $recordid
+     * @return array
+     */
+    public static function get_fields_with_data_for_backup(string $component, string $area, int $itemid, \context $datacontext, int $recordid) : array {
+        global $DB;
+        $sql = 'SELECT f.id as field_id, f.shortname, f.type, f.categoryid, d.*
+                  FROM {customfield_category} c
+                  JOIN {customfield_field} f
+                    ON (c.id = f.categoryid)
+                  JOIN {customfield_data} d
+                    ON (f.id = d.fieldid AND d.recordid = :recordid)
+                 WHERE c.component = :component
+                   AND c.area = :area
+                   AND c.itemid = :itemid
+              ORDER BY c.sortorder, f.sortorder';
+        $where = ['component' => $component, 'area' => $area, 'itemid' => $itemid, 'recordid' => $recordid];
+        $fieldsdata = $DB->get_records_sql($sql, $where);
+
+        $finalfields = [];
+        foreach ($fieldsdata as $data) {
+            $fieldobj = (object)['id' => $data->field_id, 'shortname' => $data->shortname,
+                'type' => $data->type, 'categoryid' => $data->categoryid];
+            $field = self::get_field(0, $fieldobj);
+            unset($data->field_id, $data->shortname, $data->type, $data->categoryid);
+            if (empty($data->id)) {
+                $data->fieldid = $field->get('id');
+                $data->contextid = $datacontext->id;
+                $data->recordid = $recordid;
+            }
+            $f = self::load_data($data, $field);
+            $finalfields[] = ['id' => $f->get('id'), 'shortname' => $f->get_field()->get('shortname'),
+                'type' => $f->get_field()->get('type'), 'value' => $f->get_formvalue()];
+        }
+        return $finalfields;
+    }
+
+    /**
      * Retrieve a list of all available custom field types
+     *
      * @return   array   a list of the fieldtypes suitable to use in a select statement
      */
     public static function field_types() {

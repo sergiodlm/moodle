@@ -87,10 +87,12 @@ class category extends persistent {
      * @throws \dml_exception
      */
     public function fields() {
-        return field_factory::get_fields_from_category_array($this->get('id'));
+        return field::get_fields_from_category_array($this->get('id'));
     }
 
     /**
+     * Updates sortorder (used on drag and drop)
+     *
      * @param $options
      * @return bool
      * @throws \moodle_exception
@@ -110,6 +112,8 @@ class category extends persistent {
     }
 
     /**
+     * Calls static_reorder()
+     *
      * @return bool
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -127,6 +131,8 @@ class category extends persistent {
     }
 
     /**
+     * Updates sort order after create
+     *
      * @return bool
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -136,7 +142,8 @@ class category extends persistent {
     }
 
     /**
-     * @param $result
+     * Delete fields before delete category
+     *
      * @return bool
      * @throws \moodle_exception
      * @throws \dml_exception
@@ -147,11 +154,12 @@ class category extends persistent {
                 return false;
             }
         }
-
         return true;
     }
 
     /**
+     * Update sort order after delete
+     *
      * @param bool $result
      * @return bool
      * @throws \moodle_exception
@@ -162,6 +170,8 @@ class category extends persistent {
     }
 
     /**
+     * Total number of categories
+     *
      * @return int
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -178,12 +188,14 @@ class category extends persistent {
     }
 
     /**
+     * Move a category (used by drag and drop)
+     *
      * @param int $position
      * @return category
      * @throws \moodle_exception
      * @throws \dml_exception
      */
-    private function move(int $position): self {
+    private function move(int $position) : self {
         $nextcategory = self::list(
                 [
                         'sortorder' => $this->get('sortorder') + $position,
@@ -262,8 +274,8 @@ class category extends persistent {
             for ($i = $categoryfrom->get('sortorder'); $i < $categoryto->get('sortorder'); $i++) {
                 $categoryfrom->up();
             }
-        } elseif ($categoryfrom->get('sortorder') > $categoryto->get('sortorder')) {
-            for ($i = $categoryfrom->get('sortorder'); $i > $categoryto->get('sortorder')+1; $i--) {
+        } else if ($categoryfrom->get('sortorder') > $categoryto->get('sortorder')) {
+            for ($i = $categoryfrom->get('sortorder'); $i > $categoryto->get('sortorder') + 1; $i--) {
                 $categoryfrom->down();
             }
         }
@@ -272,8 +284,10 @@ class category extends persistent {
     }
 
     /**
-     * @return bool
+     * Update sort order of the fields
+     *
      * @param int $categoryid
+     * @return bool
      * @throws \moodle_exception
      * @throws \dml_exception
      */
@@ -335,6 +349,3 @@ class category extends persistent {
         );
     }
 }
-
-
-

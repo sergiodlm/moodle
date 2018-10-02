@@ -47,7 +47,7 @@ class core_customfield_external extends external_api {
     public static function delete_entry($id) {
         // TODO clean parameters
 
-        $record = \core_customfield\field_factory::load($id);
+        $record = \core_customfield\field::load($id);
         $handler = \core_customfield\handler::get_handler_for_field($record);
         if (!$handler->can_configure()) {
             throw new moodle_exception('nopermissionconfigure', 'core_customfield');
@@ -225,7 +225,7 @@ class core_customfield_external extends external_api {
     public static function move_up_field($id, $handler) {
         $handler1 = \core_customfield\handler::get_instance($handler);
         if ($handler1->can_configure($id)) {
-            $record = \core_customfield\field_factory::load($id);
+            $record = \core_customfield\field::load($id);
             $record->up();
         }
     }
@@ -255,7 +255,7 @@ class core_customfield_external extends external_api {
     public static function move_down_field($id, $handler) {
         $handler1 = \core_customfield\handler::get_instance($handler);
         if ($handler1->can_configure()) {
-            $record = \core_customfield\field_factory::load($id);
+            $record = \core_customfield\field::load($id);
             $record->down();
         }
     }
@@ -349,7 +349,7 @@ class core_customfield_external extends external_api {
      * @throws moodle_exception
      */
     public static function drag_and_drop(int $from, int $to, int $category) {
-        return \core_customfield\field_factory::drag_and_drop($from, $to, $category);
+        return \core_customfield\field::drag_and_drop($from, $to, $category);
     }
 
     /**
