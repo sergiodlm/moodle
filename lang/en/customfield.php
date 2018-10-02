@@ -93,4 +93,4 @@ $string['visibility'] = ' Who is this field visible to?';
 $string['yes'] = 'Yes';
 $string['errorreloadpage'] = 'Error, please press F5 for reloading this page';
 $string['therearenofields'] = 'There are no fields on this category';
-$string['search:customfield'] = 'Custom fields';
+
