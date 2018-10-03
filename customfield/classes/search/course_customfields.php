@@ -25,6 +25,7 @@
 namespace core_customfield\search;
 
 use core\event\course_created;
+use core_customfield\api;
 use core_customfield\field_factory;
 
 defined('MOODLE_INTERNAL') || die();
@@ -107,7 +108,7 @@ class course_customfields extends \core_search\base_mod {
             return false;
         }
 
-        $field = field_factory::load($record->fieldid);
+        $field = api::get_field($record->fieldid);
 
         // Prepare associative array with data from DB.
         $doc = \core_search\document_factory::instance($record->id, $this->componentname, $this->areaname);
