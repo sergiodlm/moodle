@@ -24,6 +24,9 @@
 
 namespace core_customfield\search;
 
+use core\event\course_created;
+use core_customfield\field_factory;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -55,7 +58,6 @@ class course_customfields extends \core_search\base_mod {
     public function get_context_url(\core_search\document $doc) {
         return $this->get_doc_url($doc);
     }
-
 
     /**
      * Returns a url to the course.
@@ -98,10 +100,18 @@ class course_customfields extends \core_search\base_mod {
                                $record->charvalue ??
                                $record->value);
 
+        if ($modinfo = get_fast_modinfo($record->recordid)) {
+            $course = $modinfo->get_course();
+        } else {
+            return false;
+        }
+
+        $field = field_factory::load($record->fieldid);
+
         // Prepare associative array with data from DB.
         $doc = \core_search\document_factory::instance($record->id, $this->componentname, $this->areaname);
-        $doc->set('title', content_to_text($datavalue, false));
-        $doc->set('content', content_to_text($datavalue, \core_search\manager::TYPE_TEXT));
+        $doc->set('title', content_to_text($course->fullname, false));
+        $doc->set('content', content_to_text("{$field->get('name')}: $datavalue", \core_search\manager::TYPE_TEXT));
         $doc->set('contextid', $context->id);
         $doc->set('courseid', $record->recordid);
         $doc->set('owneruserid', \core_search\manager::NO_OWNER_ID);
@@ -115,8 +125,6 @@ class course_customfields extends \core_search\base_mod {
 
         return $doc;
     }
-
-
 
     public function check_access($id) {
         // TODO: Implement check_access() method.
