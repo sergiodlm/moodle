@@ -106,15 +106,7 @@ abstract class field extends persistent {
                         'type'    => PARAM_INT,
                         'default' => 0,
                 ],
-                'locked'            => [
-                        'type'    => PARAM_INT,
-                        'default' => 0,
-                ],
                 'uniquevalues'      => [
-                        'type'    => PARAM_INT,
-                        'default' => 0,
-                ],
-                'visibility'        => [
                         'type'    => PARAM_INT,
                         'default' => 0,
                 ],
@@ -152,7 +144,7 @@ abstract class field extends persistent {
      */
     protected function validate_configdata($value) {
         $fields = json_decode($this->get('configdata'));
-        if (!(isset($fields->required) && isset($fields->locked) && isset($fields->uniquevalues) && isset($fields->visibility))) {
+        if (!(isset($fields->required) && isset($fields->uniquevalues))) {
             throw new \moodle_exception('fieldrequired', 'core_customfield');
         }
         return true;
@@ -341,9 +333,7 @@ abstract class field extends persistent {
         // Set default configdata from database
         $configdata          = json_decode($field->configdata);
         $field->required     = $configdata->required;
-        $field->locked       = $configdata->locked;
         $field->uniquevalues = $configdata->uniquevalues;
-        $field->visibility   = $configdata->visibility;
 
         return new $customfieldtype($field->id, $field);
     }

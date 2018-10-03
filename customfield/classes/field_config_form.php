@@ -27,8 +27,16 @@ defined('MOODLE_INTERNAL') || die;
 global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
+/**
+ * Class field_config_form
+ *
+ * @package core_customfield
+ */
 class field_config_form extends \moodleform {
 
+    /**
+     * @throws \coding_exception
+     */
     public function definition() {
         global $PAGE;
         $mform = $this->_form;
@@ -57,26 +65,18 @@ class field_config_form extends \moodleform {
         $mform->setType('description_editor', PARAM_RAW);
 
         // If field is required.
-        $mform->addElement('selectyesno', 'required', get_string('isfieldrequired', 'core_customfield'));
-        $mform->setType('required', PARAM_BOOL);
-
-        // If field is locked.
-        $mform->addElement('selectyesno', 'locked', get_string('isfieldlocked', 'core_customfield'));
-        $mform->setType('locked', PARAM_BOOL);
+        $mform->addElement('selectyesno', 'configdata[required]', get_string('isfieldrequired', 'core_customfield'));
+        $mform->setType('configdata[required]', PARAM_BOOL);
 
         // If field data is unique.
-        $mform->addElement('selectyesno', 'uniquevalues', get_string('isdataunique', 'core_customfield'));
-        $mform->setType('uniquevalues', PARAM_BOOL);
-
-        // Field data visibility.
-        $visibilityoptions = [get_string('notvisible', 'core_customfield'),
-                              get_string('courseeditors', 'core_customfield'),
-                              get_string('everyone', 'core_customfield')];
-        $mform->addElement('select', 'visibility', get_string('visibility', 'core_customfield'), $visibilityoptions);
-        $mform->setType('visibility', PARAM_INT);
+        $mform->addElement('selectyesno', 'configdata[uniquevalues]', get_string('isdataunique', 'core_customfield'));
+        $mform->setType('configdata[uniquevalues]', PARAM_BOOL);
 
         // We add specific settings here.
         $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_customfield'));
+
+        // Specific configuration for the customfields area.
+        $handler->add_to_field_config_form($mform);
 
         // We load specific fields from type.
         $field->add_field_to_config_form($mform);
@@ -94,6 +94,14 @@ class field_config_form extends \moodleform {
         $this->add_action_buttons(true);
     }
 
+    /**
+     * @param array $data
+     * @param array $files
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
     public function validation($data, $files = array()) {
         global $DB;
 

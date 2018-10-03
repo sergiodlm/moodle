@@ -113,4 +113,23 @@ class course_handler extends \core_customfield\handler {
             return \context_system::instance();
         }
     }
+
+    /**
+     * Add fields for editing a text field.
+     *
+     * @param \MoodleQuickForm $mform
+     * @throws \coding_exception
+     */
+    public static function add_to_field_config_form(\MoodleQuickForm $mform) {
+        // If field is locked.
+        $mform->addElement('selectyesno', 'configdata[locked]', get_string('isfieldlocked', 'core_customfield'));
+        $mform->setType('configdata[locked]', PARAM_BOOL);
+
+        // Field data visibility.
+        $visibilityoptions = [get_string('notvisible', 'core_customfield'),
+                              get_string('courseeditors', 'core_customfield'),
+                              get_string('everyone', 'core_customfield')];
+        $mform->addElement('select', 'configdata[visibility]', get_string('visibility', 'core_customfield'), $visibilityoptions);
+        $mform->setType('configdata[visibility]', PARAM_INT);
+    }
 }

@@ -34,12 +34,12 @@ class api {
      * @param int $itemid
      * @return category[]
      */
-    public static function get_fields_definitions(string $component, string $area, int $itemid) : array {
+    public static function get_fields_definitions(string $component, string $area, int $itemid): array {
         return category::list([
-                'component' => $component,
-                'area' => $area,
-                'itemid' => $itemid
-        ]);
+                                      'component' => $component,
+                                      'area'      => $area,
+                                      'itemid'    => $itemid
+                              ]);
     }
 
     /**
@@ -49,7 +49,7 @@ class api {
      * @param \stdClass $record a pre-fetched record
      * @return field
      */
-    public static function get_field(int $id, \stdClass $field = null) : field {
+    public static function get_field(int $id, \stdClass $field = null): field {
         return field::load_field($id, $field);
     }
 
@@ -61,7 +61,7 @@ class api {
      * @param \stdClass $field a pre-fetched field
      * @return field
      */
-    public static function load_data(int $id, \stdClass $data, field $field) : data {
+    public static function load_data(int $id, \stdClass $data, field $field): data {
         return data::load_data($id, $data, $field);
     }
 
@@ -75,9 +75,10 @@ class api {
      * @param int $recordid
      * @return array
      */
-    public static function get_fields_with_data(string $component, string $area, int $itemid, \context $datacontext, int $recordid) : array {
+    public static function get_fields_with_data(string $component, string $area, int $itemid, \context $datacontext,
+                                                int $recordid): array {
         global $DB;
-        $sql = 'SELECT f.id as field_id, f.shortname, f.categoryid, f.type, f.configdata,
+        $sql        = 'SELECT f.id as field_id, f.shortname, f.categoryid, f.type, f.configdata,
                        c.name as categoryname, d.*
                   FROM {customfield_category} c
                   JOIN {customfield_field} f
@@ -88,23 +89,23 @@ class api {
                    AND c.area = :area
                    AND c.itemid = :itemid
               ORDER BY c.sortorder, f.sortorder';
-        $where = ['component' => $component, 'area' => $area, 'itemid' => $itemid, 'recordid' => $recordid];
+        $where      = ['component' => $component, 'area' => $area, 'itemid' => $itemid, 'recordid' => $recordid];
         $fieldsdata = $DB->get_records_sql($sql, $where);
 
         $formfields = [];
         foreach ($fieldsdata as $data) {
-            $fieldobj = (object)['id' => $data->field_id, 'shortname' => $data->shortname, 'type' => $data->type,
-                'configdata' => $data->configdata, 'categoryid' => $data->categoryid];
-            $field = self::get_field(0, $fieldobj);
-            $categoryobj = (object)['id' => $data->categoryid, 'name' => $data->categoryname,
-                'component' => $component, 'area' => $area, 'itemid' => $itemid];
+            $fieldobj    = (object) ['id'         => $data->field_id, 'shortname' => $data->shortname, 'type' => $data->type,
+                                     'configdata' => $data->configdata, 'categoryid' => $data->categoryid];
+            $field       = self::get_field(0, $fieldobj);
+            $categoryobj = (object) ['id'        => $data->categoryid, 'name' => $data->categoryname,
+                                     'component' => $component, 'area' => $area, 'itemid' => $itemid];
             $field->set_category(new category(0, $categoryobj));
             unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata, $data->categoryname);
             if (empty($data->id)) {
-                $data->id = 0;
-                $data->fieldid = $field->get('id');
+                $data->id        = 0;
+                $data->fieldid   = $field->get('id');
                 $data->contextid = $datacontext->id;
-                $data->recordid = $recordid;
+                $data->recordid  = $recordid;
             }
             $formfields[] = self::load_data($data->id, $data, $field);
         }
@@ -121,9 +122,10 @@ class api {
      * @param int $recordid
      * @return array
      */
-    public static function get_fields_with_data_for_backup(string $component, string $area, int $itemid, \context $datacontext, int $recordid) : array {
+    public static function get_fields_with_data_for_backup(string $component, string $area, int $itemid, \context $datacontext,
+                                                           int $recordid): array {
         global $DB;
-        $sql = 'SELECT f.id as field_id, f.shortname, f.type, f.categoryid, d.*
+        $sql        = 'SELECT f.id as field_id, f.shortname, f.type, f.categoryid, d.*
                   FROM {customfield_category} c
                   JOIN {customfield_field} f
                     ON (c.id = f.categoryid)
@@ -133,23 +135,23 @@ class api {
                    AND c.area = :area
                    AND c.itemid = :itemid
               ORDER BY c.sortorder, f.sortorder';
-        $where = ['component' => $component, 'area' => $area, 'itemid' => $itemid, 'recordid' => $recordid];
+        $where      = ['component' => $component, 'area' => $area, 'itemid' => $itemid, 'recordid' => $recordid];
         $fieldsdata = $DB->get_records_sql($sql, $where);
 
         $finalfields = [];
         foreach ($fieldsdata as $data) {
-            $fieldobj = (object)['id' => $data->field_id, 'shortname' => $data->shortname,
-                'type' => $data->type, 'categoryid' => $data->categoryid];
-            $field = self::get_field(0, $fieldobj);
+            $fieldobj = (object) ['id'   => $data->field_id, 'shortname' => $data->shortname,
+                                  'type' => $data->type, 'categoryid' => $data->categoryid];
+            $field    = self::get_field(0, $fieldobj);
             unset($data->field_id, $data->shortname, $data->type, $data->categoryid);
             if (empty($data->id)) {
-                $data->fieldid = $field->get('id');
+                $data->fieldid   = $field->get('id');
                 $data->contextid = $datacontext->id;
-                $data->recordid = $recordid;
+                $data->recordid  = $recordid;
             }
-            $f = self::load_data($data, $field);
-            $finalfields[] = ['id' => $f->get('id'), 'shortname' => $f->get_field()->get('shortname'),
-                'type' => $f->get_field()->get('type'), 'value' => $f->get_formvalue()];
+            $f             = self::load_data($data, $field);
+            $finalfields[] = ['id'   => $f->get('id'), 'shortname' => $f->get_field()->get('shortname'),
+                              'type' => $f->get_field()->get('type'), 'value' => $f->get_formvalue()];
         }
         return $finalfields;
     }
@@ -164,7 +166,7 @@ class api {
 
         $plugins = \core_component::get_plugin_list('customfield');
         foreach ($plugins as $type => $unused) {
-            $fieldtypes[$type] = get_string('pluginname', 'customfield_'.$type);
+            $fieldtypes[$type] = get_string('pluginname', 'customfield_' . $type);
         }
         asort($fieldtypes);
 
@@ -177,10 +179,16 @@ class api {
      * @param field $field
      * @param \stdClass $formdata
      * @param array $textoptions editor options (trusttext, subdirs, maxfiles, maxbytes etc.)
+     * @throws \moodle_exception
+     * @throws \dml_exception
      */
     public static function save_field(field $field, \stdClass $formdata, array $textoptions) {
         foreach ($formdata as $key => $value) {
-            if ($key === 'id' || $key === 'configdata' || ($key === 'type' && $field->get('id'))) {
+            if ($key === 'configdata' && is_array($formdata->configdata)) {
+                $field->set($key, json_encode($value));
+                continue;
+            }
+            if ($key === 'id' || ($key === 'type' && $field->get('id'))) {
                 continue;
             }
             if (field::has_property($key)) {
@@ -188,29 +196,17 @@ class api {
             }
         }
 
-        // Creating configdata array
-        $fieldbaseconfigdata = array_merge(
-                [
-                        'required' => $formdata->required,
-                        'locked' => $formdata->locked,
-                        'uniquevalues' => $formdata->uniquevalues,
-                        'visibility' =>  $formdata->visibility
-                ],
-                (is_array($formdata->configdata)) ? $formdata->configdata : []
-        );
-        $field->set('configdata', json_encode($fieldbaseconfigdata));
-
         $field->save();
 
         if (isset($formdata->description_editor)) {
             // Find context.
-            $context = \context_system::instance();
+            $context                = \context_system::instance();
             $textoptions['context'] = $context;
 
             // Store files.
-            $data = (object)['description_editor' => $formdata->description_editor];
+            $data = (object) ['description_editor' => $formdata->description_editor];
             $data = file_postupdate_standard_editor($data, 'description', $textoptions, $context,
-                'core_customfield', 'description', $field->get('id'));
+                                                    'core_customfield', 'description', $field->get('id'));
             $field->set('description', $data->description);
             $field->set('descriptionformat', $data->descriptionformat);
             $field->save();

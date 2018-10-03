@@ -424,7 +424,7 @@ abstract class handler {
                 if ($formfield->get_field()->get('required')) {
                     $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
                 }
-                if ($formfield->get_field()->get('locked') and !$this->can_edit()) {
+                if (!$this->can_edit()) {
                     $mform->hardFreeze($formfield->inputname());
                 }
             }
@@ -557,4 +557,12 @@ abstract class handler {
             $dataobject->save();
         }
     }
+
+    /**
+     * Add fields for editing a text field.
+     *
+     * @param \MoodleQuickForm $mform
+     * @throws \coding_exception
+     */
+    abstract static public function add_to_field_config_form(\MoodleQuickForm $mform);
 }
