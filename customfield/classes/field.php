@@ -115,7 +115,7 @@ abstract class field extends persistent {
      * Validate the user ID.
      *
      * @param int $value The value.
-     * @return true|\lang_string
+     * @return bool
      * @throws \moodle_exception
      * @throws \dml_write_exception
      */
@@ -124,6 +124,21 @@ abstract class field extends persistent {
             throw new \dml_write_exception(get_string('invalidshortnameerror', 'core_customfield'));
         }
 
+        return true;
+    }
+
+    /**
+     * Validate if configdata have all required fields
+     *
+     * @param string $value
+     * @return bool
+     * @throws \moodle_exception
+     */
+    protected function validate_configdata($value) {
+        $fields = json_decode($this->get('configdata'));
+        if (!(isset($fields->required) && isset($fields->locked) && isset($fields->uniquevalues) && isset($fields->visibility))) {
+            throw new \moodle_exception('fieldrequired', 'core_customfield');
+        }
         return true;
     }
 
@@ -165,32 +180,6 @@ abstract class field extends persistent {
     }
 
     /**
-     * Check if configdata is correct before create
-     *
-     * @return bool
-     * @throws \moodle_exception
-     */
-    protected function before_create(): bool {
-        if (!$this->configdata_mandatory_fields_are_present()) {
-            throw new \moodle_exception('fieldrequired', 'core_customfield');
-        }
-        return true;
-    }
-
-    /**
-     * Check if configdata is correct before update
-     *
-     * @return bool
-     * @throws \moodle_exception
-     */
-    protected function before_update(): bool {
-        if (!$this->configdata_mandatory_fields_are_present()) {
-            throw new \moodle_exception('fieldrequired', 'core_customfield');
-        }
-        return true;
-    }
-
-    /**
      * Delete associated data before delete field
      *
      * @return bool
@@ -225,17 +214,6 @@ abstract class field extends persistent {
      */
     protected function after_delete($result): bool {
         return $this->reorder();
-    }
-
-    /**
-     * Check if configdata have all required fields
-     *
-     * @return bool
-     * @throws \moodle_exception
-     */
-    protected function configdata_mandatory_fields_are_present(): bool {
-        $fields = json_decode($this->get('configdata'));
-        return (isset($fields->required) && isset($fields->locked) && isset($fields->uniquevalues) && isset($fields->visibility));
     }
 
     /**
