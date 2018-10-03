@@ -26,6 +26,12 @@ namespace core_customfield;
 
 use stdClass;
 
+// TODO revise function names, they are difficult to understand now.
+// This handler provides callbacks for field configuration form and also allows to add the fields to the entity editing form
+// It should be clear from the functions names what they do.
+// load_data() loads the multiple fields values from an entity, the function name and arguments are very confusing because we use the
+// word 'data' for the data related to individual field and even have class with this name
+
 defined('MOODLE_INTERNAL') || die;
 
 /**
@@ -59,16 +65,34 @@ abstract class handler {
     /**
      * Handler constructor.
      *
+     * This constructor is protected. To initiate a class use an appropriate static method:
+     * - instance
+     * - get_handler
+     * - get_handler_for_field
+     * - get_handler_for_category
+     *
      * @param int $itemid
      * @throws \coding_exception
      */
-    public final function __construct(int $itemid = 0) {
+    protected final function __construct(int $itemid = 0) {
         if (!preg_match('|^(\w+_[\w_]+)\\\\customfield\\\\([\w_]+)_handler$|', static::class, $matches)) {
             throw new \coding_exception('Handler class name must have format: <PLUGIN>\\customfield\\<AREA>_handler');
         }
         $this->component = $matches[1];
         $this->area = $matches[2];
         $this->itemid = $itemid;
+    }
+
+    /**
+     * Returns an instance of the handler
+     *
+     * Some areas may choose to use singleton/caching here
+     *
+     * @param int $itemid
+     * @return handler
+     */
+    public static function instance(int $itemid = 0) : handler {
+        return new static($itemid);
     }
 
     /**
@@ -83,7 +107,7 @@ abstract class handler {
     public static function get_handler(string $component, string $area, int $itemid = 0) : handler {
         $classname = $component . '\\customfield\\' . $area . '_handler';
         if (class_exists($classname) && is_subclass_of($classname, self::class)) {
-            return new $classname($itemid);
+            return $classname::instance($itemid);
         }
         $a = ['component' => s($component), 'area' => s($area)];
         throw new \moodle_exception('unknownhandler', 'core_customfield', (object)$a);
@@ -170,18 +194,6 @@ abstract class handler {
     }
 
     /**
-     * The form to create or edit a category
-     *
-     * @param category $category
-     * @return category_config_form
-     */
-    public function get_category_config_form(category $category): category_config_form {
-        $form = new category_config_form(null, ['handler' => $this, 'category' => $category]);
-        $form->set_data($this->prepare_category_for_form($category));
-        return $form;
-    }
-
-    /**
      * The form to create or edit a field
      *
      * @param field $field
@@ -239,36 +251,6 @@ abstract class handler {
     }
 
     /**
-     * @return category[]
-     * @throws \dml_exception
-     * @throws \moodle_exception
-     */
-    public function categories_list() : array {
-        $options = [
-                'component' => $this->get_component(),
-                'area' => $this->get_area(),
-                'itemid' => $this->get_itemid()
-        ];
-        return \core_customfield\category::list($options);
-    }
-
-    /**
-     * Array with categories list for select menus.
-     *
-     * @return array
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \moodle_exception
-     */
-    public function categories_list_for_select(): array {
-        $categorylist = array();
-        foreach ($this->categories_list() as $category) {
-            $categorylist[$category->get('id')] = $category->get('name');
-        }
-        return $categorylist;
-    }
-
-    /**
      * The current user can configure custom fields on this component.
      *
      * @return bool
@@ -300,6 +282,7 @@ abstract class handler {
      * @return category[]
      */
     public function get_fields_definitions() : array {
+        // TODO cache result here.
         $fields = api::get_fields_definitions(
                 $this->get_component(),
                 $this->get_area(),
@@ -319,6 +302,8 @@ abstract class handler {
      * @return data[]
      */
     public function get_fields_with_data(int $recordid) : array {
+        // TODO call get_fields_definitions() first, filter by the fields visible to the current user
+        // TODO only then request data only for these fields
         return api::get_fields_with_data($this->get_component(), $this->get_area(), $this->get_itemid(),
             $this->get_data_context($recordid), $recordid);
     }
@@ -327,9 +312,12 @@ abstract class handler {
      * List of fields with their data (only fields with data)
      *
      * @param int $recordid
-     * @return data[]
+     * @return data[] - TODO this is not correct
      */
     public function get_fields_with_data_for_backup(int $recordid) : array {
+        // TODO call get_fields_definitions() first, get list of available fields
+        // TODO then api::get_fields_with_data() and create the array in the desired format
+        // TODO this function looks very similar to fields_array
         return api::get_fields_with_data_for_backup($this->get_component(), $this->get_area(), $this->get_itemid(),
             $this->get_data_context($recordid), $recordid);
     }
@@ -479,6 +467,7 @@ abstract class handler {
         $data = $field->to_record();
         $context = $this->get_configuration_context();
         $textoptions = ['context' => $context] + $this->get_description_text_options();
+        // TODO use $field->get_field_configdata()
         $data->configdata = json_decode($data->configdata, true);
         if ($data->id) {
             file_prepare_standard_editor($data, 'description', $textoptions, $context, 'core_customfield',
@@ -539,6 +528,7 @@ abstract class handler {
      */
     public function restore_field_data_from_backup(int $recordid, array $data) {
         global $DB;
+        // TODO use field::create_from_type() and data::load_data()
         if ($field = $DB->get_record('customfield_field', ['shortname' => $data['shortname']])) {
             $customfieldtype = "\\customfield_{$field->type}\\field";
             $customdatatype = "\\customfield_{$field->type}\\data";

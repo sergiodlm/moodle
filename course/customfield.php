@@ -27,7 +27,7 @@ admin_externalpage_setup('course_customfield');
 
 
 $output = $PAGE->get_renderer('core_customfield');
-$handler = new  \core_course\customfield\course_handler();
+$handler = core_course\customfield\course_handler::instance();
 $outputpage = new \core_customfield\output\management($handler);
 
 echo $output->header(),

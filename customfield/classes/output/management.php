@@ -124,6 +124,7 @@ class management implements renderable, templatable {
         $data->categories = $categoriesarray;
 
         if (empty($data->categories)) {
+            // TODO this page no longer exists
             $url = new \moodle_url('/customfield/edit_category.php',
                 array('component' => $data->component, 'area' => $data->area, 'itemid' => $data->itemid));
             $data->nocategories = get_string('nocategories', 'core_customfield', (string)$url);

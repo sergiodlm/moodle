@@ -32,6 +32,24 @@ defined('MOODLE_INTERNAL') || die;
 class course_handler extends \core_customfield\handler {
 
     /**
+     * @var course_handler
+     */
+    static protected $singleton;
+
+    /**
+     * Returns a singleton
+     *
+     * @param int $itemid
+     * @return \core_customfield\handler
+     */
+    public static function instance(int $itemid = 0) : \core_customfield\handler {
+        if (static::$singleton === null) {
+            self::$singleton = new static(0);
+        }
+        return self::$singleton;
+    }
+
+    /**
      * The current user can configure custom fields on this component.
      *
      * @return bool true if the current can configure custom fields, false otherwise

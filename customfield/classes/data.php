@@ -276,6 +276,8 @@ class data extends persistent {
      * @throws \moodle_exception
      */
     public function get_field_configdata() {
+        // TODO must be json_decode(..., true)
+        // TODO add defaults here
         return json_decode($this->get_field()->get('configdata'));
     }
 
