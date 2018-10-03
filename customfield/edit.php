@@ -42,7 +42,7 @@ if ($id) {
 
 $url = new \moodle_url('/customfield/edit.php',
                        ['component'  => $handler->get_component(), 'area' => $handler->get_area(),
-                        'itemid'     => $handler->get_item_id(),
+                        'itemid'     => $handler->get_itemid(),
                         'id'         => $record->get('id'), 'type' => $record->get('type'),
                         'categoryid' => $record->get('categoryid')]);
 

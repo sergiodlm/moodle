@@ -22,57 +22,95 @@
 
 namespace core_course\customfield;
 
+defined('MOODLE_INTERNAL') || die;
+
+/**
+ * Course handler for custom fields
+ *
+ * @package core_course
+ */
 class course_handler extends \core_customfield\handler {
 
-     public function can_configure() : bool {
-         // TODO separate capability
-         return has_capability('moodle/category:manage', \context_system::instance());
-     }
+    /**
+     * The current user can configure custom fields on this component.
+     *
+     * @return bool true if the current can configure custom fields, false otherwise
+     */
+    public function can_configure() : bool {
+        // TODO separate capability.
+        return has_capability('moodle/category:manage', \context_system::instance());
+    }
 
-     public function can_edit($recordid = null) : bool {
-         if ($recordid) {
-             return has_capability('moodle/course:edit', \context_course::instance($recordid));
-         } else {
-             //guess_if_creator_will_have_course_capability()
-             return true; //TODO
-         }
-     }
+    /**
+     * The current user can edit custom fields on the given course.
+     *
+     * @param int $recordid id of the course to test edit permission
+     * @return bool true if the current can edit custom fields, false otherwise
+     */
+    public function can_edit($recordid = null) : bool {
+        if ($recordid) {
+            return has_capability('moodle/course:changecustomfields', \context_course::instance($recordid));
+        } else {
+            // guess_if_creator_will_have_course_capability()
+            return true; // TODO.
+        }
+    }
 
     /**
      * Adds custom fields to edit forms.
-     * @param moodleform $mform
+     *
+     * @param int $courseid
      */
     public function display_fields($courseid) {
         $fields = $this->get_fields_with_data($courseid);
         $content = \html_writer::start_tag('div', ['class' => 'customfields-container', 'style' => 'clear: both;']);
-        foreach ($fields as $field) {
-            if ($field->should_display()) {
-                $content .= $field->display();
+        foreach ($fields as $data) {
+            $visibility = $data->get_field()->get('visibility');
+            $canview = false;
+            if ($visibility == 0) {
+                $canview = false;
+            } else if ($visibility == 1) {
+                $canview = has_capability('moodle/course:update', \context::instance_by_id($data->get('contextid')));
+            } else {
+                $canview = true;
+            }
+            if ($canview) {
+                $content .= $data->display();
             }
         }
         $content .= \html_writer::end_tag('div');
         return $content;
     }
 
+    /**
+     * Context that should be used for new categories created by this handler
+     *
+     * @return \context the context for configuration
+     */
     public function get_configuration_context(): \context {
         return \context_system::instance();
     }
 
-    public function fields_for_ws($courseid) {
-        $fields = $this->get_fields_with_data($courseid);
-        $fieldsforws = array();
-        foreach ($fields as $field) {
-            $fieldsforws[]= ['type' => $field->get('type'), 'value' => $field->get_data(),
-                             'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
-        }
-        return $fieldsforws;
-    }
-
+    /**
+     * URL for configuration of the fields on this handler.
+     *
+     * @return \moodle_url The URL to configure custom fields for this component
+     */
     public function get_configuration_url(): \moodle_url {
         return new \moodle_url('/course/customfield.php');
     }
 
+    /**
+     * Returns the context for the data associated with the given recordid.
+     *
+     * @param int $recordid id of the record to get the context for
+     * @return \context the context for the given record
+     */
     public function get_data_context(int $recordid): \context {
-        return \context_course::instance($recordid);
+        if ($recordid > 0) {
+            return \context_course::instance($recordid);
+        } else {
+            return \context_system::instance();
+        }
     }
 }
