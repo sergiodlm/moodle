@@ -77,6 +77,8 @@ class api {
      */
     public static function get_fields_with_data(string $component, string $area, int $itemid, \context $datacontext,
                                                 int $recordid): array {
+        // TODO change arguments to: get_fields_with_data(array $fields, \context $datacontext, int $recordid)
+        // TODO where $fields will be an array of field objects
         global $DB;
         $sql        = 'SELECT f.id as field_id, f.shortname, f.categoryid, f.type, f.configdata,
                        c.name as categoryname, d.*
@@ -124,6 +126,7 @@ class api {
      */
     public static function get_fields_with_data_for_backup(string $component, string $area, int $itemid, \context $datacontext,
                                                            int $recordid): array {
+        // TODO is this function needed?
         global $DB;
         $sql        = 'SELECT f.id as field_id, f.shortname, f.type, f.categoryid, d.*
                   FROM {customfield_category} c

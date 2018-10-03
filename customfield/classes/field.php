@@ -166,6 +166,7 @@ abstract class field extends persistent {
      * @throws \dml_exception
      */
     private static function count_fields(int $categoryid) {
+        // TODO why is it static, why is it needed?
         global $DB;
 
         return $DB->count_records(
@@ -184,6 +185,7 @@ abstract class field extends persistent {
      * @throws \dml_exception
      */
     public function get_count_fields(): int {
+        // TODO this is not used
         return $this::count_fields($this->get('categoryid'));
     }
 
@@ -232,6 +234,7 @@ abstract class field extends persistent {
      * @throws \dml_exception
      */
     private function reorder(): bool {
+        // TODO why not: $this->get_category()->reorder_fields();
         return category::reorder_fields($this->get('categoryid'));
     }
 
@@ -331,7 +334,8 @@ abstract class field extends persistent {
         }
 
         // Set default configdata from database
-        $configdata          = json_decode($field->configdata, true);
+        // TODO use get_field_configdata
+        $configdata          = json_decode($field->configdata);
         $field->required     = $configdata->required;
         $field->uniquevalues = $configdata->uniquevalues;
 

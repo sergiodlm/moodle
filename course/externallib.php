@@ -485,7 +485,7 @@ class core_course_external extends external_api {
                 $courseinfo['numsections'] = $courseformatoptions['numsections'];
             }
 
-            $handler = new \core_course\customfield\course_handler();
+            $handler = core_course\customfield\course_handler::instance();
             $courseinfo['customfields'] = $handler->fields_array($course->id);
 
             //some field should be returned only if the user has update permission

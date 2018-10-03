@@ -223,6 +223,7 @@ class category extends persistent {
      * @throws \dml_exception
      */
     public function up(): self {
+        // TODO remove
         return $this->move(1);
     }
 
@@ -234,6 +235,7 @@ class category extends persistent {
      * @throws \dml_exception
      */
     public function down(): self {
+        // TODO remove
         return $this->move(-1);
     }
 
@@ -292,6 +294,7 @@ class category extends persistent {
      * @throws \dml_exception
      */
     public static function reorder_fields(int $categoryid): bool {
+        // TODO why is it static?
         global $DB;
 
         $fieldneighbours = $DB->get_records(field::TABLE, ['categoryid' => $categoryid], 'sortorder DESC');

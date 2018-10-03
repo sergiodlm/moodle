@@ -50,7 +50,12 @@ class field extends \core_customfield\field {
 
         $arryears = $calendartype->get_years();
 
+<<<<<<< HEAD
         $config = json_decode($this->get('configdata'), true);
+=======
+        // TODO use $this->get_field_configdata()
+        $config = json_decode($this->get('configdata'));
+>>>>>>> c4536c5e5529ac13277f104da711f88888fe8e0d
 
         // Add elements.
         $mform->addElement('select', 'configdata[startyear]', get_string('startyear', 'core_customfield'), $arryears);

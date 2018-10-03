@@ -320,7 +320,7 @@ class course_edit_form extends moodleform {
                     array('itemtype' => 'course', 'component' => 'core'));
         }
 
-        $handler  = new core_course\customfield\course_handler();
+        $handler  = core_course\customfield\course_handler::instance();
         $handler->add_custom_fields($mform, $course);
 
         // When two elements we need a group.
@@ -388,7 +388,7 @@ class course_edit_form extends moodleform {
         }
 
         // Add the custom fields.
-        $handler  = new core_course\customfield\course_handler();
+        $handler  = core_course\customfield\course_handler::instance();
         $handler->definition_after_data($mform, $courseid);
     }
 

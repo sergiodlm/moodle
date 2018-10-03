@@ -604,7 +604,7 @@ abstract class format_base {
     }
 
     public function get_custom_fields() {
-        $handler = new \core_course\customfield\course_handler();
+        $handler = core_course\customfield\course_handler::instance();
         return $handler->fields_array($this->courseid);
     }
 

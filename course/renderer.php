@@ -1220,7 +1220,7 @@ class core_course_renderer extends plugin_renderer_base {
         }
 
         // Display custom fields.
-        $handler = new \core_course\customfield\course_handler();
+        $handler = core_course\customfield\course_handler::instance();
         $content .= $handler->display_fields($course->id);
 
         return $content;
