@@ -276,7 +276,7 @@ class data extends persistent {
      * @throws \moodle_exception
      */
     public function get_field_configdata() {
-        return json_decode($this->get_field()->get('configdata'));
+        return json_decode($this->get_field()->get('configdata'), true);
     }
 
     /**
@@ -308,9 +308,10 @@ class data extends persistent {
      * Field data is locked (not editable)
      *
      * @return bool
+     * @throws \moodle_exception
      */
     public function is_locked() : bool {
-        return $this->get_field()->get('locked');
+        return (bool) json_decode($this->get_field()->get('configdata'), true)["locked"];
     }
 
     /**
@@ -323,7 +324,7 @@ class data extends persistent {
         if (!$mform->elementExists($this->inputname())) {
             return;
         }
-        if ($this->is_locked() and !is_editable()) {
+        if ($this->is_locked() and !$this->is_editable()) {
             $mform->hardFreeze($this->inputname());
             $mform->setConstant($this->inputname(), $this->get_formvalue());
         }

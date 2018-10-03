@@ -143,7 +143,7 @@ abstract class field extends persistent {
      * @throws \moodle_exception
      */
     protected function validate_configdata($value) {
-        $fields = json_decode($this->get('configdata'));
+        $fields = json_decode($this->get('configdata'), true);
         if (!(isset($fields->required) && isset($fields->uniquevalues))) {
             throw new \moodle_exception('fieldrequired', 'core_customfield');
         }
@@ -331,7 +331,7 @@ abstract class field extends persistent {
         }
 
         // Set default configdata from database
-        $configdata          = json_decode($field->configdata);
+        $configdata          = json_decode($field->configdata, true);
         $field->required     = $configdata->required;
         $field->uniquevalues = $configdata->uniquevalues;
 
