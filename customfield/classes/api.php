@@ -180,16 +180,25 @@ class api {
      */
     public static function save_field(field $field, \stdClass $formdata, array $textoptions) {
         foreach ($formdata as $key => $value) {
-            if ($key === 'configdata' && is_array($value)) {
-                $value = json_encode($value);
-            }
-            if ($key === 'id' || ($key === 'type' && $field->get('id'))) {
+            if ($key === 'id' || $key === 'configdata' || ($key === 'type' && $field->get('id'))) {
                 continue;
             }
             if (field::has_property($key)) {
                 $field->set($key, $value);
             }
         }
+
+        // Creating configdata array
+        $fieldbaseconfigdata = array_merge(
+                [
+                        'required' => $formdata->required,
+                        'locked' => $formdata->locked,
+                        'uniquevalues' => $formdata->uniquevalues,
+                        'visibility' =>  $formdata->visibility
+                ],
+                (is_array($formdata->configdata)) ? $formdata->configdata : []
+        );
+        $field->set('configdata', json_encode($fieldbaseconfigdata));
 
         $field->save();
 

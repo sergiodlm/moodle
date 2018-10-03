@@ -102,6 +102,22 @@ abstract class field extends persistent {
                 'categoryid'        => [
                         'type' => PARAM_INT
                 ],
+                'required'          => [
+                        'type'    => PARAM_INT,
+                        'default' => 0,
+                ],
+                'locked'            => [
+                        'type'    => PARAM_INT,
+                        'default' => 0,
+                ],
+                'uniquevalues'      => [
+                        'type'    => PARAM_INT,
+                        'default' => 0,
+                ],
+                'visibility'        => [
+                        'type'    => PARAM_INT,
+                        'default' => 0,
+                ],
                 'configdata'        => [
                         'type'     => PARAM_TEXT,
                         'optional' => true,
@@ -321,6 +337,13 @@ abstract class field extends persistent {
         if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
             throw new \coding_exception(get_string('errorfieldtypenotfound', 'core_customfield', s($field->type)));
         }
+
+        // Set default configdata from database
+        $configdata          = json_decode($field->configdata);
+        $field->required     = $configdata->required;
+        $field->locked       = $configdata->locked;
+        $field->uniquevalues = $configdata->uniquevalues;
+        $field->visibility   = $configdata->visibility;
 
         return new $customfieldtype($field->id, $field);
     }
