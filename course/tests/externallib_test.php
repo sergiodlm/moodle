@@ -536,7 +536,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 $this->assertEquals($courseinfo->shortname, $course4['shortname']);
                 $this->assertEquals($courseinfo->category, $course4['categoryid']);
 
-                 $handler  = new core_course\customfield\course_handler();
+                 $handler  = core_course\customfield\course_handler::instance();
                  $customfields = $handler->get_fields_with_data($createdcourse['id']);
                  foreach($customfields as $field) {
                      $fieldarray = ['shortname' => $field->get('shortname'), 'value' => $field->get_data()];

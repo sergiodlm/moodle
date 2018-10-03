@@ -50,6 +50,7 @@ class field extends \core_customfield\field {
 
         $arryears = $calendartype->get_years();
 
+        // TODO use $this->get_field_configdata()
         $config = json_decode($this->get('configdata'));
 
         // Add elements.

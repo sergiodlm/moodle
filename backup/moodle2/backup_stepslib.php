@@ -465,7 +465,7 @@ class backup_course_structure_step extends backup_structure_step {
                                      backup_helper::is_sqlparam('course'),
                                      backup::VAR_PARENTID));
 
-        $handler  = new core_course\customfield\course_handler();
+        $handler  = core_course\customfield\course_handler::instance();
         $fieldsforbackup = $handler->get_fields_with_data_for_backup($this->task->get_courseid());
         $customfield->set_source_array($fieldsforbackup);
 

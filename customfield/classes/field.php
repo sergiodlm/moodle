@@ -143,6 +143,7 @@ abstract class field extends persistent {
      * @throws \moodle_exception
      */
     protected function validate_configdata($value) {
+        // TODO use get_field_configdata()
         $fields = json_decode($this->get('configdata'));
         if (!(isset($fields->required) && isset($fields->uniquevalues))) {
             throw new \moodle_exception('fieldrequired', 'core_customfield');
@@ -166,6 +167,7 @@ abstract class field extends persistent {
      * @throws \dml_exception
      */
     private static function count_fields(int $categoryid) {
+        // TODO why is it static, why is it needed?
         global $DB;
 
         return $DB->count_records(
@@ -184,6 +186,7 @@ abstract class field extends persistent {
      * @throws \dml_exception
      */
     public function get_count_fields(): int {
+        // TODO this is not used
         return $this::count_fields($this->get('categoryid'));
     }
 
@@ -232,6 +235,7 @@ abstract class field extends persistent {
      * @throws \dml_exception
      */
     private function reorder(): bool {
+        // TODO why not: $this->get_category()->reorder_fields();
         return category::reorder_fields($this->get('categoryid'));
     }
 
@@ -331,6 +335,7 @@ abstract class field extends persistent {
         }
 
         // Set default configdata from database
+        // TODO use get_field_configdata
         $configdata          = json_decode($field->configdata);
         $field->required     = $configdata->required;
         $field->uniquevalues = $configdata->uniquevalues;

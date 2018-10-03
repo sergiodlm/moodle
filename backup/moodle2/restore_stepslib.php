@@ -1934,7 +1934,7 @@ class restore_course_structure_step extends restore_structure_step {
     }
 
     public function process_customfield($data) {
-        $handler  = new core_course\customfield\course_handler();
+        $handler  = core_course\customfield\course_handler::instance();
         $handler->restore_field_data_from_backup($this->task->get_courseid(), $data);
     }
 
