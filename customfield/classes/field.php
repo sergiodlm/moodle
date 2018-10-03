@@ -64,7 +64,7 @@ abstract class field extends persistent {
      * @param array $files
      * @return array associative array of error messages
      */
-    public function validate_config_form(array $data, $files = array()) : array {
+    public function validate_config_form(array $data, $files = array()): array {
         return array();
     }
 
@@ -96,22 +96,6 @@ abstract class field extends persistent {
                         'optional' => true
                 ],
                 'sortorder'         => [
-                        'type'    => PARAM_INT,
-                        'default' => 0,
-                ],
-                'required'          => [
-                        'type'    => PARAM_INT,
-                        'default' => 0,
-                ],
-                'locked'            => [
-                        'type'    => PARAM_INT,
-                        'default' => 0,
-                ],
-                'uniquevalues'      => [
-                        'type'    => PARAM_INT,
-                        'default' => 0,
-                ],
-                'visibility'        => [
                         'type'    => PARAM_INT,
                         'default' => 0,
                 ],
@@ -181,6 +165,32 @@ abstract class field extends persistent {
     }
 
     /**
+     * Check if configdata is correct before create
+     *
+     * @return bool
+     * @throws \moodle_exception
+     */
+    protected function before_create(): bool {
+        if (!$this->configdata_mandatory_fields_are_present()) {
+            throw new \moodle_exception('fieldrequired', 'core_customfield');
+        }
+        return true;
+    }
+
+    /**
+     * Check if configdata is correct before update
+     *
+     * @return bool
+     * @throws \moodle_exception
+     */
+    protected function before_update(): bool {
+        if (!$this->configdata_mandatory_fields_are_present()) {
+            throw new \moodle_exception('fieldrequired', 'core_customfield');
+        }
+        return true;
+    }
+
+    /**
      * Delete associated data before delete field
      *
      * @return bool
@@ -215,6 +225,17 @@ abstract class field extends persistent {
      */
     protected function after_delete($result): bool {
         return $this->reorder();
+    }
+
+    /**
+     * Check if configdata have all required fields
+     *
+     * @return bool
+     * @throws \moodle_exception
+     */
+    protected function configdata_mandatory_fields_are_present(): bool {
+        $fields = json_decode($this->get('configdata'));
+        return (isset($fields->required) && isset($fields->locked) && isset($fields->uniquevalues) && isset($fields->visibility));
     }
 
     /**
@@ -295,7 +316,7 @@ abstract class field extends persistent {
      * @return category
      * @throws \moodle_exception
      */
-    public function get_category() : category {
+    public function get_category(): category {
         if (!$this->category) {
             $this->category = new category($this->get('categoryid'));
         }
@@ -311,7 +332,7 @@ abstract class field extends persistent {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function load_field(int $id, \stdClass $field = null) : field {
+    public static function load_field(int $id, \stdClass $field = null): field {
         global $DB;
 
         if (!$field || empty($field->type)) {
@@ -320,7 +341,7 @@ abstract class field extends persistent {
 
         $customfieldtype = "\\customfield_{$field->type}\\field";
         if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
-            throw new \coding_exception( get_string('errorfieldtypenotfound', 'core_customfield', s($field->type)) );
+            throw new \coding_exception(get_string('errorfieldtypenotfound', 'core_customfield', s($field->type)));
         }
 
         return new $customfieldtype($field->id, $field);
@@ -331,11 +352,11 @@ abstract class field extends persistent {
      * @return field
      * @throws \coding_exception
      */
-    public static function create_from_type(string $type) : field {
+    public static function create_from_type(string $type): field {
 
         $customfieldtype = "\\customfield_{$type}\\field";
         if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
-            throw new \coding_exception( get_string('errorfieldtypenotfound', 'core_customfield', s($type)) );
+            throw new \coding_exception(get_string('errorfieldtypenotfound', 'core_customfield', s($type)));
         }
 
         $field = new $customfieldtype();
@@ -349,10 +370,10 @@ abstract class field extends persistent {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function get_fields_from_category_array(int $categoryid) :array {
+    public static function get_fields_from_category_array(int $categoryid): array {
         global $DB;
 
-        $fields = array();
+        $fields  = array();
         $records = $DB->get_records('customfield_field', ['categoryid' => $categoryid], 'sortorder DESC');
         foreach ($records as $fielddata) {
             $fields[] = self::load_field($fielddata->id);
@@ -369,10 +390,10 @@ abstract class field extends persistent {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public static function drag_and_drop(int $from, int $to, int $category) : bool {
+    public static function drag_and_drop(int $from, int $to, int $category): bool {
         $fieldfrom = self::load_field($from);
 
-        if ( $fieldfrom->get('categoryid') != $category ) {
+        if ($fieldfrom->get('categoryid') != $category) {
             $oldcategory = $fieldfrom->get('categoryid');
 
             $fieldfrom->set('categoryid', $category);
@@ -383,8 +404,8 @@ abstract class field extends persistent {
             category::reorder_fields($fieldfrom->get('categoryid'));
         }
 
-        if ( $to > 0 ) {
-            $fieldto   = self::load_field($to);
+        if ($to > 0) {
+            $fieldto = self::load_field($to);
             if ($fieldfrom->get('sortorder') < $fieldto->get('sortorder')) {
                 for ($i = $fieldfrom->get('sortorder'); $i < $fieldto->get('sortorder'); $i++) {
                     $fieldfrom->up();
