@@ -557,9 +557,10 @@ function enrol_add_course_navigation(navigation_node $coursenode, $course) {
  * @param int $limit max number of courses
  * @param array $courseids the list of course ids to filter by
  * @param bool $allaccessible Include courses user is not enrolled in, but can access
+ * @param int $offset Offset the result set by this number
  * @return array
  */
-function enrol_get_my_courses($fields = null, $sort = null, $limit = 0, $courseids = [], $allaccessible = false) {
+function enrol_get_my_courses($fields = null, $sort = null, $limit = 0, $courseids = [], $allaccessible = false, $offset = 0) {
     global $DB, $USER, $CFG;
 
     if ($sort === null) {
@@ -714,7 +715,7 @@ function enrol_get_my_courses($fields = null, $sort = null, $limit = 0, $coursei
              WHERE $wheres
           $orderby";
 
-    $courses = $DB->get_records_sql($sql, $params, 0, $limit);
+    $courses = $DB->get_records_sql($sql, $params, $offset, $limit);
 
     // preload contexts and check visibility
     foreach ($courses as $id=>$course) {
@@ -1290,7 +1291,7 @@ function is_enrolled(context $context, $user = null, $withcapability = '', $only
  * @param string|array $capability optional, may include a capability name, or array of names.
  *      If an array is provided then this is the equivalent of a logical 'OR',
  *      i.e. the user needs to have one of these capabilities.
- * @param int $group optional, 0 indicates no current group, otherwise the group id
+ * @param int $group optional, 0 indicates no current group and USERSWITHOUTGROUP users without any group; otherwise the group id
  * @param bool $onlyactive consider only active enrolments in enabled plugins and time restrictions
  * @param bool $onlysuspended inverse of onlyactive, consider only suspended enrolments
  * @param int $enrolid The enrolment ID. If not 0, only users enrolled using this enrolment method will be returned.
@@ -1315,9 +1316,12 @@ function get_enrolled_with_capabilities_join(context $context, $prefix = '', $ca
     }
 
     if ($group) {
-        $groupjoin = groups_get_members_join($group, $uid);
+        $groupjoin = groups_get_members_join($group, $uid, $context);
         $joins[] = $groupjoin->joins;
         $params = array_merge($params, $groupjoin->params);
+        if (!empty($groupjoin->wheres)) {
+            $wheres[] = $groupjoin->wheres;
+        }
     }
 
     $joins = implode("\n", $joins);
@@ -1335,7 +1339,7 @@ function get_enrolled_with_capabilities_join(context $context, $prefix = '', $ca
  *
  * @param context $context
  * @param string $withcapability
- * @param int $groupid 0 means ignore groups, any other value limits the result by group id
+ * @param int $groupid 0 means ignore groups, USERSWITHOUTGROUP without any group and any other value limits the result by group id
  * @param bool $onlyactive consider only active enrolments in enabled plugins and time restrictions
  * @param bool $onlysuspended inverse of onlyactive, consider only suspended enrolments
  * @param int $enrolid The enrolment ID. If not 0, only users enrolled using this enrolment method will be returned.
@@ -1461,7 +1465,7 @@ function get_enrolled_join(context $context, $useridcolumn, $onlyactive = false,
  *
  * @param context $context
  * @param string $withcapability
- * @param int $groupid 0 means ignore groups, any other value limits the result by group id
+ * @param int $groupid 0 means ignore groups, USERSWITHOUTGROUP without any group and any other value limits the result by group id
  * @param string $userfields requested user record fields
  * @param string $orderby
  * @param int $limitfrom return a subset of records, starting at this point (optional, required if $limitnum is set).
@@ -1505,7 +1509,7 @@ function count_enrolled_users(context $context, $withcapability = '', $groupid =
     $capjoin = get_enrolled_with_capabilities_join(
             $context, '', $withcapability, $groupid, $onlyactive);
 
-    $sql = "SELECT count(u.id)
+    $sql = "SELECT COUNT(DISTINCT u.id)
               FROM {user} u
             $capjoin->joins
              WHERE $capjoin->wheres AND u.deleted = 0";
@@ -1986,7 +1990,9 @@ abstract class enrol_plugin {
         $ue->modifierid = $USER->id;
         $ue->timemodified = time();
         $DB->update_record('user_enrolments', $ue);
-        context_course::instance($instance->courseid)->mark_dirty(); // reset enrol caches
+
+        // User enrolments have changed, so mark user as dirty.
+        mark_user_dirty($userid);
 
         // Invalidate core_access cache for get_suspended_userids.
         cache_helper::invalidate_by_definition('core', 'suspended_userids', array(), array($instance->courseid));
@@ -2083,8 +2089,9 @@ abstract class enrol_plugin {
                     )
                 );
         $event->trigger();
-        // reset all enrol caches
-        $context->mark_dirty();
+
+        // User enrolments have changed, so mark user as dirty.
+        mark_user_dirty($userid);
 
         // Check if courrse contacts cache needs to be cleared.
         core_course_category::user_enrolment_changed($courseid, $ue->userid, ENROL_USER_SUSPENDED);

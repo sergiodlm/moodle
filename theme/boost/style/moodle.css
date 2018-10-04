@@ -2691,7 +2691,8 @@ hr {
   border-top: 1px solid rgba(0, 0, 0, 0.1); }
 
 small,
-.small {
+.small,
+#page-admin-search .adminpagepath li {
   font-size: 80%;
   font-weight: 400; }
 
@@ -8448,7 +8449,7 @@ a.dimmed_text:visited,
 .usersuspended a:visited,
 .dimmed_category,
 .dimmed_category a, .tag_feed .media .muted a, #page-admin-qtypes .disabled,
-#page-admin-qbehaviours .disabled, #page-admin-plugins #plugins-control-panel .pluginname .componentname, #page-admin-plugins #plugins-control-panel .version .versionnumber, #page-admin-plugins #plugins-control-panel .notes .requiredby, #plugins-check-page .page-description, #plugins-check-page #plugins-check .requires-ok, #plugins-check-page #plugins-check .displayname .plugindir, #plugins-check-page #plugins-check-available-dependencies .displayname .component, .block .minicalendar td.weekend, .section .activity .stealth, .course-content .section-summary .section-summary-activities .activity-count, .course-content ul li.section.hidden .sectionname > span,
+#page-admin-qbehaviours .disabled, #page-admin-plugins #plugins-control-panel .pluginname .componentname, #page-admin-plugins #plugins-control-panel .version .versionnumber, #page-admin-plugins #plugins-control-panel .notes .requiredby, #plugins-check-page .page-description, #plugins-check-page #plugins-check .requires-ok, #plugins-check-page #plugins-check .displayname .plugindir, #plugins-check-page #plugins-check-available-dependencies .displayname .component, #page-admin-search .adminpagepath li, .block .minicalendar td.weekend, .section .activity .stealth, .course-content .section-summary .section-summary-activities .activity-count, .course-content ul li.section.hidden .sectionname > span,
 .course-content ul li.section.hidden .content > div.summary,
 .course-content ul li.section.hidden .activity .activityinstance, #course-category-listings .listitem[data-visible="0"], #course-category-listings .listitem[data-visible="0"] > div > a, #course-category-listings .listing-pagination-totals.dimmed, .fitem.disabled .fp-btn-choose, .form-defaultinfo,
 .form-label .form-shortname, .formsettingheading .form-horizontal, .no-felement.fstatic, .path-backup .backup_progress .backup_stage {
@@ -8592,9 +8593,6 @@ a.dimmed_text:visited,
   .statuscritical[href]:focus, #page-admin-report-backups-index .backup-error[href]:focus,
   #page-admin-report-backups-index .backup-unfinished[href]:focus, #page-admin-index .adminwarning.availableupdatesinfo .moodleupdateinfo.maturity50 .info.release[href]:focus {
     background-color: #c9302c; }
-
-.custom-select {
-  width: auto; }
 
 .fade.in {
   opacity: 1; }
@@ -9662,14 +9660,6 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   white-space: nowrap;
   text-align: center; }
 
-.initialbarlabel {
-  display: inline-block;
-  width: 6em;
-  float: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap; }
-
 /* Moodle Dialogue Settings (moodle-core-dialogue)  */
 .moodle-dialogue-base .moodle-dialogue-lightbox {
   background-color: #495057; }
@@ -10427,6 +10417,47 @@ div.editor_atto_toolbar button .icon {
 .w-auto {
   width: auto; }
 
+.bg-pulse-grey {
+  animation: bg-pulse-grey 2s infinite linear; }
+
+@keyframes bg-pulse-grey {
+  0% {
+    background-color: #f8f9fa; }
+  50% {
+    background-color: #e9ecef; }
+  100% {
+    background-color: #f8f9fa; } }
+
+.line-height-0 {
+  line-height: 0 !important;
+  /* stylelint-disable-line declaration-no-important */ }
+
+.line-height-1 {
+  line-height: 0.25rem !important;
+  /* stylelint-disable-line declaration-no-important */ }
+
+.line-height-2 {
+  line-height: 0.5rem !important;
+  /* stylelint-disable-line declaration-no-important */ }
+
+.line-height-3 {
+  line-height: 1rem !important;
+  /* stylelint-disable-line declaration-no-important */ }
+
+.line-height-4 {
+  line-height: 1.5rem !important;
+  /* stylelint-disable-line declaration-no-important */ }
+
+.line-height-5 {
+  line-height: 3rem !important;
+  /* stylelint-disable-line declaration-no-important */ }
+
+.dir-rtl .dir-rtl-hide {
+  display: none; }
+
+.dir-ltr .dir-ltr-hide {
+  display: none; }
+
 .icon {
   font-size: 16px;
   width: 16px;
@@ -10463,9 +10494,51 @@ div.editor_atto_toolbar button .icon {
 .icon-no-spacing a > .icon {
   margin: 0; }
 
+.icon-no-margin .icon {
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
+  margin-bottom: 0; }
+
 .icon-large > .icon {
   width: 32px;
   height: 32px; }
+
+.icon-size-0 .icon {
+  height: 0 !important;
+  /* stylelint-disable-line declaration-no-important */
+  width: 0 !important;
+  /* stylelint-disable-line declaration-no-important */ }
+
+.icon-size-1 .icon {
+  height: 4px !important;
+  /* stylelint-disable-line declaration-no-important */
+  width: 4px !important;
+  /* stylelint-disable-line declaration-no-important */ }
+
+.icon-size-2 .icon {
+  height: 8px !important;
+  /* stylelint-disable-line declaration-no-important */
+  width: 8px !important;
+  /* stylelint-disable-line declaration-no-important */ }
+
+.icon-size-3 .icon {
+  height: 16px !important;
+  /* stylelint-disable-line declaration-no-important */
+  width: 16px !important;
+  /* stylelint-disable-line declaration-no-important */ }
+
+.icon-size-4 .icon {
+  height: 24px !important;
+  /* stylelint-disable-line declaration-no-important */
+  width: 24px !important;
+  /* stylelint-disable-line declaration-no-important */ }
+
+.icon-size-5 .icon {
+  height: 48px !important;
+  /* stylelint-disable-line declaration-no-important */
+  width: 48px !important;
+  /* stylelint-disable-line declaration-no-important */ }
 
 .helplink .icon {
   margin-left: 0.5rem; }
@@ -10977,6 +11050,21 @@ div.editor_atto_toolbar button .icon {
 .modal.modal-in-page {
   z-index: 0; }
 
+#page-admin-search .adminpagetitle {
+  margin-bottom: 0;
+  border-bottom: none; }
+
+#page-admin-search .adminpagepath {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0; }
+  #page-admin-search .adminpagepath li + li:before {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+    content: "/"; }
+
 .blockmovetarget .accesshide {
   position: relative;
   left: initial; }
@@ -11291,25 +11379,6 @@ div.editor_atto_toolbar button .icon {
       height: 45px;
       width: 45px;
       font-size: 45px; }
-
-.block_myoverview .event-list-item .event-icon {
-  vertical-align: middle; }
-  .block_myoverview .event-list-item .event-icon::before {
-    content: '';
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle; }
-
-.block_myoverview .event-list-item .event-name-container {
-  vertical-align: middle;
-  max-width: calc(100% - 50px); }
-  .block_myoverview .event-list-item .event-name-container .event-name {
-    display: block; }
-
-.block_myoverview .content-centred {
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto; }
 
 .block_myoverview .empty-placeholder-image-sm {
   height: 50px; }
@@ -17003,3 +17072,27 @@ body {
 
 .userpicture {
   border-radius: 50%; }
+
+.btn-outline-secondary {
+  color: #868e96;
+  background-color: transparent;
+  background-image: none;
+  border-color: #868e96;
+  border-color: #dee2e6; }
+  .btn-outline-secondary:hover {
+    color: #fff;
+    background-color: #868e96;
+    border-color: #868e96; }
+  .btn-outline-secondary:focus, .btn-outline-secondary.focus {
+    box-shadow: 0 0 0 0.2rem rgba(134, 142, 150, 0.5); }
+  .btn-outline-secondary.disabled, .btn-outline-secondary:disabled {
+    color: #868e96;
+    background-color: transparent; }
+  .btn-outline-secondary:not(:disabled):not(.disabled):active, .btn-outline-secondary:not(:disabled):not(.disabled).active,
+  .show > .btn-outline-secondary.dropdown-toggle {
+    color: #fff;
+    background-color: #868e96;
+    border-color: #868e96; }
+    .btn-outline-secondary:not(:disabled):not(.disabled):active:focus, .btn-outline-secondary:not(:disabled):not(.disabled).active:focus,
+    .show > .btn-outline-secondary.dropdown-toggle:focus {
+      box-shadow: 0 0 0 0.2rem rgba(134, 142, 150, 0.5); }

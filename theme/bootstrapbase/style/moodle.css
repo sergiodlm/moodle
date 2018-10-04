@@ -4808,6 +4808,20 @@ h3.sectionname .inplaceeditable.inplaceeditingon .editinstructions {
 [data-drag-type="move"] {
   cursor: move;
 }
+.bg-pulse-grey {
+  animation: bg-pulse-grey 2s infinite linear;
+}
+@keyframes bg-pulse-grey {
+  0% {
+    background-color: #eee;
+  }
+  50% {
+    background-color: #e1e1e1;
+  }
+  100% {
+    background-color: #eee;
+  }
+}
 /* admin.less */
 .formtable tbody th {
   font-weight: normal;
@@ -5574,6 +5588,27 @@ img.iconsmall {
 }
 #page-admin-registration-index form .mark {
   background-color: #fcf8e3;
+}
+#page-admin-search .adminpagetitle {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+#page-admin-search .adminpagepath {
+  list-style: none;
+  margin: 0 0 10px 0;
+}
+#page-admin-search .adminpagepath li {
+  color: #999;
+  display: inline;
+  font-size: 11.9px;
+}
+#page-admin-search .adminpagepath li + li:before {
+  content: "◀\00a0";
+  /*rtl:remove*/
+  content: "▶\00a0";
+  /* stylelint-disable-line declaration-block-no-duplicate-properties */
+  color: #ccc;
+  font-size: 11.9px;
 }
 /* calendar.less */
 .calendar_event_category {
@@ -16505,32 +16540,6 @@ body {
 }
 .block_myoverview .row-fluid [class*="span"] {
   margin-left: 0;
-}
-.block_myoverview .event-list-item {
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-}
-.block_myoverview .event-list-item:last-of-type {
-  border-bottom: none;
-  padding-bottom: 0;
-  margin-bottom: 0;
-}
-.block_myoverview .event-list-item .event-icon {
-  vertical-align: middle;
-}
-.block_myoverview .event-list-item .event-icon::before {
-  content: '';
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
-}
-.block_myoverview .event-list-item .event-name-container {
-  vertical-align: middle;
-  max-width: calc(100% - 50px);
-}
-.block_myoverview .event-list-item .event-name-container .event-name {
-  display: block;
 }
 .block_myoverview .empty-placeholder-image-sm {
   height: 50px;
