@@ -528,17 +528,15 @@ abstract class handler {
      */
     public function restore_field_data_from_backup(int $recordid, array $data) {
         global $DB;
-        // TODO use field::create_from_type() and data::load_data()
-        if ($field = $DB->get_record('customfield_field', ['shortname' => $data['shortname']])) {
-            $customfieldtype = "\\customfield_{$field->type}\\field";
-            $customdatatype = "\\customfield_{$field->type}\\data";
-            $field = new $customfieldtype($field->id, $field);
+        if ($fieldrecord = $DB->get_record('customfield_field', ['shortname' => $data['shortname']], 'id,type')) {
+            $field = field::create_from_type($fieldrecord->type);
+            $field->set('id', $fieldrecordid);
 
             $datarecord = $DB->get_record('customfield_data', array('recordid' => $recordid, 'fieldid' => $field->get('id')));
             if ($datarecord) {
-                $dataobject = new $customdatatype($datarecord->id, $datarecord);
+                $dataobject = data::load_data($datarecord->id, $datarecord, $field);
             } else {
-                $dataobject = new $customdatatype(0);
+                $dataobject = data::load_data(0, null, $field);
             }
             $dataobject->set('recordid', $recordid);
             $dataobject->set('fieldid', $field->get('id'));
