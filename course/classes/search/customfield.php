@@ -78,13 +78,12 @@ class customfield extends \core_search\base_mod {
      * @throws \moodle_exception
      */
     public function get_document($record, $options = array()) {
-
         try {
             $context = \context_module::instance($record->contextid);
+
         } catch (\dml_missing_record_exception $ex) {
             // Notify it as we run here as admin, we should see everything.
-            debugging('Error retrieving ' . $this->areaid . ' ' . $record->id . ' document, not all required data is available: ' .
-                      $ex->getMessage(), DEBUG_DEVELOPER);
+
             return false;
         } catch (\dml_exception $ex) {
             // Notify it as we run here as admin, we should see everything.
@@ -93,6 +92,7 @@ class customfield extends \core_search\base_mod {
         }
 
         // Getting the non-null $record(Data) value. Only 1 must be !null
+        // TODO: change this by only get value whn data be fixed.
         $datavalue = (string) ($record->intvalue ??
                                $record->decvalue ??
                                $record->shortcharvalue ??
@@ -106,15 +106,12 @@ class customfield extends \core_search\base_mod {
             return false;
         }
 
-        $field = api::get_field($record->fieldid);
+        $field = \core_customfield\api::get_field($record->fieldid);
 
         // Prepare associative array with data from DB.
         $doc = \core_search\document_factory::instance($record->id, $this->componentname, $this->areaname);
         $doc->set('title', content_to_text($course->fullname, false));
-        $doc->set('content', content_to_text(
-                "{$field->get('name')}: $datavalue",
-                \core_search\manager::TYPE_TEXT)
-        );
+        $doc->set('content', content_to_text("{$field->get('name')}: $datavalue", \core_search\manager::TYPE_TEXT));
         $doc->set('contextid', $context->id);
         $doc->set('courseid', $record->recordid);
         $doc->set('owneruserid', \core_search\manager::NO_OWNER_ID);
@@ -151,17 +148,6 @@ class customfield extends \core_search\base_mod {
         if ($contextjoin === null) {
             return null;
         }
-
-        var_dump(
-                $DB->get_recordset_sql(
-                        "SELECT d.* 
-                FROM {customfield_data} d
-                $contextjoin
-                WHERE d.timemodified >= ? 
-                ORDER BY d.timemodified ASC",
-                        array_merge($contextparams, [$modifiedfrom])
-                ) );
-                die;
 
         return $DB->get_recordset_sql(
                 "SELECT d.* 
