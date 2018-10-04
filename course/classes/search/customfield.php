@@ -17,16 +17,14 @@
 /**
  * Search area for course custom fields.
  *
- * @package core_customfield
+ * @package core_course
  * @copyright Toni Barbera <toni@moodle.com>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace core_customfield\search;
+namespace core_course\search;
 
-use core\event\course_created;
-use core_customfield\api;
-use core_customfield\field_factory;
+use core_course\api;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -36,11 +34,11 @@ defined('MOODLE_INTERNAL') || die();
  * Note this does not include the activities within the section, as these have their own search
  * areas.
  *
- * @package core_customfield
+ * @package core_course
  * @copyright Toni Barbera <toni@moodle.com>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class course_customfields extends \core_search\base_mod {
+class customfield extends \core_search\base_mod {
 
     /**
      * The context levels the search area is working on.
@@ -153,6 +151,17 @@ class course_customfields extends \core_search\base_mod {
         if ($contextjoin === null) {
             return null;
         }
+
+        var_dump(
+                $DB->get_recordset_sql(
+                        "SELECT d.* 
+                FROM {customfield_data} d
+                $contextjoin
+                WHERE d.timemodified >= ? 
+                ORDER BY d.timemodified ASC",
+                        array_merge($contextparams, [$modifiedfrom])
+                ) );
+                die;
 
         return $DB->get_recordset_sql(
                 "SELECT d.* 
