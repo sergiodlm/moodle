@@ -144,9 +144,11 @@ abstract class field extends persistent {
      */
     protected function validate_configdata($value) {
         $fields = json_decode($this->get('configdata'), true);
-        if (!(isset($fields->required) && isset($fields->uniquevalues))) {
+
+        if (!(isset($fields['required']) && isset($fields['uniquevalues']))) {
             throw new \moodle_exception('fieldrequired', 'core_customfield');
         }
+
         return true;
     }
 
