@@ -336,7 +336,7 @@ abstract class field extends persistent {
         }
 
         // Set default configdata from database
-        // TODO use get_field_configdata
+        // TODO use get_field_configdata. But field is stdClass here.
         $configdata          = json_decode($field->configdata);
         $field->required     = $configdata->required;
         $field->uniquevalues = $configdata->uniquevalues;
