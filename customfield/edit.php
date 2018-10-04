@@ -30,14 +30,15 @@ $type       = optional_param('type', null, PARAM_COMPONENT);
 require_login();
 
 if ($id) {
-    $record = \core_customfield\api::get_field($id);
+    $record  = \core_customfield\api::get_field($id);
     $handler = \core_customfield\handler::get_handler_for_field($record);
-    $title = get_string('editingfield', 'core_customfield');
+    $title   = get_string('editingfield', 'core_customfield');
 } else {
     $category = new \core_customfield\category($categoryid);
-    $handler = \core_customfield\handler::get_handler_for_category($category);
-    $record = $handler->new_field($category, $type);
-    $title = get_string('addingnewcustomfield', 'core_customfield');
+    $handler  = \core_customfield\handler::get_handler_for_category($category);
+    $record   = $handler->new_field($category, $type);
+    $typestr  = get_string('pluginname', 'customfield_'.$type);
+    $title    = get_string('addingnewcustomfield', 'core_customfield', $typestr);
 }
 
 $url = new \moodle_url('/customfield/edit.php',
