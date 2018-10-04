@@ -2574,6 +2574,7 @@ function update_course($data, $editoroptions = NULL) {
         }
     }
 
+    $data->contextid = $context->id;
     $handler  = core_course\customfield\course_handler::instance();
     $handler->save_customfield_data($data);
 

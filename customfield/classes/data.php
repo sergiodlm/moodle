@@ -52,53 +52,52 @@ class data extends persistent {
     protected static function define_properties(): array {
         // TODO correct all types
         return array(
-                'fieldid' => [
+                'fieldid'        => [
                         'type' => PARAM_TEXT,
                 ],
-                'recordid' => [
+                'recordid'       => [
                         'type' => PARAM_TEXT,
                 ],
-                'intvalue' => [
-                        'type' => PARAM_TEXT,
+                'intvalue'       => [
+                        'type'     => PARAM_TEXT,
                         'optional' => true,
-                        'default' => null,
-                        'null' => NULL_ALLOWED
+                        'default'  => null,
+                        'null'     => NULL_ALLOWED
                 ],
-                'decvalue' => [
-                        'type' => PARAM_TEXT,
+                'decvalue'       => [
+                        'type'     => PARAM_TEXT,
                         'optional' => true,
-                        'default' => null,
-                        'null' => NULL_ALLOWED
+                        'default'  => null,
+                        'null'     => NULL_ALLOWED
                 ],
-                'charvalue' => [
-                        'type' => PARAM_TEXT,
+                'charvalue'      => [
+                        'type'     => PARAM_TEXT,
                         'optional' => true,
-                        'default' => null,
-                        'null' => NULL_ALLOWED
+                        'default'  => null,
+                        'null'     => NULL_ALLOWED
                 ],
                 'shortcharvalue' => [
-                        'type' => PARAM_TEXT,
+                        'type'     => PARAM_TEXT,
                         'optional' => true,
-                        'default' => null,
-                        'null' => NULL_ALLOWED
+                        'default'  => null,
+                        'null'     => NULL_ALLOWED
                 ],
-                'value' => [
-                        'type' => PARAM_TEXT,
+                'value'          => [
+                        'type'     => PARAM_TEXT,
                         'optional' => true,
-                        'default' => null,
-                        'null' => NULL_ALLOWED
+                        'default'  => null,
+                        'null'     => NULL_ALLOWED
                 ],
-                'valueformat' => [
-                        'type' => PARAM_TEXT,
+                'valueformat'    => [
+                        'type'     => PARAM_TEXT,
                         'optional' => true,
-                        'default' => null,
-                        'null' => NULL_ALLOWED
+                        'default'  => null,
+                        'null'     => NULL_ALLOWED
                 ],
-                'contextid' => [
-                        'type' => PARAM_TEXT,
-                        'optional' => true,
-                        'default' => null,
-                        'null' => NULL_ALLOWED
+                'contextid'      => [
+                        'type'     => PARAM_INT,
+                        'optional' => false,
+                        'null'     => NULL_NOT_ALLOWED
                 ]
         );
     }
@@ -110,7 +109,7 @@ class data extends persistent {
      * @throws \moodle_exception
      * @throws \dml_exception
      */
-    public static function load(int $recordid, int $fieldid) : self {
+    public static function load(int $recordid, int $fieldid): self {
         global $DB;
 
         $dbdata = $DB->get_record(self::TABLE, ['fieldid' => $fieldid, 'recordid' => $recordid]);
@@ -123,7 +122,7 @@ class data extends persistent {
      * @return data
      * @throws \dml_exception
      */
-    public static function fieldload(int $fieldid) : self {
+    public static function fieldload(int $fieldid): self {
         global $DB;
 
         $dbdata = $DB->get_record(self::TABLE, ['fieldid' => $fieldid]);
@@ -149,7 +148,7 @@ class data extends persistent {
      *
      * @return field
      */
-    public function get_field() : field {
+    public function get_field(): field {
         return $this->field;
     }
 
@@ -189,7 +188,7 @@ class data extends persistent {
      * @return string
      * @throws \moodle_exception
      */
-    public function inputname() : string {
+    public function inputname(): string {
         return 'customfield_' . $this->get_field()->get('shortname');
     }
 
@@ -198,7 +197,7 @@ class data extends persistent {
      *
      * @return string field name of customfield_data table used to store data.
      */
-    public function datafield() : string {
+    public function datafield(): string {
         throw new coding_exception('datafield() method needs to be overridden in each subclass of \core_customfield\data');
     }
 
@@ -218,7 +217,10 @@ class data extends persistent {
             return false;
         }
 
-        $datarecord = $DB->get_record('customfield_data', array('recordid' => $datanew->id, 'fieldid' => $this->get_field()->get('id')));
+        $datarecord = $DB->get_record(
+                'customfield_data',
+                ['recordid' => $datanew->id, 'fieldid' => $this->get_field()->get('id')]
+        );
 
         $now = time();
         if ($datarecord) {
@@ -242,7 +244,7 @@ class data extends persistent {
      * @param $value
      * @return bool
      */
-    public function validate_data($value) : bool {
+    public function validate_data($value): bool {
         return true;
     }
 
@@ -288,7 +290,7 @@ class data extends persistent {
      * @return bool
      * @throws \moodle_exception
      */
-    public function edit_after_data(\MoodleQuickForm $mform) : bool {
+    public function edit_after_data(\MoodleQuickForm $mform): bool {
         if (!$this->is_editable()) {
             return false;
         }
@@ -302,7 +304,7 @@ class data extends persistent {
      *
      * @return bool
      */
-    public function is_editable() : bool {
+    public function is_editable(): bool {
         return true;
     }
 
@@ -312,7 +314,7 @@ class data extends persistent {
      * @return bool
      * @throws \moodle_exception
      */
-    public function is_locked() : bool {
+    public function is_locked(): bool {
         return (bool) json_decode($this->get_field()->get('configdata'), true)["locked"];
     }
 
@@ -339,8 +341,8 @@ class data extends persistent {
      * @throws \coding_exception
      * @throws \moodle_exception
      */
-    public static function load_data(int $id = 0, \stdClass $data, field $field) : data {
-        $fieldtype = $field->get('type');
+    public static function load_data(int $id = 0, \stdClass $data, field $field): data {
+        $fieldtype      = $field->get('type');
         $customdatatype = "\\customfield_{$fieldtype}\\data";
         if (!class_exists($customdatatype) || !is_subclass_of($customdatatype, data::class)) {
             throw new \moodle_exception(get_string('errordatatypenotfound', 'core_customfield', s($fieldtype)));
