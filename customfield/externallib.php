@@ -45,9 +45,9 @@ class core_customfield_external extends external_api {
      * @throws moodle_exception
      */
     public static function delete_entry($id) {
-        // TODO clean parameters
+        $params = self::validate_parameters(self::delete_entry_parameters(), ['id' => $id]);
 
-        $record = \core_customfield\api::get_field($id);
+        $record = \core_customfield\api::get_field($params['id']);
         $handler = \core_customfield\handler::get_handler_for_field($record);
         if (!$handler->can_configure()) {
             throw new moodle_exception('nopermissionconfigure', 'core_customfield');
@@ -87,10 +87,11 @@ class core_customfield_external extends external_api {
     public static function reload_template($component, $area, $itemid) {
         global $PAGE;
 
-        // TODO clean parameters
+        $params = self::validate_parameters(self::reload_template_parameters(),
+                      ['component' => $component, 'area' => $area, 'id' => $itemid]);
 
         $PAGE->set_context(context_system::instance());
-        $handler = \core_customfield\handler::get_handler($component, $area, $itemid);
+        $handler = \core_customfield\handler::get_handler($params['component'], $params['area'], $params['itemid']);
         self::validate_context($handler->get_configuration_context());
         if (!$handler->can_configure()) {
             throw new moodle_exception('nopermissionconfigure', 'core_customfield');
