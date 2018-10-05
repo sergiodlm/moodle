@@ -91,14 +91,6 @@ class customfield extends \core_search\base_mod {
             return false;
         }
 
-        // Getting the non-null $record(Data) value. Only 1 must be !null
-        // TODO: change this by only get value whn data be fixed.
-        $datavalue = (string) ($record->intvalue ??
-                               $record->decvalue ??
-                               $record->shortcharvalue ??
-                               $record->charvalue ??
-                               $record->value);
-
         // Getting the couse info for results view
         if ($modinfo = get_fast_modinfo($record->recordid)) {
             $course = $modinfo->get_course();
@@ -111,7 +103,7 @@ class customfield extends \core_search\base_mod {
         // Prepare associative array with data from DB.
         $doc = \core_search\document_factory::instance($record->id, $this->componentname, $this->areaname);
         $doc->set('title', content_to_text($course->fullname, false));
-        $doc->set('content', content_to_text("{$field->get('name')}: $datavalue", \core_search\manager::TYPE_TEXT));
+        $doc->set('content', content_to_text("{$field->get('name')}: $record->value", \core_search\manager::TYPE_TEXT));
         $doc->set('contextid', $context->id);
         $doc->set('courseid', $record->recordid);
         $doc->set('owneruserid', \core_search\manager::NO_OWNER_ID);
