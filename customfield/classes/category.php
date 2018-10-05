@@ -131,6 +131,27 @@ class category extends persistent {
     }
 
     /**
+     * Clear the customfield fields_definitions cache
+     */
+    protected function clear_cache() {
+        $cache = \cache::make('core', 'customfield_fields_definitions');
+        $key = $this->get('component') . '+' . $this->get('area') . '+' . $this->get('itemid');
+        $cache->delete($key);
+    }
+
+    /**
+     * Clear cache before create
+     *
+     * @return bool
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    protected function before_create() : bool {
+        $this->clear_cache();
+        return true;
+    }
+
+    /**
      * Updates sort order after create
      *
      * @return bool
@@ -149,6 +170,7 @@ class category extends persistent {
      * @throws \dml_exception
      */
     protected function before_delete() : bool {
+        $this->clear_cache();
         foreach ($this->fields() as $field) {
             if (!$field->delete()) {
                 return false;

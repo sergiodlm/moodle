@@ -283,7 +283,7 @@ abstract class handler {
      */
     public function get_fields_definitions() : array {
         $cache = \cache::make('core', 'customfield_fields_definitions');
-        $key = $this->get_component() . '+'.$this->get_area().'+'.$this->get_itemid();
+        $key = $this->get_component() . '+' . $this->get_area() . '+' . $this->get_itemid();
         if ($data = $cache->get($key)) {
             $fields = $data;
         } else {
