@@ -195,6 +195,7 @@ class api {
             }
         }
 
+        $created = !$field->get('id');
         $field->save();
 
         if (isset($formdata->description_editor)) {
@@ -211,7 +212,14 @@ class api {
             $field->save();
         }
 
-        // TODO trigger event.
+        $eventparams = ['objectid' => $field->get('id'), 'context' => \context_system::instance(),
+                'other' => ['shortname' => $field->get('shortname'), 'name' => $field->get('name')]];
+        if ($created) {
+            $event = \core_customfield\event\field_created::create($eventparams);
+        } else {
+            $event = \core_customfield\event\field_updated::create($eventparams);
+        }
+        $event->trigger();
     }
 
     /**
@@ -221,9 +229,18 @@ class api {
      * @param \stdClass $formdata
      */
     public static function save_category(category $category, \stdClass $formdata) {
+        $created = !$field->get('id');
+
         $category->set('name', $formdata->name);
         $category->save();
 
-        // TODO trigger event.
+        $eventparams = ['objectid' => $category->get('id'), 'context' => \context_system::instance(),
+                        'other' => ['name' => $category->get('name')]];
+        if ($created) {
+            $event = \core_customfield\event\category_created::create($eventparams);
+        } else {
+            $event = \core_customfield\event\category_updated::create($eventparams);
+        }
+        $event->trigger();
     }
 }

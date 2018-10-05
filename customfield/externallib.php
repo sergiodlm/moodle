@@ -88,7 +88,7 @@ class core_customfield_external extends external_api {
         global $PAGE;
 
         $params = self::validate_parameters(self::reload_template_parameters(),
-                      ['component' => $component, 'area' => $area, 'id' => $itemid]);
+                      ['component' => $component, 'area' => $area, 'itemid' => $itemid]);
 
         $PAGE->set_context(context_system::instance());
         $handler = \core_customfield\handler::get_handler($params['component'], $params['area'], $params['itemid']);

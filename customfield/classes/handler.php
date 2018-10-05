@@ -301,7 +301,7 @@ abstract class handler {
      */
     public function get_fields_with_data(int $recordid) : array {
         // TODO call get_fields_definitions() first, filter by the fields visible to the current user
-        // TODO only then request data only for these fields
+        //      only then request data only for these fields
         return api::get_fields_with_data($this->get_component(), $this->get_area(), $this->get_itemid(),
             $this->get_data_context($recordid), $recordid);
     }
@@ -314,9 +314,9 @@ abstract class handler {
      */
     public function get_fields_with_data_for_backup(int $recordid) : array {
         // TODO call get_fields_definitions() first, get list of available fields
-        // TODO then api::get_fields_with_data() and create the array in the desired format
+        //      then api::get_fields_with_data() and create the array in the desired format
         // TODO this function looks very similar to fields_array / yes, except it returns only fields with data associated to it
-        // TODO on the given recordid
+        //      on the given recordid
         return api::get_fields_with_data_for_backup($this->get_component(), $this->get_area(), $this->get_itemid(),
             $this->get_data_context($recordid), $recordid);
     }
