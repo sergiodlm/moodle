@@ -46,14 +46,14 @@ class data extends \core_customfield\data {
         $config = $this->get_field_configdata();
 
         // Convert the year stored in the DB as gregorian to that used by the calendar type.
-        $startdate = $calendartype->convert_from_gregorian($config->startyear, 1, 1);
-        $stopdate = $calendartype->convert_from_gregorian($config->endyear, 1, 1);
+        $startdate = $calendartype->convert_from_gregorian($config['startyear'], 1, 1);
+        $stopdate = $calendartype->convert_from_gregorian($config['endyear'], 1, 1);
 
         $attributes = ['startyear' => $startdate['year'],
                        'stopyear' => $stopdate['year'],
                        'optional' => ($this->get_field()->get('required') != 1)];
 
-        if (empty($config->includetime)) {
+        if (empty($config['includetime'])) {
             $element = 'date_selector';
         } else {
             $element = 'date_time_selector';
@@ -77,7 +77,7 @@ class data extends \core_customfield\data {
     public function display() {
         $config = $this->get_field_configdata();
         // Check if time was specified.
-        if (!empty($config->includetime)) {
+        if (!empty($config['includetime'])) {
             $format = get_string('strftimedaydatetime', 'langconfig');
         } else {
             $format = get_string('strftimedate', 'langconfig');
@@ -119,7 +119,7 @@ class data extends \core_customfield\data {
         $config = $this->get_field_configdata();
 
         $datetime = explode('-', $datetime);
-        $datetime[0] = min(max($datetime[0], $config->startyear), $config->endyear);
+        $datetime[0] = min(max($datetime[0], $config['startyear']), $config['endyear']);
 
         if (!empty($config->includetime) && count($datetime) == 6) {
             return make_timestamp($datetime[0], $datetime[1], $datetime[2], $datetime[3], $datetime[4], $datetime[5]);

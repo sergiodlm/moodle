@@ -334,6 +334,10 @@ abstract class handler {
 
         foreach ($fields as $formfield) {
             $formfield->edit_after_data($mform);
+            if ($formfield->get_field_configdata()['locked'] and !$this->can_edit($recordid)) {
+                $mform->hardFreeze($formfield->inputname());
+                $mform->setConstant($formfield->inputname(), $formfield->get_formvalue());
+            }
         }
     }
 
@@ -390,30 +394,12 @@ abstract class handler {
             $categories[$data->get_field()->get('categoryid')][] = $data;
         }
         foreach ($categories as $categoryid => $fields) {
-            // Check first if *any* fields will be displayed.
-            $fieldstodisplay = [];
-
-            foreach ($fields as $formfield) {
-                if ($formfield->is_editable()) {
-                    $fieldstodisplay[] = $formfield;
-                }
-            }
-
-            if (empty($fieldstodisplay)) {
-                continue;
-            }
-
-            // Display the header and the fields.
-            $formfield = reset($fieldstodisplay);
+            $formfield = reset($fields);
             $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->get_field()->get_category()->get('name')));
-            foreach ($fieldstodisplay as $formfield) {
+            foreach ($fields as $formfield) {
                 $formfield->edit_field_add($mform);
-                // TODO: looks like it is being done here and also on data class on callbacks?
                 if ($formfield->get_field()->get('required')) {
                     $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
-                }
-                if (!$this->can_edit()) {
-                    $mform->hardFreeze($formfield->inputname());
                 }
             }
         }
@@ -467,8 +453,7 @@ abstract class handler {
         $data = $field->to_record();
         $context = $this->get_configuration_context();
         $textoptions = ['context' => $context] + $this->get_description_text_options();
-        // TODO use $field->get_field_configdata()
-        $data->configdata = json_decode($data->configdata, true);
+        $data->configdata = json_decode($field->get('configdata'), true);
         if ($data->id) {
             file_prepare_standard_editor($data, 'description', $textoptions, $context, 'core_customfield',
                 'description', $data->id);

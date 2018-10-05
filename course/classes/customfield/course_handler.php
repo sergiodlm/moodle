@@ -83,7 +83,7 @@ class course_handler extends \core_customfield\handler {
         $fields = $this->get_fields_with_data($courseid);
         $content = \html_writer::start_tag('div', ['class' => 'customfields-container', 'style' => 'clear: both;']);
         foreach ($fields as $data) {
-            $visibility = $data->get_field()->get('visibility');
+            $visibility = $data->get_field_configdata()['visibility'];
             $canview = false;
             if ($visibility == 0) {
                 $canview = false;
