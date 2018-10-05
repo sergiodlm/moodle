@@ -35,36 +35,7 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                 });
             }).fail(notification.exception);
         };
-        var move = function (id, handler, direction) {
-            switch (direction) {
-                case 'category_up':
-                    var func = 'core_customfield_move_up_category';
-                    break;
-                case 'category_down':
-                    var func = 'core_customfield_move_down_category';
-                    break;
-                case 'field_up':
-                    var func = 'core_customfield_move_up_field';
-                    break;
-                case 'field_down':
-                    var func = 'core_customfield_move_down_field';
-                    break;
-            }
-            var promises = ajax.call([
-                {methodname: func, args: {id: id, handler: handler}},
-                {methodname: 'core_customfield_reload_template', args: {handler: handler}}
-            ]);
-            promises[1].done(function (response) {
-                templates.render('core_customfield/customfield', response).done(function (html, js) {
-                    $('[data-region="list-page"]').replaceWith(html);
-                    templates.runTemplateJS(js);
-                }).fail(function () {
-                    // Deal with this exception (I recommend core/notify exception function for this).
-                });
-            }).fail(function () {
-                // Do something with the exception.
-            });
-        };
+
         var createNewCategory = function(component, area, itemid) {
             var promises = ajax.call([
                     {methodname: 'core_customfield_create_category', args: {component: component, area: area, itemid: itemid}},
@@ -99,7 +70,7 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     confirmDelete($(this).attr('data-id'), 'category', component, area, itemid);
                     e.preventDefault();
                 });
-                $('[data-role=addnewcategory]').on('click', function(e) {
+                $('[data-role=addnewcategory]').on('click', function() {
                     createNewCategory(component, area, itemid);
                 });
 
