@@ -76,7 +76,7 @@ $string['modify'] = 'Modify';
 $string['newwindow'] = 'New window';
 $string['none'] = 'None';
 $string['no'] = 'No';
-$string['nocategories'] = 'There are no custom fields and categories. <a href="{$a}">Add a category</a>.';
+$string['nocategories'] = 'There are no custom fields and categories.';
 $string['nopermissionconfigure'] = 'You don\'t have permission to configure fields here.';
 $string['notchecked'] = 'Not checked';
 $string['notset'] = 'Not set';
