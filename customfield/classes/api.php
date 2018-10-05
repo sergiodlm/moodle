@@ -35,11 +35,7 @@ class api {
      * @return category[]
      */
     public static function get_fields_definitions(string $component, string $area, int $itemid): array {
-        return category::list([
-                                      'component' => $component,
-                                      'area'      => $area,
-                                      'itemid'    => $itemid
-                              ]);
+        return category::list(['component' => $component, 'area' => $area, 'itemid' => $itemid]);
     }
 
     /**

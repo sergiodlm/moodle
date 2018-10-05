@@ -38,7 +38,7 @@ class data extends \core_customfield\data {
      * @param \moodleform $mform
      * @throws \coding_exception
      */
-    public function edit_field_add(\moodleform $mform) {
+    public function edit_field_add(\MoodleQuickForm $mform) {
         $mform->addElement('editor', $this->inputname(), format_string($this->get_field()->get('name')));
         $mform->setType($this->inputname(), PARAM_RAW);
     }

@@ -282,15 +282,13 @@ abstract class handler {
      * @return category[]
      */
     public function get_fields_definitions() : array {
-        // TODO cache result here.
-        $fields = api::get_fields_definitions(
-                $this->get_component(),
-                $this->get_area(),
-                $this->get_itemid()
-        );
-        if (!$fields && !$this->uses_categories()) {
-            $this->new_category()->save();
+        $cache = \cache::make('core', 'customfield_fields_definitions');
+        $key = $this->get_component() . '+'.$this->get_area().'+'.$this->get_itemid();
+        if ($data = $cache->get($key)) {
+            $fields = $data;
+        } else {
             $fields = api::get_fields_definitions($this->get_component(), $this->get_area(), $this->get_itemid());
+            $cache->set($key, $fields);
         }
         return $fields;
     }
@@ -312,12 +310,13 @@ abstract class handler {
      * List of fields with their data (only fields with data)
      *
      * @param int $recordid
-     * @return data[] - TODO this is not correct
+     * @return array
      */
     public function get_fields_with_data_for_backup(int $recordid) : array {
         // TODO call get_fields_definitions() first, get list of available fields
         // TODO then api::get_fields_with_data() and create the array in the desired format
-        // TODO this function looks very similar to fields_array
+        // TODO this function looks very similar to fields_array / yes, except it returns only fields with data associated to it
+        // TODO on the given recordid
         return api::get_fields_with_data_for_backup($this->get_component(), $this->get_area(), $this->get_itemid(),
             $this->get_data_context($recordid), $recordid);
     }

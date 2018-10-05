@@ -387,4 +387,8 @@ $definitions = array(
             'createduser',
         )
     ),
+
+    'customfield_fields_definitions' => [
+        'mode' => cache_store::MODE_APPLICATION
+    ],
 );

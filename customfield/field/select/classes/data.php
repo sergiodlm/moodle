@@ -39,7 +39,7 @@ class data extends \core_customfield\data {
      * @param moodleform $mform
      * @throws \coding_exception
      */
-    public function edit_field_add($mform) {
+    public function edit_field_add(\MoodleQuickForm $mform) {
         $config = $this->get_field_configdata();
 
         if (isset($config->options)) {

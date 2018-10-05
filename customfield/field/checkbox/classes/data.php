@@ -39,10 +39,10 @@ class data extends \core_customfield\data {
      * @param moodleform $mform
      * @throws \coding_exception
      */
-    public function edit_field_add($mform) {
+    public function edit_field_add(\MoodleQuickForm $mform) {
         $config = $this->get_field_configdata();
         $checkbox = $mform->addElement('advcheckbox', $this->inputname(), format_string($this->get_field()->get('name')));
-        if (($this->get_formvalue() == '1') || $config->checkbydefault == 1) {
+        if (($this->get_formvalue() == '1') || $config['checkbydefault'] == 1) {
             $checkbox->setChecked(true);
         }
         $mform->setType($this->inputname(), PARAM_BOOL);
