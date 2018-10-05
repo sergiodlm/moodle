@@ -208,134 +208,11 @@ class core_customfield_external extends external_api {
     /**
      * @return external_function_parameters
      */
-    public static function move_up_field_parameters() {
-        return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'Entry ID to move up', VALUE_REQUIRED),
-                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
-        );
-    }
-
-    /**
-     * TODO remove all move_up and move_down services from here and from lib/db/services.php
-     * @param $id
-     * @param $handler
-     * @throws coding_exception
-     * @throws dml_exception
-     */
-    public static function move_up_field($id, $handler) {
-        $handler1 = \core_customfield\handler::get_instance($handler);
-        if ($handler1->can_configure($id)) {
-            $record = \core_customfield\api::get_field($id);
-            $record->up();
-        }
-    }
-
-    /**
-     *
-     */
-    public static function move_up_field_returns() {
-    }
-
-    /**
-     * @return external_function_parameters
-     */
-    public static function move_down_field_parameters() {
-        return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'Entry ID to move down', VALUE_REQUIRED),
-                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
-        );
-    }
-
-    /**
-     * @param $id
-     * @param $handler
-     * @throws coding_exception
-     * @throws dml_exception
-     */
-    public static function move_down_field($id, $handler) {
-        $handler1 = \core_customfield\handler::get_instance($handler);
-        if ($handler1->can_configure()) {
-            $record = \core_customfield\api::get_field($id);
-            $record->down();
-        }
-    }
-
-    /**
-     *
-     */
-    public static function move_down_field_returns() {
-    }
-
-    /**
-     * @return external_function_parameters
-     */
-    public static function move_up_category_parameters() {
-        return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'Entry ID to move up', VALUE_REQUIRED),
-                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
-        );
-    }
-
-    /**
-     * @param $id
-     * @param $handler
-     * @throws coding_exception
-     * @throws dml_exception
-     */
-    public static function move_up_category($id, $handler) {
-        $handler1 = \core_customfield\handler::get_instance($handler);
-        if ($handler1->can_configure()) {
-            $record = new \core_customfield\category($id);
-            $record->up();
-        }
-    }
-
-    /**
-     *
-     */
-    public static function move_up_category_returns() {
-    }
-
-    /**
-     * @return external_function_parameters
-     */
-    public static function move_down_category_parameters() {
-        return new external_function_parameters(
-                array('id' => new external_value(PARAM_INT, 'Entry ID to move down', VALUE_REQUIRED),
-                      'handler' => new external_value(PARAM_RAW, 'Handler', VALUE_REQUIRED))
-        );
-    }
-
-    /**
-     * @param $id
-     * @param $handler
-     * @throws coding_exception
-     * @throws dml_exception
-     */
-    public static function move_down_category($id, $handler) {
-        $handler1 = \core_customfield\handler::get_instance($handler);
-        if ($handler1->can_configure()) {
-            $record = new \core_customfield\category($id);
-            $record->down();
-        }
-    }
-
-    /**
-     *
-     */
-    public static function move_down_category_returns() {
-    }
-
-    /**
-     * @return external_function_parameters
-     */
     public static function drag_and_drop_parameters(): external_function_parameters {
         return new external_function_parameters(
-                [
-                        'from' => new external_value(PARAM_INT, 'Entry ID to move from', VALUE_REQUIRED),
-                        'to'   => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED),
-                        'category' => new external_value(PARAM_INT, 'Entry new CategoryId', VALUE_REQUIRED)
-                ]
+                ['from' => new external_value(PARAM_INT, 'Entry ID to move from', VALUE_REQUIRED),
+                 'to'   => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED),
+                 'category' => new external_value(PARAM_INT, 'Entry new CategoryId', VALUE_REQUIRED)]
         );
     }
 
@@ -363,10 +240,8 @@ class core_customfield_external extends external_api {
      */
     public static function drag_and_drop_block_parameters(): external_function_parameters {
         return new external_function_parameters(
-                [
-                        'from'     => new external_value(PARAM_INT, 'Entry ID to move from', VALUE_REQUIRED),
-                        'to'       => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED),
-                ]
+                ['from' => new external_value(PARAM_INT, 'Entry ID to move from', VALUE_REQUIRED),
+                 'to'   => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED)]
         );
     }
 
@@ -386,6 +261,4 @@ class core_customfield_external extends external_api {
      */
     public static function drag_and_drop_block_returns() {
     }
-
-
 }
