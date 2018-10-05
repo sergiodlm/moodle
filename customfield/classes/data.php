@@ -50,7 +50,6 @@ class data extends persistent {
      * @return array
      */
     protected static function define_properties(): array {
-        // TODO correct all types
         return array(
                 'fieldid'        => [
                         'type' => PARAM_TEXT,
@@ -59,13 +58,13 @@ class data extends persistent {
                         'type' => PARAM_TEXT,
                 ],
                 'intvalue'       => [
-                        'type'     => PARAM_TEXT,
+                        'type'     => PARAM_INT,
                         'optional' => true,
                         'default'  => null,
                         'null'     => NULL_ALLOWED
                 ],
                 'decvalue'       => [
-                        'type'     => PARAM_TEXT,
+                        'type'     => PARAM_NUMBER,
                         'optional' => true,
                         'default'  => null,
                         'null'     => NULL_ALLOWED
@@ -82,8 +81,9 @@ class data extends persistent {
                         'default'  => null,
                         'null'     => NULL_ALLOWED
                 ],
+                // TODO: should we use raw here?
                 'value'          => [
-                        'type'     => PARAM_TEXT,
+                        'type'     => PARAM_RAW,
                         'optional' => true,
                         'null'     => NULL_NOT_ALLOWED
                 ],
