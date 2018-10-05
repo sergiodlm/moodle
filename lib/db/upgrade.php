@@ -2473,7 +2473,7 @@ function xmldb_main_upgrade($oldversion) {
         $table->add_field('shortcharvalue', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('charvalue', XMLDB_TYPE_CHAR, '400', null, null, null, null);
         $table->add_field('value', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('valueformat', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('valueformat', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('contextid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
