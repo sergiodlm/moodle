@@ -244,16 +244,6 @@ class data extends persistent {
         $this->set($this->datafield(), $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew));
         $this->set('timemodified', $now);
 
-        // TODO: Patch value and valueformat migrating -> REMOVE IT
-        $this->set(
-                'value',
-                $this->get('intvalue') ??
-                $this->get('decvalue') ??
-                $this->get('shortcharvalue') ??
-                $this->get('charvalue')
-        );
-        $this->set('valueformat', PARAM_TEXT);
-
         $this->save();
         return $this;
     }
