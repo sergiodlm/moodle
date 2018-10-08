@@ -124,11 +124,10 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     listSelector: '#customfield_catlist .fieldslist tbody',
                     moveHandlerSelector: '.movefield',
                     destinationNameCallback: function (parentElement, afterElement) {
-                        // TODO use correct strings.
                         if (!afterElement.length) {
-                            return str.get_string('totopofsection', 'moodle', categoryName(parentElement));
+                            return str.get_string('totopofcategory', 'customfield', categoryName(parentElement));
                         } else if (afterElement.attr('data-field-name')) {
-                            return str.get_string('afterresource', 'moodle', afterElement.attr('data-field-name'));
+                            return str.get_string('afterfield', 'customfield', afterElement.attr('data-field-name'));
                         } else {
                             return '';
                         }
