@@ -282,6 +282,10 @@ abstract class field extends persistent {
         return $this->category;
     }
 
+    public function get_config_data(): array {
+        return json_decode($this->get('configdata'), true);
+    }
+
     /**
      * Returns a correct class field.
      *

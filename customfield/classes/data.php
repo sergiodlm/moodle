@@ -84,12 +84,14 @@ class data extends persistent {
                 'value'          => [
                         'type'     => PARAM_TEXT,
                         'optional' => true,
-                        'null'     => NULL_NOT_ALLOWED
+                        'null'     => NULL_NOT_ALLOWED,
+                        'default'  => ''
                 ],
                 'valueformat'    => [
                         'type'     => PARAM_TEXT,
                         'optional' => true,
-                        'null'     => NULL_NOT_ALLOWED
+                        'null'     => NULL_NOT_ALLOWED,
+                        'default'  => ''
                 ],
                 'contextid'      => [
                         'type'     => PARAM_INT,
@@ -317,7 +319,9 @@ class data extends persistent {
 
         $dataobject = new $customdatatype($id, $data);
         $dataobject->set_field($field);
-        $dataobject->set_formvalue($data);
+        if (!is_null($data)) {
+            $dataobject->set_formvalue($data);
+        }
 
         return $dataobject;
     }

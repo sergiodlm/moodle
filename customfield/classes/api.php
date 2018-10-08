@@ -71,32 +71,28 @@ class api {
      * @param int $recordid
      * @return array
      */
-    public static function get_fields_with_data(string $component, string $area, int $itemid, \context $datacontext,
-                                                int $recordid): array {
-        // TODO change arguments to: get_fields_with_data(array $fields, \context $datacontext, int $recordid)
-        // TODO where $fields will be an array of field objects
+    public static function get_fields_with_data(array $fields, \context $datacontext, int $recordid): array {
         global $DB;
-        $sql        = 'SELECT f.id as field_id, f.shortname, f.categoryid, f.type, f.configdata,
+
+        list($sqlfields, $params) = $DB->get_in_or_equal(array_keys($fields), SQL_PARAMS_NAMED);
+        $sql = "SELECT f.id as field_id, f.shortname, f.categoryid, f.type, f.configdata,
                        c.name as categoryname, d.*
                   FROM {customfield_category} c
                   JOIN {customfield_field} f
                     ON (c.id = f.categoryid)
              LEFT JOIN {customfield_data} d
                     ON (f.id = d.fieldid AND d.recordid = :recordid)
-                 WHERE c.component = :component
-                   AND c.area = :area
-                   AND c.itemid = :itemid
-              ORDER BY c.sortorder, f.sortorder';
-        $where      = ['component' => $component, 'area' => $area, 'itemid' => $itemid, 'recordid' => $recordid];
-        $fieldsdata = $DB->get_records_sql($sql, $where);
+                 WHERE f.id {$sqlfields}
+              ORDER BY c.sortorder, f.sortorder";
+        $params['recordid'] = $recordid;
+        $fieldsdata = $DB->get_records_sql($sql, $params);
 
         $formfields = [];
         foreach ($fieldsdata as $data) {
             $fieldobj    = (object) ['id'         => $data->field_id, 'shortname' => $data->shortname, 'type' => $data->type,
                                      'configdata' => $data->configdata, 'categoryid' => $data->categoryid];
             $field       = self::get_field(0, $fieldobj);
-            $categoryobj = (object) ['id'        => $data->categoryid, 'name' => $data->categoryname,
-                                     'component' => $component, 'area' => $area, 'itemid' => $itemid];
+            $categoryobj = (object) ['id' => $data->categoryid, 'name' => $data->categoryname];
             $field->set_category(new category(0, $categoryobj));
             unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata, $data->categoryname);
             if (empty($data->id)) {
@@ -120,35 +116,33 @@ class api {
      * @param int $recordid
      * @return array
      */
-    public static function get_fields_with_data_for_backup(string $component, string $area, int $itemid, \context $datacontext,
-                                                           int $recordid): array {
-        // TODO is this function needed?
+    public static function get_fields_with_data_for_backup(array $fields, \context $datacontext, int $recordid): array {
         global $DB;
-        $sql        = 'SELECT f.id as field_id, f.shortname, f.type, f.categoryid, d.*
+
+        list($sqlfields, $params) = $DB->get_in_or_equal(array_keys($fields), SQL_PARAMS_NAMED);
+        $sql = "SELECT f.id as field_id, f.shortname, f.type, f.categoryid, f.configdata, d.*
                   FROM {customfield_category} c
                   JOIN {customfield_field} f
                     ON (c.id = f.categoryid)
                   JOIN {customfield_data} d
                     ON (f.id = d.fieldid AND d.recordid = :recordid)
-                 WHERE c.component = :component
-                   AND c.area = :area
-                   AND c.itemid = :itemid
-              ORDER BY c.sortorder, f.sortorder';
-        $where      = ['component' => $component, 'area' => $area, 'itemid' => $itemid, 'recordid' => $recordid];
-        $fieldsdata = $DB->get_records_sql($sql, $where);
+                 WHERE f.id {$sqlfields}
+              ORDER BY c.sortorder, f.sortorder";
+        $params['recordid'] = $recordid;
+        $fieldsdata = $DB->get_records_sql($sql, $params);
 
         $finalfields = [];
         foreach ($fieldsdata as $data) {
             $fieldobj = (object) ['id'   => $data->field_id, 'shortname' => $data->shortname,
-                                  'type' => $data->type, 'categoryid' => $data->categoryid];
+                                  'type' => $data->type, 'categoryid' => $data->categoryid, 'configdata' => $data->configdata];
             $field    = self::get_field(0, $fieldobj);
-            unset($data->field_id, $data->shortname, $data->type, $data->categoryid);
+            unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata);
             if (empty($data->id)) {
                 $data->fieldid   = $field->get('id');
                 $data->contextid = $datacontext->id;
                 $data->recordid  = $recordid;
             }
-            $f             = self::load_data($data, $field);
+            $f             = self::load_data($data->id, $data, $field);
             $finalfields[] = ['id'   => $f->get('id'), 'shortname' => $f->get_field()->get('shortname'),
                               'type' => $f->get_field()->get('type'), 'value' => $f->get_formvalue()];
         }

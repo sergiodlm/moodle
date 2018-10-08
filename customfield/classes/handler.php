@@ -299,26 +299,21 @@ abstract class handler {
      * @param int $recordid
      * @return data[]
      */
-    public function get_fields_with_data(int $recordid) : array {
-        // TODO call get_fields_definitions() first, filter by the fields visible to the current user
-        //      only then request data only for these fields
-        return api::get_fields_with_data($this->get_component(), $this->get_area(), $this->get_itemid(),
-            $this->get_data_context($recordid), $recordid);
+    public function get_fields_with_data(array $fields, int $recordid) : array {
+        return api::get_fields_with_data($fields, $this->get_data_context($recordid), $recordid);
     }
 
     /**
-     * List of fields with their data (only fields with data)
+     * List of fields with their data (only fields with data).
+     * This function looks very similar to fields_array, except it returns only fields with data associated to it
+     *  on the given recordid
      *
      * @param int $recordid
      * @return array
      */
     public function get_fields_with_data_for_backup(int $recordid) : array {
-        // TODO call get_fields_definitions() first, get list of available fields
-        //      then api::get_fields_with_data() and create the array in the desired format
-        // TODO this function looks very similar to fields_array / yes, except it returns only fields with data associated to it
-        //      on the given recordid
-        return api::get_fields_with_data_for_backup($this->get_component(), $this->get_area(), $this->get_itemid(),
-            $this->get_data_context($recordid), $recordid);
+        $editablefields = $this->get_editable_fields($recordid);
+        return api::get_fields_with_data_for_backup($editablefields, $this->get_data_context($recordid), $recordid);
     }
 
     /**
@@ -329,7 +324,8 @@ abstract class handler {
      * @throws \moodle_exception
      */
     public function definition_after_data(\MoodleQuickForm $mform, int $recordid) {
-        $fields = $this->get_fields_with_data($recordid);
+        $editablefields = $this->get_editable_fields($recordid);
+        $fields = $this->get_fields_with_data($editablefields, $recordid);
 
         foreach ($fields as $formfield) {
             $formfield->edit_after_data($mform);
@@ -350,7 +346,8 @@ abstract class handler {
         if (!isset($data->id)) {
             $data->id = 0;
         }
-        $fields = $this->get_fields_with_data($data->id);
+        $editablefields = $this->get_editable_fields($data->id);
+        $fields = $this->get_fields_with_data($editablefields, $data->id);
 
         foreach ($fields as $formfield) {
             $formfield->edit_load_data($data);
@@ -365,7 +362,8 @@ abstract class handler {
      * @throws \moodle_exception
      */
     public function save_customfield_data($data) {
-        $fields = $this->get_fields_with_data($data->id);
+        $editablefields = $this->get_editable_fields($data->id);
+        $fields = $this->get_fields_with_data($editablefields, $data->id);
         foreach ($fields as $formfield) {
             $formfield->edit_save_data($data);
         }
@@ -387,7 +385,8 @@ abstract class handler {
             $recordid = 0;
         }
 
-        $fieldswithdata = $this->get_fields_with_data($recordid);
+        $editablefields = $this->get_editable_fields($recordid);
+        $fieldswithdata = $this->get_fields_with_data($editablefields, $recordid);
         $categories = [];
         foreach ($fieldswithdata as $data) {
             $categories[$data->get_field()->get('categoryid')][] = $data;
@@ -494,7 +493,8 @@ abstract class handler {
      * @return array custom fields with it's values for the specified recordid
      */
     public function fields_array($recordid) : array {
-        $datafields = $this->get_fields_with_data($recordid);
+        $visiblefields = $this->get_visible_fields($recordid);
+        $datafields = $this->get_fields_with_data($visiblefields, $recordid);
         $fieldsarray = array();
         foreach ($datafields as $data) {
             $field = $data->get_field();
@@ -514,7 +514,7 @@ abstract class handler {
         global $DB;
         if ($fieldrecord = $DB->get_record('customfield_field', ['shortname' => $data['shortname']], 'id,type')) {
             $field = field::create_from_type($fieldrecord->type);
-            $field->set('id', $fieldrecordid);
+            $field->set('id', $fieldrecord->id);
 
             $datarecord = $DB->get_record('customfield_data', array('recordid' => $recordid, 'fieldid' => $field->get('id')));
             if ($datarecord) {
