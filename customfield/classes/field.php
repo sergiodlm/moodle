@@ -335,11 +335,9 @@ abstract class field extends persistent {
             throw new \coding_exception(get_string('errorfieldtypenotfound', 'core_customfield', s($field->type)));
         }
 
-        // Set default configdata from database
-        // TODO use get_field_configdata. But field is stdClass here.
-        $configdata          = json_decode($field->configdata);
-        $field->required     = $configdata->required;
-        $field->uniquevalues = $configdata->uniquevalues;
+        $configdata          = json_decode($field->configdata, true);
+        $field->required     = $configdata['required'];
+        $field->uniquevalues = $configdata['uniquevalues'];
 
         return new $customfieldtype($field->id, $field);
     }

@@ -16,7 +16,7 @@
 
 /**
  * @package   customfield_select
- * @copyright 2018 Daniel Neis Araujo <danielneis@gmail.com>
+ * @copyright 2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ class data extends \core_customfield\data {
      * @param moodleform $mform
      * @throws \coding_exception
      */
-    public function edit_field_add($mform) {
+    public function edit_field_add(\MoodleQuickForm $mform) {
         $config = $this->get_field_configdata();
 
         if (isset($config->options)) {

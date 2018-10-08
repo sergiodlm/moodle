@@ -50,7 +50,6 @@ class data extends persistent {
      * @return array
      */
     protected static function define_properties(): array {
-        // TODO correct all types
         return array(
                 'fieldid'        => [
                         'type' => PARAM_TEXT,
@@ -59,13 +58,13 @@ class data extends persistent {
                         'type' => PARAM_TEXT,
                 ],
                 'intvalue'       => [
-                        'type'     => PARAM_TEXT,
+                        'type'     => PARAM_INT,
                         'optional' => true,
                         'default'  => null,
                         'null'     => NULL_ALLOWED
                 ],
                 'decvalue'       => [
-                        'type'     => PARAM_TEXT,
+                        'type'     => PARAM_NUMBER,
                         'optional' => true,
                         'default'  => null,
                         'null'     => NULL_ALLOWED
@@ -82,8 +81,9 @@ class data extends persistent {
                         'default'  => null,
                         'null'     => NULL_ALLOWED
                 ],
+                // TODO: should we use raw here?
                 'value'          => [
-                        'type'     => PARAM_TEXT,
+                        'type'     => PARAM_RAW,
                         'optional' => true,
                         'null'     => NULL_NOT_ALLOWED
                 ],
@@ -200,6 +200,16 @@ class data extends persistent {
     }
 
     /**
+     * Add fields on the context edit form.
+     *
+     * @param moodleform $mform
+     * @throws \coding_exception
+     */
+    public function edit_field_add(\MoodleQuickForm $mform) {
+        throw new coding_exception('edit_field_add() method needs to be overridden in each subclass of \core_customfield\data');
+    }
+
+    /**
      * Saves the data coming from form
      *
      * @param \stdClass $datanew data coming from the form
@@ -277,9 +287,8 @@ class data extends persistent {
      * @throws \moodle_exception
      */
     public function get_field_configdata() {
+        // TODO add defaults here.
         return json_decode($this->get_field()->get('configdata'), true);
-        // TODO add defaults here
-        return json_decode($this->get_field()->get('configdata'));
     }
 
     /**
@@ -290,47 +299,7 @@ class data extends persistent {
      * @throws \moodle_exception
      */
     public function edit_after_data(\MoodleQuickForm $mform): bool {
-        if (!$this->is_editable()) {
-            return false;
-        }
-        $this->edit_field_set_locked($mform);
         return true;
-    }
-
-    /**
-     * TODO: check capabilities.
-     * TODO: need context and capabilities from handler to check capabilities here?
-     *
-     * @return bool
-     */
-    public function is_editable(): bool {
-        return true;
-    }
-
-    /**
-     * Field data is locked (not editable)
-     *
-     * @return bool
-     * @throws \moodle_exception
-     */
-    public function is_locked(): bool {
-        return (bool) json_decode($this->get_field()->get('configdata'), true)["locked"];
-    }
-
-    /**
-     * HardFreeze the field if locked.
-     *
-     * @param \MoodleQuickForm $mform
-     * @throws \moodle_exception
-     */
-    public function edit_field_set_locked(\MoodleQuickForm $mform) {
-        if (!$mform->elementExists($this->inputname())) {
-            return;
-        }
-        if ($this->is_locked() and !$this->is_editable()) {
-            $mform->hardFreeze($this->inputname());
-            $mform->setConstant($this->inputname(), $this->get_formvalue());
-        }
     }
 
     /**

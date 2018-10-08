@@ -16,7 +16,7 @@
 
 /**
  * @package   core_customfield
- * @copyright 2018 Daniel Neis Araujo <danielneis@gmail.com>
+ * @copyright 2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ class data extends \core_customfield\data {
      * @param moodleform $mform
      * @throws \coding_exception
      */
-    public function edit_field_add($mform) {
+    public function edit_field_add(\MoodleQuickForm $mform) {
         $mform->addElement('text', $this->inputname(), format_string($this->get_field()->get('name')));
         $mform->setType($this->inputname(), PARAM_TEXT);
         $config = $this->get_field_configdata();
