@@ -80,21 +80,11 @@ class course_handler extends \core_customfield\handler {
      * @param int $courseid
      */
     public function display_fields($courseid) {
-        $fields = $this->get_fields_with_data($courseid);
+        $visiblefields = $this->get_visible_fields($courseid);
+        $fields = $this->get_fields_with_data($visiblefields, $courseid);
         $content = \html_writer::start_tag('div', ['class' => 'customfields-container', 'style' => 'clear: both;']);
         foreach ($fields as $data) {
-            $visibility = $data->get_field_configdata()['visibility'];
-            $canview = false;
-            if ($visibility == 0) {
-                $canview = false;
-            } else if ($visibility == 1) {
-                $canview = has_capability('moodle/course:update', \context::instance_by_id($data->get('contextid')));
-            } else {
-                $canview = true;
-            }
-            if ($canview) {
-                $content .= $data->display();
-            }
+            $content .= $data->display();
         }
         $content .= \html_writer::end_tag('div');
         return $content;
@@ -130,6 +120,41 @@ class course_handler extends \core_customfield\handler {
         } else {
             return \context_system::instance();
         }
+    }
+
+    protected function get_visible_fields(int $recordid): array {
+        $categories = $this->get_fields_definitions();
+        $visiblefields = [];
+        foreach ($categories as $category) {
+            foreach ($category->fields() as $field) {
+                $visibility = $field->get_config_data()['visibility'];
+                $canview = false;
+                if ($visibility == 0) {
+                    $canview = false;
+                } else if ($visibility == 1) {
+                    $canview = has_capability('moodle/course:update', $this->get_data_context($recordid));
+                } else {
+                    $canview = true;
+                }
+                if ($canview) {
+                    $visiblefields[$field->get('id')] = $field;
+                }
+            }
+        }
+        return $visiblefields;
+    }
+
+    protected function get_editable_fields(int $recordid): array {
+        $categories = $this->get_fields_definitions();
+        $editablefields = [];
+        foreach ($categories as $category) {
+            foreach ($category->fields() as $field) {
+                if (has_capability('moodle/course:update', $this->get_data_context($recordid))) {
+                    $editablefields[$field->get('id')] = $field;
+                }
+            }
+        }
+        return $editablefields;
     }
 
     /**
