@@ -304,6 +304,15 @@ class data extends persistent {
     }
 
     /**
+     * Displays the data as html. Used by handler to display data on various places.
+     * @return string
+     * @throws \coding_exception
+     */
+    public function display() {
+        throw new coding_exception('display() method needs to be overridden in each subclass of \core_customfield\data');
+    }
+
+    /**
      * @param \stdClass $data
      * @param field $field
      * @return data
