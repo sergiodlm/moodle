@@ -81,9 +81,8 @@ class data extends persistent {
                         'default'  => null,
                         'null'     => NULL_ALLOWED
                 ],
-                // TODO: should we use raw here?
                 'value'          => [
-                        'type'     => PARAM_RAW,
+                        'type'     => PARAM_TEXT,
                         'optional' => true,
                         'null'     => NULL_NOT_ALLOWED
                 ],
