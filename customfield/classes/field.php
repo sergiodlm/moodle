@@ -161,25 +161,6 @@ abstract class field extends persistent {
     }
 
     /**
-     * Get total count of fields for this category
-     *
-     * @param int $categoryid
-     * @return int
-     * @throws \dml_exception
-     */
-    private static function count_fields(int $categoryid) {
-        // TODO why is it static, why is it needed?
-        global $DB;
-
-        return $DB->count_records(
-                self::TABLE,
-                [
-                        'categoryid' => $categoryid
-                ]
-        );
-    }
-
-    /**
      * Delete associated data before delete field
      *
      * @return bool
