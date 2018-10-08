@@ -238,30 +238,6 @@ class category extends persistent {
     }
 
     /**
-     * Move the category one position up
-     *
-     * @return category
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    public function up(): self {
-        // TODO remove
-        return $this->move(1);
-    }
-
-    /**
-     * Mode a category one position down
-     *
-     * @return category
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    public function down(): self {
-        // TODO remove
-        return $this->move(-1);
-    }
-
-    /**
      * Returns a list of categories with their related fields.
      *
      * @param array $options
@@ -296,11 +272,11 @@ class category extends persistent {
 
         if ($categoryfrom->get('sortorder') < $categoryto->get('sortorder')) {
             for ($i = $categoryfrom->get('sortorder'); $i < $categoryto->get('sortorder'); $i++) {
-                $categoryfrom->up();
+                $categoryfrom->move(1);
             }
         } else if ($categoryfrom->get('sortorder') > $categoryto->get('sortorder')) {
             for ($i = $categoryfrom->get('sortorder'); $i > $categoryto->get('sortorder') + 1; $i--) {
-                $categoryfrom->down();
+                $categoryfrom->move(-1);
             }
         }
 
