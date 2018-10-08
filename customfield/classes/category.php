@@ -233,7 +233,7 @@ class category extends persistent {
             $this->set('sortorder', $this->get('sortorder') + $position);
             $this->save();
         }
-
+        $this->clear_cache();
         return $this;
     }
 

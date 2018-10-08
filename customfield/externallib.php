@@ -250,8 +250,8 @@ class core_customfield_external extends external_api {
      * @param int $from
      * @param int $to
      * @return bool
-     * @throws coding_exception
      * @throws dml_exception
+     * @throws moodle_exception
      */
     public static function drag_and_drop_block(int $from, int $to) {
         return \core_customfield\category::drag_and_drop_block($from, $to);
