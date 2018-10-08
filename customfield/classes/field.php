@@ -180,18 +180,6 @@ abstract class field extends persistent {
     }
 
     /**
-     * Call count_fields()
-     *
-     * @return int
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    public function get_count_fields(): int {
-        // TODO this is not used
-        return $this::count_fields($this->get('categoryid'));
-    }
-
-    /**
      * Delete associated data before delete field
      *
      * @return bool
@@ -236,8 +224,7 @@ abstract class field extends persistent {
      * @throws \dml_exception
      */
     private function reorder(): bool {
-        // TODO why not: $this->get_category()->reorder_fields();
-        return category::reorder_fields($this->get('categoryid'));
+        return $this->get_category()->reorder_fields();
     }
 
     /**
@@ -389,14 +376,15 @@ abstract class field extends persistent {
         $fieldfrom = self::load_field($from);
 
         if ($fieldfrom->get('categoryid') != $category) {
-            $oldcategory = $fieldfrom->get('categoryid');
+            $oldcategory     = new category($fieldfrom->get('categoryid'));
+            $currentcategory = new category($category);
 
             $fieldfrom->set('categoryid', $category);
             $fieldfrom->set('sortorder', -1);
             $fieldfrom->save();
 
-            category::reorder_fields($oldcategory);
-            category::reorder_fields($fieldfrom->get('categoryid'));
+            $oldcategory->reorder_fields();
+            $currentcategory->reorder_fields();
         }
 
         if ($to > 0) {

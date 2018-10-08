@@ -286,16 +286,15 @@ class category extends persistent {
     /**
      * Update sort order of the fields
      *
-     * @param int $categoryid
+     * @param void
      * @return bool
      * @throws \moodle_exception
      * @throws \dml_exception
      */
-    public static function reorder_fields(int $categoryid): bool {
-        // TODO why is it static?
+    public function reorder_fields(): bool {
         global $DB;
 
-        $fieldneighbours = $DB->get_records(field::TABLE, ['categoryid' => $categoryid], 'sortorder DESC');
+        $fieldneighbours = $DB->get_records(field::TABLE, ['categoryid' => $this->get('id')], 'sortorder DESC');
 
         $neworder = count($fieldneighbours);
 
