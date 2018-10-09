@@ -64,7 +64,7 @@ class data extends persistent {
                         'null'     => NULL_ALLOWED
                 ],
                 'decvalue'       => [
-                        'type'     => PARAM_NUMBER,
+                        'type'     => PARAM_FLOAT,
                         'optional' => true,
                         'default'  => null,
                         'null'     => NULL_ALLOWED
@@ -81,15 +81,15 @@ class data extends persistent {
                         'default'  => null,
                         'null'     => NULL_ALLOWED
                 ],
+                // Mandatory field.
                 'value'          => [
                         'type'     => PARAM_TEXT,
-                        'optional' => true,
                         'null'     => NULL_NOT_ALLOWED,
                         'default'  => ''
                 ],
+                // Mandatory field.
                 'valueformat'    => [
                         'type'     => PARAM_TEXT,
-                        'optional' => true,
                         'null'     => NULL_NOT_ALLOWED,
                         'default'  => ''
                 ],
