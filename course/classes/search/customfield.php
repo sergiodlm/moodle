@@ -99,11 +99,12 @@ class customfield extends \core_search\base_mod {
         }
 
         $field = \core_customfield\api::get_field($record->fieldid);
+        $data = \core_customfield\api::get_data($record->id, $record, $field);
 
         // Prepare associative array with data from DB.
         $doc = \core_search\document_factory::instance($record->id, $this->componentname, $this->areaname);
-        $doc->set('title', content_to_text($course->fullname, false));
-        $doc->set('content', content_to_text("{$field->get('name')}: $record->value", \core_search\manager::TYPE_TEXT));
+        $doc->set('title', content_to_text($field->get('name'));
+        $doc->set('content', content_to_text($data->display(), FORMAT_HTML));
         $doc->set('contextid', $context->id);
         $doc->set('courseid', $record->recordid);
         $doc->set('owneruserid', \core_search\manager::NO_OWNER_ID);
@@ -135,20 +136,17 @@ class customfield extends \core_search\base_mod {
     public function get_document_recordset($modifiedfrom = 0, \context $context = null) {
         global $DB;
 
-        list ($contextjoin, $contextparams) = $this->get_context_restriction_sql(
-                $context, 'data', 'd');
+        list ($contextjoin, $contextparams) = $this->get_context_restriction_sql($context, 'data', 'd');
+
         if ($contextjoin === null) {
             return null;
         }
 
-        return $DB->get_recordset_sql(
-                "SELECT d.* 
-                FROM {customfield_data} d
-                $contextjoin
-                WHERE d.timemodified >= ? 
-                ORDER BY d.timemodified ASC",
-                array_merge($contextparams, [$modifiedfrom])
-        );
+        $sql =  "SELECT d.*
+                   FROM {customfield_data} d
+                        $contextjoin
+                  WHERE d.timemodified >= ?
+               ORDER BY d.timemodified ASC"
+        return $DB->get_recordset_sql($sql , array_merge($contextparams, [$modifiedfrom]));
     }
-
 }
