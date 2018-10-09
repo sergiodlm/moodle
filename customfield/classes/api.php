@@ -74,6 +74,10 @@ class api {
     public static function get_fields_with_data(array $fields, \context $datacontext, int $recordid): array {
         global $DB;
 
+        if (empty($fields)) {
+            return array();
+        }
+
         list($sqlfields, $params) = $DB->get_in_or_equal(array_keys($fields), SQL_PARAMS_NAMED);
         $sql = "SELECT f.id as field_id, f.shortname, f.categoryid, f.type, f.configdata,
                        c.name as categoryname, d.*
@@ -118,6 +122,10 @@ class api {
      */
     public static function get_fields_with_data_for_backup(array $fields, \context $datacontext, int $recordid): array {
         global $DB;
+
+        if (empty($fields)) {
+            return array();
+        }
 
         list($sqlfields, $params) = $DB->get_in_or_equal(array_keys($fields), SQL_PARAMS_NAMED);
         $sql = "SELECT f.id as field_id, f.shortname, f.type, f.categoryid, f.configdata, d.*
