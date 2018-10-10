@@ -103,7 +103,7 @@ class customfield extends \core_search\base_mod {
 
         // Prepare associative array with data from DB.
         $doc = \core_search\document_factory::instance($record->id, $this->componentname, $this->areaname);
-        $doc->set('title', content_to_text($field->get('name'));
+        $doc->set('title', content_to_text($field->get('name')));
         $doc->set('content', content_to_text($data->display(), FORMAT_HTML));
         $doc->set('contextid', $context->id);
         $doc->set('courseid', $record->recordid);
@@ -146,7 +146,7 @@ class customfield extends \core_search\base_mod {
                    FROM {customfield_data} d
                         $contextjoin
                   WHERE d.timemodified >= ?
-               ORDER BY d.timemodified ASC"
+               ORDER BY d.timemodified ASC";
         return $DB->get_recordset_sql($sql , array_merge($contextparams, [$modifiedfrom]));
     }
 }
