@@ -102,14 +102,6 @@ abstract class field extends persistent {
                 'categoryid'        => [
                         'type' => PARAM_INT
                 ],
-                'required'          => [
-                        'type'    => PARAM_INT,
-                        'default' => 0,
-                ],
-                'uniquevalues'      => [
-                        'type'    => PARAM_INT,
-                        'default' => 0,
-                ],
                 'configdata'        => [
                         'type'     => PARAM_TEXT,
                         'optional' => true,
@@ -308,8 +300,6 @@ abstract class field extends persistent {
         }
 
         $configdata          = json_decode($field->configdata, true);
-        $field->required     = $configdata['required'];
-        $field->uniquevalues = $configdata['uniquevalues'];
 
         return new $customfieldtype($field->id, $field);
     }

@@ -3898,7 +3898,7 @@
         <INDEX NAME="indexprioritytimerequested" UNIQUE="false" FIELDS="indexpriority, timerequested"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="customfield_field" COMMENT="Default comment for customfield_text, please edit me">
+    <TABLE NAME="customfield_field" COMMENT="core_customfield field table">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="shortname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
@@ -3920,7 +3920,7 @@
         <INDEX NAME="categoryid_shortname" UNIQUE="true" FIELDS="categoryid, shortname"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="customfield_category" COMMENT="customfield_category comment">
+    <TABLE NAME="customfield_category" COMMENT="core_customfield category table">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="name" TYPE="char" LENGTH="400" NOTNULL="true" SEQUENCE="false"/>
@@ -3942,7 +3942,7 @@
         <INDEX NAME="component_area_itemid" UNIQUE="false" FIELDS="component, area, itemid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="customfield_data" COMMENT="customfield_data description">
+    <TABLE NAME="customfield_data" COMMENT="core_customfield data table">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="fieldid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
