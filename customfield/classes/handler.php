@@ -396,8 +396,8 @@ abstract class handler {
             $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->get_field()->get_category()->get('name')));
             foreach ($fields as $formfield) {
                 $formfield->edit_field_add($mform);
-                if ($formfield->get_field()->get('required')) {
-                    $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
+                if ((bool) json_decode($formfield->get_field()->get('configdata'), true)['required']) {
+                     $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
                 }
             }
         }

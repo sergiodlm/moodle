@@ -23,6 +23,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace core_customfield;
+
+use advanced_testcase;
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -32,7 +37,32 @@ class core_customfield_category_testcase extends advanced_testcase {
     public function test_create_category() {
         global $DB, $CFG;
 
-        $this->assertSame(1, 1);
+        // Create the category.
+        $categorydata            = new stdClass();
+
+        $categorydata->name      = 'aaaa';
+        $categorydata->component = 'core_course';
+        $categorydata->area      = 'course';
+        $categorydata->itemid    = 0;
+        $categorydata->contextid = 1;
+
+        $category = new category(0, $categorydata);
+        $category->set('name',  $categorydata->name);
+
+        // Initially confirm that base data was inserted correctly.
+        $this->assertSame($category->get('name'), $categorydata->name);
+        $this->assertSame($category->get('description'), null);
+        $this->assertSame($category->get('descriptionformat'), '0');
+        $this->assertSame($category->get('component'), $categorydata->component);
+        $this->assertSame($category->get('area'), $categorydata->area);
+        $this->assertSame($category->get('itemid'), $categorydata->itemid);
+        $this->assertSame($category->get('contextid'), $categorydata->contextid);
     }
+
+        // TODO: Exceptions tests
+        // TODO: Update name tests
+        // TODO: Drag adn drop tests
+        // TODO: Visibility tests
+        // TODO: Delete tests
 
 }
