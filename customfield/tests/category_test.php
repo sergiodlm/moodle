@@ -31,15 +31,23 @@ use stdClass;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Functional test for class core_customfield_field
+ * Functional test for class core_customfield_category
  */
 class core_customfield_category_testcase extends advanced_testcase {
+    /**
+     * setUp.
+     */
+    public function setUp() {
+        $this->resetAfterTest();
+    }
+
+    /**
+     * @throws \coding_exception
+     */
     public function test_create_category() {
-        global $DB, $CFG;
 
         // Create the category.
         $categorydata            = new stdClass();
-
         $categorydata->name      = 'aaaa';
         $categorydata->component = 'core_course';
         $categorydata->area      = 'course';
@@ -48,6 +56,7 @@ class core_customfield_category_testcase extends advanced_testcase {
 
         $category = new category(0, $categorydata);
         $category->set('name',  $categorydata->name);
+        $category->save();
 
         // Initially confirm that base data was inserted correctly.
         $this->assertSame($category->get('name'), $categorydata->name);
@@ -57,6 +66,29 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame($category->get('area'), $categorydata->area);
         $this->assertSame($category->get('itemid'), $categorydata->itemid);
         $this->assertSame($category->get('contextid'), $categorydata->contextid);
+        $this->assertSame($category->get('sortorder'), -1);
+
+        // Creating 2nd category and check if sortorder is correct.
+        $categorydata->name = 'bbbb';
+
+        $category2 = new category(0, $categorydata);
+        $category2->set('name',  $categorydata->name);
+        $category2->save();
+
+        // Initially confirm that base data was inserted correctly.
+        $this->assertSame($category2->get('name'), $categorydata->name);
+        $this->assertSame($category2->get('description'), null);
+        $this->assertSame($category2->get('descriptionformat'), '0');
+        $this->assertSame($category2->get('component'), $categorydata->component);
+        $this->assertSame($category2->get('area'), $categorydata->area);
+        $this->assertSame($category2->get('itemid'), $categorydata->itemid);
+        $this->assertSame($category2->get('contextid'), $categorydata->contextid);
+        $this->assertSame($category2->get('sortorder'), -1);
+
+        // Check order after reorder.
+        $category->reorder();
+        $this->assertSame($category->get('sortorder'), 1);
+        $this->assertSame($category2->get('sortorder'), 0);
     }
 
         // TODO: Exceptions tests

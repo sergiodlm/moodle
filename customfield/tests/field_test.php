@@ -29,10 +29,6 @@ defined('MOODLE_INTERNAL') || die();
  * Functional test for class core_customfield_field
  */
 class core_customfield_field_testcase extends advanced_testcase {
-    public function test_create_field() {
-        global $DB, $CFG;
 
-        $this->assertSame(1, 1);
-    }
 
 }

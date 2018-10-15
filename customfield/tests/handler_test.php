@@ -23,12 +23,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace core_customfield;
+
+use advanced_testcase;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Functional test for class core_customfield_data
+ * Functional test for class core_customfield_handler
  */
-class core_customfield_data_testcase extends advanced_testcase {
-
+class core_customfield_handler_testcase extends advanced_testcase {
 
 }
