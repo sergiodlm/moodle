@@ -243,8 +243,7 @@ class data extends persistent {
         }
         $this->set($this->datafield(), $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew));
         $this->set('value', $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew));
-        $this->set('valueformat', 'text');
-
+        $this->set('valueformat', str_replace('value', '', $this->datafield()));
         $this->set('timemodified', $now);
 
         $this->save();
