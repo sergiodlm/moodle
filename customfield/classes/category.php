@@ -290,11 +290,11 @@ class category extends persistent {
         $categoryto   = new self($to);
 
         if ($categoryfrom->get('sortorder') < $categoryto->get('sortorder')) {
-            for ($i = $categoryfrom->get('sortorder'); $i < $categoryto->get('sortorder'); $i++) {
+            for ($i = $categoryfrom->get('sortorder'); $i < $categoryto->get('sortorder')-1; $i++) {
                 $categoryfrom->move(1);
             }
         } else if ($categoryfrom->get('sortorder') > $categoryto->get('sortorder')) {
-            for ($i = $categoryfrom->get('sortorder'); $i > $categoryto->get('sortorder') + 1; $i--) {
+            for ($i = $categoryfrom->get('sortorder'); $i > $categoryto->get('sortorder'); $i--) {
                 $categoryfrom->move(-1);
             }
         }
