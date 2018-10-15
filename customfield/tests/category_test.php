@@ -42,7 +42,7 @@ class core_customfield_category_testcase extends advanced_testcase {
     }
 
     /**
-     * @throws \coding_exception
+     * @throws \moodle_exception
      */
     public function test_create_category() {
 
@@ -55,7 +55,6 @@ class core_customfield_category_testcase extends advanced_testcase {
         $categorydata->contextid = 1;
 
         $category = new category(0, $categorydata);
-        $category->set('name',  $categorydata->name);
         $category->save();
 
         // Initially confirm that base data was inserted correctly.
@@ -66,13 +65,12 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame($category->get('area'), $categorydata->area);
         $this->assertSame($category->get('itemid'), $categorydata->itemid);
         $this->assertSame($category->get('contextid'), $categorydata->contextid);
-        $this->assertSame($category->get('sortorder'), -1);
+        $this->assertSame($category->get('sortorder'), 0);
 
         // Creating 2nd category and check if sortorder is correct.
         $categorydata->name = 'bbbb';
 
         $category2 = new category(0, $categorydata);
-        $category2->set('name',  $categorydata->name);
         $category2->save();
 
         // Initially confirm that base data was inserted correctly.
@@ -83,10 +81,10 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame($category2->get('area'), $categorydata->area);
         $this->assertSame($category2->get('itemid'), $categorydata->itemid);
         $this->assertSame($category2->get('contextid'), $categorydata->contextid);
-        $this->assertSame($category2->get('sortorder'), -1);
+        $this->assertSame($category2->get('sortorder'), 0);
 
-        // Check order after reorder.
-        $category->reorder();
+        // Check order after re-fetch.
+        // TODO: refech $categories.
         $this->assertSame($category->get('sortorder'), 1);
         $this->assertSame($category2->get('sortorder'), 0);
     }

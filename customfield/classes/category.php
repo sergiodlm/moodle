@@ -76,7 +76,8 @@ class category extends persistent {
                 ],
                 'sortorder' => [
                         'type' => PARAM_INT,
-                        'default' => -1,
+                        'optional' => false,
+                        'default' => -1
                 ],
         );
     }
@@ -101,10 +102,28 @@ class category extends persistent {
     protected static function static_reorder($options): bool {
         $categoryneighbours = self::list($options);
 
-        $neworder = count($categoryneighbours);
-
+        // First let's move the new element at the end of categories list.
+        $lastcategorysortorder = 0;
         foreach ($categoryneighbours as $category) {
-            $category->set('sortorder', --$neworder);
+            if ($category->get('sortorder') > $lastcategorysortorder) {
+                $lastcategorysortorder = $category->get('sortorder');
+            }
+        }
+        foreach ($categoryneighbours as $category) {
+            if ($category->get('sortorder') < 0) {
+                $category->set('sortorder', $lastcategorysortorder+1);
+            }
+        }
+
+        // And now let's update sortorder values in the database.
+        $sortfunction = function(category $a, category $b): int {
+            return $a->get('sortorder') <=> $b->get('sortorder');
+        };
+
+        usort($categoryneighbours, $sortfunction);
+
+        foreach ($categoryneighbours as $sortorder => $category) {
+            $category->set('sortorder', $sortorder);
             $category->save();
         }
 
@@ -250,7 +269,7 @@ class category extends persistent {
 
         $categories = array();
 
-        foreach ($DB->get_records(self::TABLE, $options, 'sortorder DESC') as $categorydata) {
+        foreach ($DB->get_records(self::TABLE, $options, 'sortorder') as $categorydata) {
             $categories[] = new self(0, $categorydata);
         }
 
