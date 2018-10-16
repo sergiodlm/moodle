@@ -337,27 +337,6 @@ class category extends persistent {
         return true;
     }
 
-    /**
-     * Set category name
-     *
-     * @param string $name
-     * @throws \moodle_exception
-     */
-    protected function set_name($name) {
-        global $DB;
-        $name = trim($name);
-        if ($name === '') {
-            throw new \moodle_exception('fieldrequired', 'core_customfield');
-        }
-        $select = 'component = :component AND area = :area AND itemid = :itemid AND name = :name';
-        if ($this->get('id')) {
-            $select .= ' AND id <> :id';
-        }
-        if ($DB->record_exists_select(self::TABLE, $select, ['name' => $name] + (array)$this->to_record())) {
-            throw new \moodle_exception('formcategorycheckname', 'core_customfield');
-        }
-        $this->raw_set('name', $name);
-    }
 
     /**
      * Returns an object for inplace editable
