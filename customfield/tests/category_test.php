@@ -54,21 +54,47 @@ class core_customfield_category_testcase extends advanced_testcase {
         $categorydata->itemid    = 0;
         $categorydata->contextid = 1;
 
-        $category = new category(0, $categorydata);
-        $category->save();
+        $category0 = new category(0, $categorydata);
+        $category0->save();
 
         // Initially confirm that base data was inserted correctly.
-        $this->assertSame($category->get('name'), $categorydata->name);
-        $this->assertSame($category->get('description'), null);
-        $this->assertSame($category->get('descriptionformat'), '0');
-        $this->assertSame($category->get('component'), $categorydata->component);
-        $this->assertSame($category->get('area'), $categorydata->area);
-        $this->assertSame($category->get('itemid'), $categorydata->itemid);
-        $this->assertSame($category->get('contextid'), $categorydata->contextid);
-        $this->assertSame($category->get('sortorder'), 0);
+        $this->assertSame($category0->get('name'), $categorydata->name);
+        $this->assertSame($category0->get('description'), null);
+        $this->assertSame($category0->get('descriptionformat'), '0');
+        $this->assertSame($category0->get('component'), $categorydata->component);
+        $this->assertSame($category0->get('area'), $categorydata->area);
+        $this->assertSame($category0->get('itemid'), $categorydata->itemid);
+        $this->assertSame($category0->get('contextid'), $categorydata->contextid);
+        $this->assertSame($category0->get('sortorder'), -1);
 
         // Creating 2nd category and check if sortorder is correct.
         $categorydata->name = 'bbbb';
+
+        $category1 = new category(0, $categorydata);
+        $category1->save();
+
+        // Initially confirm that base data was inserted correctly.
+        $this->assertSame($category1->get('name'), $categorydata->name);
+        $this->assertSame($category1->get('description'), null);
+        $this->assertSame($category1->get('descriptionformat'), '0');
+        $this->assertSame($category1->get('component'), $categorydata->component);
+        $this->assertSame($category1->get('area'), $categorydata->area);
+        $this->assertSame($category1->get('itemid'), $categorydata->itemid);
+        $this->assertSame($category1->get('contextid'), $categorydata->contextid);
+        $this->assertSame($category1->get('sortorder'), -1);
+
+        $id0 = $category0->get('id');
+        $id1 = $category1->get('id');
+
+        // Check order after re-fetch.
+        $category0 = new category($id0);
+        $category1 = new category($id1);
+
+        $this->assertSame((int) $category0->get('sortorder'), 0);
+        $this->assertSame((int) $category1->get('sortorder'), 1);
+
+        // Creating 3rd category and check if sortorder is correct.
+        $categorydata->name = 'cccc';
 
         $category2 = new category(0, $categorydata);
         $category2->save();
@@ -81,18 +107,25 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame($category2->get('area'), $categorydata->area);
         $this->assertSame($category2->get('itemid'), $categorydata->itemid);
         $this->assertSame($category2->get('contextid'), $categorydata->contextid);
-        $this->assertSame($category2->get('sortorder'), 0);
+        $this->assertSame($category2->get('sortorder'), -1);
+
+        $id2 = $category2->get('id');
 
         // Check order after re-fetch.
-        // TODO: refech $categories.
-        $this->assertSame($category->get('sortorder'), 1);
-        $this->assertSame($category2->get('sortorder'), 0);
+        $category0 = new category($id0);
+        $category1 = new category($id1);
+        $category2 = new category($id2);
+
+        $this->assertSame((int) $category0->get('sortorder'), 0);
+        $this->assertSame((int) $category1->get('sortorder'), 1);
+        $this->assertSame((int) $category2->get('sortorder'), 2);
+
     }
 
-        // TODO: Exceptions tests
-        // TODO: Update name tests
-        // TODO: Drag adn drop tests
-        // TODO: Visibility tests
-        // TODO: Delete tests
+    // TODO: Exceptions tests
+    // TODO: Update name tests
+    // TODO: Drag adn drop tests
+    // TODO: Visibility tests
+    // TODO: Delete tests
 
 }

@@ -95,6 +95,7 @@ abstract class field extends persistent {
                         'default'  => FORMAT_MOODLE,
                         'optional' => true
                 ],
+                // TODO: Invert sortorder according Moodle standards.
                 'sortorder'         => [
                         'type'    => PARAM_INT,
                         'default' => 0,
