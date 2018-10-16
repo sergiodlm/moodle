@@ -289,6 +289,15 @@ class category extends persistent {
         $categoryfrom = new self($from);
         $categoryto   = new self($to);
 
+        // Move to the last position on the list.
+        if ($to === 0) {
+            $categoryfrom->set('sortorder', -1);
+            $categoryfrom->save();
+            $output = $categoryfrom->reorder();
+            $categoryfrom->clear_cache();
+            return $output;
+        }
+
         if ($categoryfrom->get('sortorder') < $categoryto->get('sortorder')) {
             for ($i = $categoryfrom->get('sortorder'); $i < $categoryto->get('sortorder')-1; $i++) {
                 $categoryfrom->move(1);
