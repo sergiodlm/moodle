@@ -121,7 +121,7 @@ class data extends \core_customfield\data {
         $datetime = explode('-', $datetime);
         $datetime[0] = min(max($datetime[0], $config['startyear']), $config['endyear']);
 
-        if (!empty($config->includetime) && count($datetime) == 6) {
+        if (!empty($config['includetime']) && count($datetime) == 6) {
             return make_timestamp($datetime[0], $datetime[1], $datetime[2], $datetime[3], $datetime[4], $datetime[5]);
         } else {
             return make_timestamp($datetime[0], $datetime[1], $datetime[2]);
