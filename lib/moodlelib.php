@@ -2259,6 +2259,35 @@ function userdate($date, $format = '', $timezone = 99, $fixday = true, $fixhour 
 }
 
 /**
+ * Returns a html "time" tag with both the exact user date with timezone information
+ * as a datetime attribute in the W3C format, and the user readable date and time as text.
+ *
+ * @package core
+ * @category time
+ * @param int $date the timestamp in UTC, as obtained from the database.
+ * @param string $format strftime format. You should probably get this using
+ *        get_string('strftime...', 'langconfig');
+ * @param int|float|string $timezone by default, uses the user's time zone. if numeric and
+ *        not 99 then daylight saving will not be added.
+ *        {@link http://docs.moodle.org/dev/Time_API#Timezone}
+ * @param bool $fixday If true (default) then the leading zero from %d is removed.
+ *        If false then the leading zero is maintained.
+ * @param bool $fixhour If true (default) then the leading zero from %I is removed.
+ * @return string the formatted date/time.
+ */
+function userdate_htmltime($date, $format = '', $timezone = 99, $fixday = true, $fixhour = true) {
+    $userdatestr = userdate($date, $format, $timezone, $fixday, $fixhour);
+    if (CLI_SCRIPT && !PHPUNIT_TEST) {
+        return $userdatestr;
+    }
+    $machinedate = new DateTime();
+    $machinedate->setTimestamp(intval($date));
+    $machinedate->setTimezone(core_date::get_user_timezone_object());
+
+    return html_writer::tag('time', $userdatestr, ['datetime' => $machinedate->format(DateTime::W3C)]);
+}
+
+/**
  * Returns a formatted date ensuring it is UTF-8.
  *
  * If we are running under Windows convert to Windows encoding and then back to UTF-8
@@ -4182,8 +4211,8 @@ function delete_user(stdClass $user) {
     // Don't trigger update event, as user is being deleted.
     user_update_user($updateuser, false, false);
 
-    // Now do a final accesslib cleanup - removes all role assignments in user context and context itself.
-    context_helper::delete_instance(CONTEXT_USER, $user->id);
+    // Delete all content associated with the user context, but not the context itself.
+    $usercontext->delete_content();
 
     // Any plugin that needs to cleanup should register this event.
     // Trigger event.
@@ -10147,5 +10176,24 @@ class lang_string {
      */
     public function get_component() {
         return $this->component;
+    }
+}
+
+/**
+ * Get human readable name describing the given callable.
+ *
+ * This performs syntax check only to see if the given param looks like a valid function, method or closure.
+ * It does not check if the callable actually exists.
+ *
+ * @param callable|string|array $callable
+ * @return string|bool Human readable name of callable, or false if not a valid callable.
+ */
+function get_callable_name($callable) {
+
+    if (!is_callable($callable, true, $name)) {
+        return false;
+
+    } else {
+        return $name;
     }
 }
