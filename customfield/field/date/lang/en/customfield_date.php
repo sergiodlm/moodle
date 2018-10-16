@@ -22,5 +22,4 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Date Field';
-
+$string['pluginname'] = 'Date and time';
