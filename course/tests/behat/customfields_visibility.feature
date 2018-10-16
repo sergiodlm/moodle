@@ -19,7 +19,7 @@ Feature: The visibility of fields control where they are displayed
       | user | course | role |
       | teacher1 | C1 | editingteacher |
 
-  Scenario: Display custom fields on homepage
+  Scenario: Display course custom fields on homepage
     When I log in as "admin"
      And I navigate to "Courses > Course custom fields" in site administration
      And I click on "Add a new custom field" "link"

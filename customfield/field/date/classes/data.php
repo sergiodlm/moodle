@@ -50,8 +50,8 @@ class data extends \core_customfield\data {
         $stopdate = $calendartype->convert_from_gregorian($config['endyear'], 1, 1);
 
         $attributes = ['startyear' => $startdate['year'],
-                       'stopyear' => $stopdate['year'],
-                       'optional' => ($this->get_field()->get('required') != 1)];
+                       'stopyear'  => $stopdate['year'],
+                       'optional'  => $this->get_field_configdata()['required'] != 1];
 
         if (empty($config['includetime'])) {
             $element = 'date_selector';
