@@ -97,5 +97,5 @@ $string['therearenofields'] = 'There are no fields on this category';
 $string['totopofcategory'] = 'To the top of category {$a}';
 $string['type'] = 'Type';
 $string['unknownhandler'] = 'Unable to find handler for custom fields for component {$a->component} and area {$a->area}';
-$string['visibility'] = ' Who is this field visible to?';
+$string['visibility'] = ' Visible to';
 $string['yes'] = 'Yes';
