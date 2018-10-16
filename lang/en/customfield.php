@@ -55,6 +55,7 @@ $string['editingfield'] = 'Editing field';
 $string['endyear'] = 'End year';
 $string['errorfieldtypenotfound'] = 'Field type {$a} not found';
 $string['errorreloadpage'] = 'An error occurred. Please, refresh this page.';
+$string['erroruniquevalues'] = 'This value is already used.';
 $string['eventfieldcreated'] = 'Custom field created';
 $string['eventfieldupdated'] = 'Custom field updated';
 $string['everyone'] = 'Everyone';

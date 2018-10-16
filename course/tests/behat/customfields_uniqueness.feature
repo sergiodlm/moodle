@@ -14,11 +14,11 @@ Feature: The course custom fields can be mandatory or not
     And the following "courses" exist:
       | fullname | shortname | format |
       | Course 1 | C1 | topics |
+      | Course 2 | C2 | topics |
     And the following "course enrolments" exist:
       | user | course | role |
       | teacher1 | C1 | editingteacher |
-
-  Scenario: A required course custom field must be filled when editing course settings
+      | teacher1 | C2 | editingteacher |
     When I log in as "admin"
      And I navigate to "Courses > Course custom fields" in site administration
      And I click on "Add a new custom field" "link"
@@ -26,29 +26,20 @@ Feature: The course custom fields can be mandatory or not
      And I set the following fields to these values:
        | Name | Test field |
        | Short name | testfield |
-       | Required | Yes |
+       | Unique data | Yes |
      And I press "Save changes"
      And I log out
-     And I log in as "teacher1"
-     And I am on "Course 1" course homepage
-     And I navigate to "Edit settings" in current page administration
-     And I press "Save and display"
-    Then I should see "This field is required"
 
-  Scenario: A course custom field that is not required may not be filled
-    When I log in as "admin"
-     And I navigate to "Courses > Course custom fields" in site administration
-     And I click on "Add a new custom field" "link"
-     And I click on "Text field" "link"
-     And I set the following fields to these values:
-       | Name | Test field |
-       | Short name | testfield |
-       | Required | Yes |
-     And I press "Save changes"
-     And I log out
-     And I log in as "teacher1"
+  Scenario: A course custom field with unique data must not allow same data in same field in different courses
+    When I log in as "teacher1"
      And I am on "Course 1" course homepage
      And I navigate to "Edit settings" in current page administration
+     And I set the following fields to these values:
+       | Test field | testcontent |
      And I press "Save and display"
-    Then I should see "Course 1"
-     And I should see "Topic 1"
+     And I am on "Course 2" course homepage
+     And I navigate to "Edit settings" in current page administration
+     And I set the following fields to these values:
+       | Test field | testcontent |
+     And I press "Save and display"
+    Then I should see "This value is already used"

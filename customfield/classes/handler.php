@@ -370,6 +370,23 @@ abstract class handler {
     }
 
     /**
+     * Validates the given data for custom fields
+     *
+     * @param $data
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function validate_customfield_data($data) {
+        $editablefields = $this->get_editable_fields($data->id);
+        $fields = $this->get_fields_with_data($editablefields, $data->id);
+        $errors = [];
+        foreach ($fields as $formfield) {
+            $errors += $formfield->validate_data($data);
+        }
+        return $errors;
+    }
+
+    /**
      * Adds custom fields to edit forms.
      *
      * @param \MoodleQuickForm $mform
