@@ -85,10 +85,12 @@ class management implements renderable, templatable {
             foreach ($category->fields() as $field) {
                 global $OUTPUT;
 
+                $fieldname = format_string($field->get('name'), true, ['context' => $this->handler->get_configuration_context()]); // TODO method in field class.
                 $fieldarray['type'] = $fieldtypes[$field->get('type')];
                 $fieldarray['id'] = $field->get('id');
-                $fieldarray['name'] = $field->get('name');
+                $fieldarray['name'] = $fieldname;
                 $fieldarray['shortname'] = $field->get('shortname');
+                $fieldarray['movetitle'] = get_string('movefield', 'core_customfield', $fieldname);
 
                 $fieldarray['deletefieldurl'] = (new \moodle_url('/customfield/edit.php', [
                         'delete' => $fieldarray['id'],

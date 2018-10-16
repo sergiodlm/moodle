@@ -60,9 +60,7 @@
         <div class="row align-items-baseline justify-content-between">
             <div class="col-8 categoryinstance">
                 {{#usescategories}}
-                <a tabindex="0" data-drag-type="move" aria-haspopup="true" role="button" class="movecategory osep-link-icon float-left">
-                    {{#pix}}i/dragdrop, core, {{#str}}move{{/str}}{{/pix}}
-                </a>
+                    <span class="movecategory">{{> core/drag_handle}}</span>
                 <h3>{{{nameeditable}}}</h3>
                 {{/usescategories}}
             </div>
@@ -91,9 +89,7 @@
                 {{#fields}}
                     <tr data-field-name="{{name}}" data-field-id="{{id}}"  class="field">
                         <td class="text-left">
-                            <a tabindex="0" data-drag-type="move" aria-haspopup="true" role="button" class="movefield osep-link-icon">
-                                {{#pix}}i/dragdrop, core, {{#str}}move{{/str}}{{/pix}}
-                            </a>
+                            <span class="movefield">{{> core/drag_handle}}</span>
                         </td>
                         <td class="col-5">
                             <p>{{{name}}}</p>

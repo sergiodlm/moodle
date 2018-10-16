@@ -82,24 +82,21 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                 };
 
                 // Sort category.
-                sortableList.init({
-                    listSelector: '#customfield_catlist',
-                    moveHandlerSelector: '.movecategory',
-                    elementNameCallback: function (el) {
-                        //console.log('elementnamecallback');
-                        //console.log(el);
-                        return categoryName(el);
-                    }
-                });
+                var sortCat = new sortableList('#customfield_catlist', {moveHandlerSelector: '.movecategory [data-drag-type=move]'});
+                sortCat.getElementName = function(el) {
+                    //console.log('elementnamecallback');
+                    //console.log(el);
+                    return $.Deferred().resolve(categoryName(el));
+                };
                 $('[data-category-id]').on(
                     'sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend',
                     function(evt, info) {
-                        if (evt.type == 'sortablelist-dragend' && info.dropped) {
+                        if (evt.type == 'sortablelist-drop' && info.positionChanged) {
                             var promises = ajax.call([
                                 {
                                     methodname: 'core_customfield_drag_and_drop_block',
                                     args: {
-                                        from: info.draggedElement.data('category-id'),
+                                        from: info.element.data('category-id'),
                                         to: info.targetNextElement.data('category-id') || 0
                                     }
 
@@ -120,29 +117,26 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     });
 
                 // Sort activities.
-                sortableList.init({
-                    listSelector: '#customfield_catlist .fieldslist tbody',
-                    moveHandlerSelector: '.movefield',
-                    destinationNameCallback: function (parentElement, afterElement) {
-                        if (!afterElement.length) {
-                            return str.get_string('totopofcategory', 'customfield', categoryName(parentElement));
-                        } else if (afterElement.attr('data-field-name')) {
-                            return str.get_string('afterfield', 'customfield', afterElement.attr('data-field-name'));
-                        } else {
-                            return '';
-                        }
+                var sort = new sortableList('#customfield_catlist .fieldslist tbody', {moveHandlerSelector: '.movefield [data-drag-type=move]'});
+                sort.getDestinationName = function (parentElement, afterElement) {
+                    if (!afterElement.length) {
+                        return str.get_string('totopofcategory', 'customfield', categoryName(parentElement));
+                    } else if (afterElement.attr('data-field-name')) {
+                        return str.get_string('afterfield', 'customfield', afterElement.attr('data-field-name'));
+                    } else {
+                        return $.Deferred().resolve('');
                     }
-                });
+                 };
                 $('[data-field-name]').on(
                     'sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend',
                     function (evt, info
                     ) {
-                        if (evt.type === 'sortablelist-dragend' && info.dropped) {
+                        if (evt.type === 'sortablelist-drop' && info.positionChanged) {
                             var promises = ajax.call([
                                 {
                                     methodname: 'core_customfield_drag_and_drop',
                                     args: {
-                                        from: info.draggedElement.data('field-id'),
+                                        from: info.element.data('field-id'),
                                         to: info.targetNextElement.data('field-id') || 0,
                                         category: Number(info.targetList.closest('[data-category-id]').attr('data-category-id'))
                                     },
@@ -179,7 +173,7 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     'sortablelist-dragstart',
                     function (evt, info) {
                         setTimeout(function () {
-                            $('.sortable-list-is-dragged').width(info.draggedElement.width());
+                            $('.sortable-list-is-dragged').width(info.element.width());
                         }, 501);
                     }
                 );
