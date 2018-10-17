@@ -119,18 +119,23 @@ class customfield extends \core_search\base_mod {
         return $doc;
     }
 
+    /**
+     *  Check access to the indexed resource
+     *
+     *  @param int $id
+     *  @return int
+     *  @throws \dml_exception
+     */
     public function check_access($id) {
-        //    global $DB;
-        //    $course = $DB->get_record('course', array('id' => $id));
-        //    if (!$course) {
-        //        return \core_search\manager::ACCESS_DELETED;
-        //    }
-        //    if (can_access_course($course)) {
-        //        return \core_search\manager::ACCESS_GRANTED;
-        //    }
-        //    return \core_search\manager::ACCESS_DENIED;
-        // TODO: Implement check_access() method.
-        return \core_search\manager::ACCESS_GRANTED;
+            global $DB;
+            $course = $DB->get_record('course', array('id' => $id));
+            if (!$course) {
+                return \core_search\manager::ACCESS_DELETED;
+            }
+            if (can_access_course($course)) {
+                return \core_search\manager::ACCESS_GRANTED;
+            }
+            return \core_search\manager::ACCESS_DENIED;
     }
 
     /**
