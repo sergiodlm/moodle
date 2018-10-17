@@ -33,6 +33,8 @@ class api {
      * @param string $area
      * @param int $itemid
      * @return category[]
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public static function get_fields_definitions(string $component, string $area, int $itemid): array {
         return category::list(['component' => $component, 'area' => $area, 'itemid' => $itemid]);
@@ -42,8 +44,10 @@ class api {
      * Fetch a field from database or create a new one if $field is given
      *
      * @param int $id id of the field (0 for new field)
-     * @param \stdClass $record a pre-fetched record
+     * @param \stdClass|null $field
      * @return field
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
     public static function get_field(int $id, \stdClass $field = null): field {
         return field::load_field($id, $field);
@@ -54,8 +58,10 @@ class api {
      *
      * @param int $id id of the field (0 for new field)
      * @param \stdClass $data a pre-fetched data
-     * @param \stdClass $field a pre-fetched field
-     * @return field
+     * @param field $field a pre-fetched field
+     * @return data
+     * @throws \coding_exception
+     * @throws \moodle_exception
      */
     public static function load_data(int $id, \stdClass $data, field $field): data {
         return data::load_data($id, $data, $field);
@@ -64,12 +70,13 @@ class api {
     /**
      * Retrieves list of all fields and the data associated with them
      *
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
+     * @param array $fields
      * @param \context $datacontext context to use for data that does not yet exist
      * @param int $recordid
      * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public static function get_fields_with_data(array $fields, \context $datacontext, int $recordid): array {
         global $DB;
@@ -113,12 +120,13 @@ class api {
     /**
      * Retrieves list of fields and the data associated with them for backups
      *
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
+     * @param array $fields
      * @param \context $datacontext context to use for data that does not yet exist
      * @param int $recordid
      * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public static function get_fields_with_data_for_backup(array $fields, \context $datacontext, int $recordid): array {
         global $DB;
@@ -161,6 +169,7 @@ class api {
      * Retrieve a list of all available custom field types
      *
      * @return   array   a list of the fieldtypes suitable to use in a select statement
+     * @throws \coding_exception
      */
     public static function field_types() {
         $fieldtypes = array();
@@ -229,6 +238,8 @@ class api {
      *
      * @param category $category
      * @param \stdClass $formdata
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
     public static function save_category(category $category, \stdClass $formdata) {
         $created = !$field->get('id');
