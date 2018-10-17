@@ -4,6 +4,7 @@ Feature: Managers can manage categories for course custom fields
   As a manager
   I need to create, edit, remove and sort custom field's categories
 
+  @javascript
   Scenario: Create a category for custom course fields
     Given I log in as "admin"
     When I navigate to "Courses > Course custom fields" in site administration

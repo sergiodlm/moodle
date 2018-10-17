@@ -25,7 +25,6 @@ require_once($CFG->libdir.'/adminlib.php');
 
 admin_externalpage_setup('course_customfield');
 
-
 $output = $PAGE->get_renderer('core_customfield');
 $handler = core_course\customfield\course_handler::instance();
 $outputpage = new \core_customfield\output\management($handler);

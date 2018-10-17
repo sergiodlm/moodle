@@ -1,4 +1,4 @@
-@core @core_course
+@core @core_course @course_customfield
 Feature: Teachers can edit course custom fields
   In order to have additional data on the course
   As a teacher
@@ -19,14 +19,15 @@ Feature: Teachers can edit course custom fields
       | teacher1 | C1 | editingteacher |
     And I log in as "admin"
     And I navigate to "Courses > Course custom fields" in site administration
-    And I select "Text field" from the "Add a new custom field" singleselect
+    And I click on "Add a new custom field" "link"
+    And I click on "Text field" "link"
     And I set the following fields to these values:
       | Name | Test field |
-      | Short Name | testfield |
+      | Short name | testfield |
     And I press "Save changes"
     And I log out
 
-  Scenario: Have a checkbox on course edit form
+  Scenario: Have a text field on course edit form
     When I log in as "teacher1"
      And I am on "Course 1" course homepage
      And I navigate to "Edit settings" in current page administration
@@ -41,8 +42,8 @@ Feature: Teachers can edit course custom fields
      And I set the following fields to these values:
        | Test field | testcontent |
      And I press "Save and display"
-    And I log out
-    And I log in as "admin"
+     And I log out
+     And I log in as "admin"
      And I go to the courses management page
     When I set the field "coursesearchbox" to "testcontent"
      And I press "Go"

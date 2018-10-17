@@ -83,15 +83,15 @@ class data extends persistent {
                 ],
                 // Mandatory field.
                 'value'          => [
-                        'type'     => PARAM_TEXT,
-                        'null'     => NULL_NOT_ALLOWED,
-                        'default'  => ''
+                        'type'    => PARAM_TEXT,
+                        'null'    => NULL_NOT_ALLOWED,
+                        'default' => ''
                 ],
                 // Mandatory field.
                 'valueformat'    => [
-                        'type'     => PARAM_TEXT,
-                        'null'     => NULL_NOT_ALLOWED,
-                        'default'  => ''
+                        'type'    => PARAM_TEXT,
+                        'null'    => NULL_NOT_ALLOWED,
+                        'default' => ''
                 ],
                 'contextid'      => [
                         'type'     => PARAM_INT,
@@ -226,10 +226,7 @@ class data extends persistent {
             return false;
         }
 
-        $datarecord = $DB->get_record(
-                'customfield_data',
-                ['recordid' => $datanew->id, 'fieldid' => $this->get_field()->get('id')]
-        );
+        $datarecord = $DB->get_record('customfield_data', ['recordid' => $datanew->id, 'fieldid' => $this->get_field()->get('id')]);
 
         $now = time();
         if ($datarecord) {
@@ -271,6 +268,32 @@ class data extends persistent {
         if ($this->get_formvalue() !== null) {
             $data->{$this->inputname()} = $this->get_formvalue();
         }
+    }
+
+    /**
+     * Loads an object with data for this field.
+     *
+     * @param \stdClass $data
+     * @return array
+     */
+    public function validate_data($data): array {
+        global $DB;
+
+        $errors = [];
+        if ($this->get_field_configdata()['uniquevalues'] == 1) {
+
+            $datafield = $this->datafield();
+            $where = "fieldid = ? AND {$datafield} = ?";
+            $params = [$this->get_field()->get('id'), $data->{$this->inputname()}];
+            if (isset($data->id) && $data->id > 1) {
+                $where .= ' AND recordid != ?';
+                $params[] = $data->id;
+            }
+            if ($DB->record_exists_select('customfield_data', $where, $params)) {
+                $errors[$this->inputname()] = get_string('erroruniquevalues', 'core_customfield');
+            }
+        }
+        return $errors;
     }
 
     /**

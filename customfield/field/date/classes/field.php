@@ -56,16 +56,16 @@ class field extends \core_customfield\field {
         $mform->addElement('select', 'configdata[startyear]', get_string('startyear', 'core_customfield'), $arryears);
         $mform->setType('configdata[startyear]', PARAM_INT);
 
-        $defaultstart = isset($config->startyear) ? $config->startyear : $currentyear;
+        $defaultstart = isset($config['startyear']) ? $config['startyear'] : $currentyear;
         $mform->setDefault('configdata[startyear]', $defaultstart);
 
         $mform->addElement('select', 'configdata[endyear]', get_string('endyear', 'core_customfield'), $arryears);
         $mform->setType('configdata[endyear]', PARAM_INT);
-        $defaultend = isset($config->endyear) ? $config->endyear : $currentyear;
+        $defaultend = isset($config['endyear']) ? $config['endyear'] : $currentyear;
         $mform->setDefault('configdata[endyear]', $defaultend);
 
         $mform->addElement('checkbox', 'configdata[includetime]', get_string('includetime', 'core_customfield'));
-        $mform->setDefault('configdata[includetime]', isset($config->includetime));
+        $mform->setDefault('configdata[includetime]', isset($config['includetime']));
 
         $mform->addElement('hidden', 'startday', '1');
         $mform->setType('startday', PARAM_INT);

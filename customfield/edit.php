@@ -27,12 +27,13 @@ $id         = optional_param('id', 0, PARAM_INT);
 $categoryid = optional_param('categoryid', 0, PARAM_INT);
 $type       = optional_param('type', null, PARAM_COMPONENT);
 
-require_login();
+admin_externalpage_setup('course_customfield');
 
 if ($id) {
     $record  = \core_customfield\api::get_field($id);
     $handler = \core_customfield\handler::get_handler_for_field($record);
-    $title   = get_string('editingfield', 'core_customfield');
+    $typestr  = get_string('pluginname', 'customfield_'.$record->get('type'));
+    $title   = get_string('editingfield', 'core_customfield', $typestr);
 } else {
     $category = new \core_customfield\category($categoryid);
     $handler  = \core_customfield\handler::get_handler_for_category($category);
@@ -51,7 +52,6 @@ $PAGE->set_url($url);
 if (!$handler->can_configure()) {
     print_error('nopermissionconfigure', 'core_customfield');
 }
-$PAGE->set_context(context_system::instance());
 
 $mform = $handler->get_field_config_form($record);
 // Process Form data.
@@ -62,7 +62,6 @@ if ($mform->is_cancelled()) {
     redirect($handler->get_configuration_url());
 }
 
-$PAGE->set_heading(get_site()->fullname);
 $PAGE->set_title($title);
 $PAGE->navbar->add($title);
 

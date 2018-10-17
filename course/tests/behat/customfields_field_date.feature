@@ -1,4 +1,4 @@
-@core @core_course
+@core @core_course @course_customfield
 Feature: Managers can manage course custom fields
   In order to have additional data on the course
   As a manager
@@ -12,34 +12,37 @@ Feature: Managers can manage course custom fields
     And I navigate to "Courses > Course custom fields" in site administration
 
   Scenario: Create a custom course field
-    When I select "Date Field" from the "Add a new custom field" singleselect
-    And I set the following fields to these values:
-      | Name | Test field |
-      | Short Name | testfield |
-    And I press "Save changes"
+    When I click on "Add a new custom field" "link"
+     And I click on "Date and time" "link"
+     And I set the following fields to these values:
+       | Name | Test field |
+       | Short name | testfield |
+     And I press "Save changes"
     Then I should see "Test field" in the "#customfield_catlist" "css_element"
 
   Scenario: Edit a custom course field
-    When I select "Date Field" from the "Add a new custom field" singleselect
-    And I set the following fields to these values:
-      | Name | Test field |
-      | Short Name | testfield |
-    And I press "Save changes"
-    And I click on "[data-role='editfield']" "css_element"
-    And I set the following fields to these values:
-      | Name | Edited field |
-    And I press "Save changes"
+    When I click on "Add a new custom field" "link"
+     And I click on "Date and time" "link"
+     And I set the following fields to these values:
+       | Name | Test field |
+       | Short name | testfield |
+     And I press "Save changes"
+     And I click on "[data-role='editfield']" "css_element"
+     And I set the following fields to these values:
+       | Name | Edited field |
+     And I press "Save changes"
     Then I should see "Edited field" in the "#customfield_catlist" "css_element"
 
   @javascript
   Scenario: Delete a custom course field
-    When I select "Date Field" from the "Add a new custom field" singleselect
-    And I set the following fields to these values:
-      | Name | Test field |
-      | Short Name | testfield |
-    And I press "Save changes"
-    And I click on "[data-role='deletefield']" "css_element"
-    And I click on "Yes" "button" in the "Delete" "dialogue"
-    And I wait until the page is ready
-    And I wait until "Test field" "text" does not exist
+    When I click on "Add a new custom field" "link"
+     And I click on "Date and time" "link"
+     And I set the following fields to these values:
+       | Name | Test field |
+       | Short name | testfield |
+     And I press "Save changes"
+     And I click on "[data-role='deletefield']" "css_element"
+     And I click on "Yes" "button" in the "Delete" "dialogue"
+     And I wait until the page is ready
+     And I wait until "Test field" "text" does not exist
     Then I should not see "Test field" in the "#customfield_catlist" "css_element"
