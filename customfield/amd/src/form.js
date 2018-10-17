@@ -36,18 +36,18 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
             }).fail(notification.exception);
         };
 
-        var createNewCategory = function(component, area, itemid) {
+        var createNewCategory = function (component, area, itemid) {
             var promises = ajax.call([
                     {methodname: 'core_customfield_create_category', args: {component: component, area: area, itemid: itemid}},
                     {methodname: 'core_customfield_reload_template', args: {component: component, area: area, itemid: itemid}}
                 ]),
                 categoryid;
-            promises[0].then(function(response) {
+            promises[0].then(function (response) {
                 categoryid = response;
                 return;
             }).catch(notification.exception);
-            promises[1].then(function(response) {
-                templates.render('core_customfield/customfield', response).then(function(html, js) {
+            promises[1].then(function (response) {
+                templates.render('core_customfield/customfield', response).then(function (html, js) {
                     $('[data-region="list-page"]').replaceWith(html);
                     templates.runTemplateJS(js);
                     window.location.href = '#category-' + categoryid;
@@ -70,7 +70,7 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     confirmDelete($(this).attr('data-id'), 'category', component, area, itemid);
                     e.preventDefault();
                 });
-                $('[data-role=addnewcategory]').on('click', function() {
+                $('[data-role=addnewcategory]').on('click', function () {
                     createNewCategory(component, area, itemid);
                 });
 
@@ -82,15 +82,18 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                 };
 
                 // Sort category.
-                var sortCat = new sortableList('#customfield_catlist', {moveHandlerSelector: '.movecategory [data-drag-type=move]'});
-                sortCat.getElementName = function(el) {
+                var sortCat = new sortableList(
+                    '#customfield_catlist',
+                    {moveHandlerSelector: '.movecategory [data-drag-type=move]'}
+                );
+                sortCat.getElementName = function (el) {
                     //console.log('elementnamecallback');
                     //console.log(el);
                     return $.Deferred().resolve(categoryName(el));
                 };
                 $('[data-category-id]').on(
                     'sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend',
-                    function(evt, info) {
+                    function (evt, info) {
                         if (evt.type == 'sortablelist-drop' && info.positionChanged) {
                             var promises = ajax.call([
                                 {
@@ -102,9 +105,9 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
 
                                 },
                             ]);
-                            promises[0].fail(function() {
-                                require(["core/notification"], function(notification) {
-                                    str.get_string('errorreloadpage', 'core_customfield').done(function(s) {
+                            promises[0].fail(function () {
+                                require(["core/notification"], function (notification) {
+                                    str.get_string('errorreloadpage', 'core_customfield').done(function (s) {
                                         notification.addNotification({
                                             message: s,
                                             type: "problem"
@@ -117,7 +120,10 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     });
 
                 // Sort activities.
-                var sort = new sortableList('#customfield_catlist .fieldslist tbody', {moveHandlerSelector: '.movefield [data-drag-type=move]'});
+                var sort = new sortableList(
+                    '#customfield_catlist .fieldslist tbody',
+                    {moveHandlerSelector: '.movefield [data-drag-type=move]'}
+                );
                 sort.getDestinationName = function (parentElement, afterElement) {
                     if (!afterElement.length) {
                         return str.get_string('totopofcategory', 'customfield', categoryName(parentElement));
@@ -126,7 +132,7 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                     } else {
                         return $.Deferred().resolve('');
                     }
-                 };
+                };
                 $('[data-field-name]').on(
                     'sortablelist-drop sortablelist-dragstart sortablelist-drag sortablelist-dragend',
                     function (evt, info
@@ -142,9 +148,9 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                                     },
                                 },
                             ]);
-                            promises[0].fail(function() {
+                            promises[0].fail(function () {
                                 require(["core/notification"], function (notification) {
-                                    str.get_string('errorreloadpage', 'core_customfield').done(function(s) {
+                                    str.get_string('errorreloadpage', 'core_customfield').done(function (s) {
                                         notification.addNotification({
                                             message: s,
                                             type: "problem"
