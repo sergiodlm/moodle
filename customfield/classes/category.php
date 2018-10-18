@@ -171,6 +171,18 @@ class category extends persistent {
     }
 
     /**
+     * Clear cache before update
+     *
+     * @param bool $result
+     *
+     * @return bool
+     */
+    protected function after_update($result) : bool {
+        $this->clear_cache();
+        return true;
+    }
+
+    /**
      * Updates sort order after create
      *
      * @return bool
