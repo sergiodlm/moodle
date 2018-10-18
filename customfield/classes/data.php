@@ -303,7 +303,7 @@ class data extends persistent {
      */
     public function get_field_configdata() {
         // TODO add defaults here.
-        return json_decode($this->get_field()->get('configdata'), true);
+        return $this->get_field()->get('configdata');
     }
 
     /**
