@@ -61,8 +61,7 @@ class management implements renderable, templatable {
      * @throws \moodle_exception
      */
     public function export_for_template(renderer_base $output) {
-        global $OUTPUT;
-        $data = (object) [];
+        $data = new \stdClass();
 
         $fieldtypes = $this->handler->field_types();
 
@@ -83,9 +82,8 @@ class management implements renderable, templatable {
             $categoryarray['fields'] = array();
 
             foreach ($category->fields() as $field) {
-                global $OUTPUT;
 
-                $fieldname = format_string($field->get('name'), true, ['context' => $this->handler->get_configuration_context()]); // TODO method in field class.
+                $fieldname = $this->handler->get_field_formatted_name($field);
                 $fieldarray['type'] = $fieldtypes[$field->get('type')];
                 $fieldarray['id'] = $field->get('id');
                 $fieldarray['name'] = $fieldname;

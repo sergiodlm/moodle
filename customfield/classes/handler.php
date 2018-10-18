@@ -548,6 +548,16 @@ abstract class handler {
     }
 
     /**
+     * Returns the field name formatted according to configuration context.
+     *
+     * @param field $field
+     * @return string
+     */
+    public function get_field_formatted_name(field $field): string {
+        return format_string($field->get('name'), true, ['context' => $this->get_configuration_context()]);
+    }
+
+    /**
      * Add fields for editing a text field.
      *
      * @param \MoodleQuickForm $mform
