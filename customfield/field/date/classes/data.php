@@ -100,12 +100,12 @@ class data extends \core_customfield\data {
     /**
      * If timestamp is in YYYY-MM-DD or YYYY-MM-DD-HH-MM-SS format, then convert it to timestamp.
      *
-     * @param string|int $datetime datetime to be converted.
+     * @param string|array $data
      * @param stdClass $datarecord The object that will be used to save the record
      * @return mixed
      * @throws \coding_exception
      */
-    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
+    public function edit_save_data_preprocess($data, \stdClass $datarecord) {
 
         if (!$data) {
             return 0;
