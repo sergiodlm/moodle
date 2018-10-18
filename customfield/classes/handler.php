@@ -413,8 +413,8 @@ abstract class handler {
             $mform->addElement('header', 'category_' . $categoryid, format_string($formfield->get_field()->get_category()->get('name')));
             foreach ($fields as $formfield) {
                 $formfield->edit_field_add($mform);
-                if ((bool) json_decode($formfield->get_field()->get('configdata'), true)['required']) {
-                     $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
+                if ($formfield->get_field()->get('required')) {
+                    $mform->addRule($formfield->inputname(), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
                 }
             }
         }
@@ -468,7 +468,7 @@ abstract class handler {
         $data = $field->to_record();
         $context = $this->get_configuration_context();
         $textoptions = ['context' => $context] + $this->get_description_text_options();
-        $data->configdata = json_decode($field->get('configdata'), true);
+        $data->configdata = $field->get('configdata');
         if ($data->id) {
             file_prepare_standard_editor($data, 'description', $textoptions, $context, 'core_customfield',
                 'description', $data->id);

@@ -136,7 +136,7 @@ abstract class field extends persistent {
      * @throws \moodle_exception
      */
     protected function validate_configdata($value) {
-        $fields = json_decode($this->get('configdata'), true);
+        $fields = $this->get('configdata');
 
         if (!(isset($fields['required']) && isset($fields['uniquevalues']))) {
             throw new \moodle_exception('fieldrequired', 'core_customfield');
@@ -275,8 +275,31 @@ abstract class field extends persistent {
         return $this->category;
     }
 
-    public function get_config_data(): array {
+    /**
+     * Custom getter for configdata, decoded
+     *
+     * @return array
+     */
+    protected function get_configdata(): array {
         return json_decode($this->get('configdata'), true);
+    }
+
+    /**
+     * Custom getter for required
+     *
+     * @return array
+     */
+    protected function get_required(): bool {
+        return (bool) $this->get('configdata')['required'];
+    }
+
+    /**
+     * Custom getter for visibility
+     *
+     * @return string
+     */
+    protected function get_visibility(): string {
+        return $this->get('configdata')['visibility'];
     }
 
     /**
@@ -299,8 +322,6 @@ abstract class field extends persistent {
         if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
             throw new \coding_exception(get_string('errorfieldtypenotfound', 'core_customfield', s($field->type)));
         }
-
-        $configdata          = json_decode($field->configdata, true);
 
         return new $customfieldtype($field->id, $field);
     }
