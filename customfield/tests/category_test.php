@@ -26,8 +26,6 @@
 namespace core_customfield;
 
 use advanced_testcase;
-use Horde\Socket\Client\Exception;
-use Phpml\Exception\DatasetException;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
