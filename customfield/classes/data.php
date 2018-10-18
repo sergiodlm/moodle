@@ -83,7 +83,7 @@ class data extends persistent {
                 ],
                 // Mandatory field.
                 'value'          => [
-                        'type'    => PARAM_TEXT,
+                        'type'    => PARAM_RAW,
                         'null'    => NULL_NOT_ALLOWED,
                         'default' => ''
                 ],
@@ -238,9 +238,8 @@ class data extends persistent {
             $this->set('contextid', $datanew->contextid);
             $this->set('timecreated', $now);
         }
-        $this->set($this->datafield(), $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew));
-        $this->set('value', $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew));
-        $this->set('valueformat', str_replace('value', '', $this->datafield()));
+        $datapreprocessed = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
+        $this->set($this->datafield(), $datapreprocessed);
         $this->set('timemodified', $now);
 
         $this->save();
@@ -250,11 +249,11 @@ class data extends persistent {
     /**
      * Hook for child classess to process the data before it gets saved in database
      *
-     * @param string $data
+     * @param string|array $data
      * @param \stdClass $datarecord The object that will be used to save the record
      * @return  mixed
      */
-    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
+    public function edit_save_data_preprocess($data, \stdClass $datarecord) {
         return $data;
     }
 

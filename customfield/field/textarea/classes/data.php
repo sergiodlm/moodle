@@ -64,11 +64,11 @@ class data extends \core_customfield\data {
     /**
      * Process incoming data for the field.
      *
-     * @param \stdClass $data
+     * @param string|array $data
      * @param \stdClass $datarecord
      * @return mixed
      */
-    public function edit_save_data_preprocess(string $data, \stdClass $datarecord) {
+    public function edit_save_data_preprocess($data, \stdClass $datarecord) {
         if (is_array($data)) {
             $datarecord->dataformat = $data['format'];
             $data                   = $data['text'];
@@ -83,10 +83,10 @@ class data extends \core_customfield\data {
      * @throws \coding_exception
      */
     public function edit_load_data(\stdClass $data) {
-        if ($this->get('data') !== null) {
-            $this->set('dataformat', 1);
-            $this->set('data', clean_text($this->get('data'), $this->get('dataformat')));
-            $data->{$this->inputname()} = array('text' => $this->get('data'), 'format' => $this->get('dataformat'));
+        if ($this->get($this->datafield()) !== null) {
+            $this->set('valueformat', 1);
+            $this->set($this->datafield(), clean_text($this->get($this->datafield()), $this->get('valueformat')));
+            $data->{$this->inputname()} = array('text' => $this->get($this->datafield()), 'format' => $this->get('valueformat'));
         }
     }
 }
