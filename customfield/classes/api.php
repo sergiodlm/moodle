@@ -94,7 +94,7 @@ class api {
              LEFT JOIN {customfield_data} d
                     ON (f.id = d.fieldid AND d.recordid = :recordid)
                  WHERE f.id {$sqlfields}
-              ORDER BY c.sortorder, f.sortorder";
+              ORDER BY c.sortorder, f.sortorder DESC";
         $params['recordid'] = $recordid;
         $fieldsdata = $DB->get_records_sql($sql, $params);
 
