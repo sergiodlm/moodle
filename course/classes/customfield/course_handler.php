@@ -127,7 +127,12 @@ class course_handler extends \core_customfield\handler {
         $visiblefields = [];
         foreach ($categories as $category) {
             foreach ($category->fields() as $field) {
-                $visibility = $field->get_configdata_property('visibility');
+                if ( is_null($field->get_configdata_property('visibility')) ) {
+                    throw new \coding_exception('null value not allowed');
+                } else {
+                    $visibility = (bool) $field->get_configdata_property('visibility');
+                }
+
                 $canview = false;
                 if ($visibility == 0) {
                     $canview = false;

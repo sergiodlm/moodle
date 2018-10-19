@@ -292,7 +292,7 @@ abstract class field extends persistent {
     public function get_configdata_property(string $property) {
         $configdata = json_decode($this->raw_get('configdata'), true);
         if ( !isset($configdata[$property]) ) {
-            throw new \moodle_exception("Field property \"$property\" not defined.");
+            return null;
         }
         return $configdata[$property];
     }
