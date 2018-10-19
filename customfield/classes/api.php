@@ -72,13 +72,13 @@ class api {
      *
      * @param array $fields
      * @param \context $datacontext context to use for data that does not yet exist
-     * @param int $recordid
+     * @param int $instanceid
      * @return array
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public static function get_fields_with_data(array $fields, \context $datacontext, int $recordid): array {
+    public static function get_fields_with_data(array $fields, \context $datacontext, int $instanceid): array {
         global $DB;
 
         if (empty($fields)) {
@@ -92,10 +92,10 @@ class api {
                   JOIN {customfield_field} f
                     ON (c.id = f.categoryid)
              LEFT JOIN {customfield_data} d
-                    ON (f.id = d.fieldid AND d.recordid = :recordid)
+                    ON (f.id = d.fieldid AND d.instanceid = :instanceid)
                  WHERE f.id {$sqlfields}
               ORDER BY c.sortorder, f.sortorder DESC";
-        $params['recordid'] = $recordid;
+        $params['instanceid'] = $instanceid;
         $fieldsdata = $DB->get_records_sql($sql, $params);
 
         $formfields = [];
@@ -110,7 +110,7 @@ class api {
                 $data->id        = 0;
                 $data->fieldid   = $field->get('id');
                 $data->contextid = $datacontext->id;
-                $data->recordid  = $recordid;
+                $data->instanceid  = $instanceid;
             }
             $formfields[] = self::load_data(0, $data, $field);
         }
@@ -122,13 +122,13 @@ class api {
      *
      * @param array $fields
      * @param \context $datacontext context to use for data that does not yet exist
-     * @param int $recordid
+     * @param int $instanceid
      * @return array
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public static function get_fields_with_data_for_backup(array $fields, \context $datacontext, int $recordid): array {
+    public static function get_fields_with_data_for_backup(array $fields, \context $datacontext, int $instanceid): array {
         global $DB;
 
         if (empty($fields)) {
@@ -141,10 +141,10 @@ class api {
                   JOIN {customfield_field} f
                     ON (c.id = f.categoryid)
                   JOIN {customfield_data} d
-                    ON (f.id = d.fieldid AND d.recordid = :recordid)
+                    ON (f.id = d.fieldid AND d.instanceid = :instanceid)
                  WHERE f.id {$sqlfields}
               ORDER BY c.sortorder, f.sortorder";
-        $params['recordid'] = $recordid;
+        $params['instanceid'] = $instanceid;
         $fieldsdata = $DB->get_records_sql($sql, $params);
 
         $finalfields = [];
@@ -156,7 +156,7 @@ class api {
             if (empty($data->id)) {
                 $data->fieldid   = $field->get('id');
                 $data->contextid = $datacontext->id;
-                $data->recordid  = $recordid;
+                $data->instanceid  = $instanceid;
             }
             $f             = self::load_data($data->id, $data, $field);
             $finalfields[] = ['id'   => $f->get('id'), 'shortname' => $f->get_field()->get('shortname'),
