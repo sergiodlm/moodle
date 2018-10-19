@@ -260,10 +260,11 @@ abstract class handler {
     /**
      * The current user can edit custom fields on the given record on this component.
      *
+     * @param field $field
      * @param null $recordid
      * @return bool
      */
-    abstract public function can_edit($recordid = null): bool;
+    abstract public function can_edit(field $field, $recordid = null): bool;
 
     /**
      * The given field is supported on by this handler
@@ -329,10 +330,6 @@ abstract class handler {
 
         foreach ($fields as $formfield) {
             $formfield->edit_after_data($mform);
-            if ($formfield->get_field_configdata()['locked'] and !$this->can_edit($recordid)) {
-                $mform->hardFreeze($formfield->inputname());
-                $mform->setConstant($formfield->inputname(), $formfield->get_formvalue());
-            }
         }
     }
 
@@ -372,16 +369,17 @@ abstract class handler {
     /**
      * Validates the given data for custom fields
      *
-     * @param $data
+     * @param stdClass $data
+     * @param array $files
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function validate_customfield_data($data) {
+    public function validate_customfield_data(stdClass $data, array $files) {
         $editablefields = $this->get_editable_fields($data->id);
         $fields = $this->get_fields_with_data($editablefields, $data->id);
         $errors = [];
         foreach ($fields as $formfield) {
-            $errors += $formfield->validate_data($data);
+            $errors += $formfield->validate_data($data, $files);
         }
         return $errors;
     }
@@ -488,40 +486,6 @@ abstract class handler {
     }
 
     /**
-     * Save the category configuration using the data from the form
-     *
-     * @param category $category
-     * @param stdClass $data data from the form
-     * @throws \moodle_exception
-     */
-    public function save_category(category $category, stdClass $data) {
-        try {
-            api::save_category($category, $data);
-            \core\notification::success(get_string('categorysaved', 'core_customfield'));
-        } catch (\moodle_exception $exception) {
-            \core\notification::error(get_string('categorysavefailed', 'core_customfield'));
-        }
-    }
-
-    /**
-     * Returns get_fields_with_data as an array for webservices use.
-     *
-     * @param int $recordid id of the record to get fields for
-     * @return array custom fields with it's values for the specified recordid
-     */
-    public function fields_array($recordid) : array {
-        $visiblefields = $this->get_visible_fields($recordid);
-        $datafields = $this->get_fields_with_data($visiblefields, $recordid);
-        $fieldsarray = array();
-        foreach ($datafields as $data) {
-            $field = $data->get_field();
-            $fieldsarray[] = ['type' => $field->get('type'), 'value' => $data->get_formvalue(),
-                              'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
-        }
-        return $fieldsarray;
-    }
-
-    /**
      * Creates or updates custom field data for a recordid from backup data.
      *
      * @param int $recordid
@@ -564,4 +528,17 @@ abstract class handler {
      * @throws \coding_exception
      */
     abstract static public function add_to_field_config_form(\MoodleQuickForm $mform);
+
+    protected function get_editable_fields(int $recordid): array {
+        $categories = $this->get_fields_definitions();
+        $editablefields = [];
+        foreach ($categories as $category) {
+            foreach ($category->fields() as $field) {
+                if ($this->can_edit($field, $recordid)) {
+                    $editablefields[$field->get('id')] = $field;
+                }
+            }
+        }
+        return $editablefields;
+    }
 }

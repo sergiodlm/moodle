@@ -1171,9 +1171,9 @@ EOD;
      * Create a new course custom field category with the given name.
      *
      * @param   array $data Array with 'name' of category
-     * @return  \stdClass   The created category
+     * @return  \core_customfield\category   The created category
      */
-    public function create_custom_field_category($data) {
+    public function create_custom_field_category($data): \core_customfield\category {
         $handler = core_course\customfield\course_handler::instance();
         $category = $handler->new_category();
         if (!empty($data['name'])) {
@@ -1189,7 +1189,7 @@ EOD;
      * @param   array $data Array with 'name', 'shortname' and 'type' of the field
      * @return  \stdClass   The created field
      */
-    public function create_custom_field($category, $data) {
+    public function create_custom_field($category, $data): \core_customfield\field {
         $handler = core_course\customfield\course_handler::instance();
         $field = $handler->new_field($category, $data['type']);
         $field->set('shortname', $data['shortname']);

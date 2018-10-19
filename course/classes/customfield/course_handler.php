@@ -22,6 +22,8 @@
 
 namespace core_course\customfield;
 
+use core_customfield\field;
+
 defined('MOODLE_INTERNAL') || die;
 
 /**
@@ -65,9 +67,10 @@ class course_handler extends \core_customfield\handler {
      * @param int $recordid id of the course to test edit permission
      * @return bool true if the current can edit custom fields, false otherwise
      */
-    public function can_edit($recordid = null) : bool {
+    public function can_edit(field $field, $recordid = null) : bool {
+        // TODO check field is locked, check different capability for the locked fields.
         if ($recordid) {
-            return has_capability('moodle/course:changecustomfields', \context_course::instance($recordid));
+            return has_capability('moodle/course:update', $this->get_data_context($recordid));
         } else {
             // guess_if_creator_will_have_course_capability()
             return true; // TODO.
@@ -133,7 +136,6 @@ class course_handler extends \core_customfield\handler {
                     $visibility = (bool) $field->get_configdata_property('visibility');
                 }
 
-                $canview = false;
                 if ($visibility == 0) {
                     $canview = false;
                 } else if ($visibility == 1) {
@@ -149,17 +151,22 @@ class course_handler extends \core_customfield\handler {
         return $visiblefields;
     }
 
-    protected function get_editable_fields(int $recordid): array {
-        $categories = $this->get_fields_definitions();
-        $editablefields = [];
-        foreach ($categories as $category) {
-            foreach ($category->fields() as $field) {
-                if (has_capability('moodle/course:update', $this->get_data_context($recordid))) {
-                    $editablefields[$field->get('id')] = $field;
-                }
-            }
+    /**
+     * Returns get_fields_with_data as an array for webservices use.
+     *
+     * @param int $recordid id of the record to get fields for
+     * @return array custom fields with it's values for the specified recordid
+     */
+    public function fields_array($recordid) : array {
+        $visiblefields = $this->get_visible_fields($recordid);
+        $datafields = $this->get_fields_with_data($visiblefields, $recordid);
+        $fieldsarray = array();
+        foreach ($datafields as $data) {
+            $field = $data->get_field();
+            $fieldsarray[] = ['type' => $field->get('type'), 'value' => $data->get_formvalue(),
+                'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
         }
-        return $editablefields;
+        return $fieldsarray;
     }
 
     /**
