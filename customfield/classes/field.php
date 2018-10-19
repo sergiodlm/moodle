@@ -270,7 +270,7 @@ abstract class field extends persistent {
      */
     public function get_category(): category {
         if (!$this->category) {
-            $this->category = new category($this->get('categoryid'));
+            $this->category = new category($this->raw_get('categoryid'));
         }
         return $this->category;
     }
@@ -281,7 +281,7 @@ abstract class field extends persistent {
      * @return array
      */
     protected function get_configdata(): array {
-        return json_decode($this->get('configdata'), true);
+        return json_decode($this->raw_get('configdata'), true) ?? array();
     }
 
     /**
@@ -290,7 +290,7 @@ abstract class field extends persistent {
      * @return array
      */
     protected function get_required(): bool {
-        return (bool) $this->get('configdata')['required'];
+        return (bool) $this->raw_get('configdata')['required'];
     }
 
     /**
@@ -299,7 +299,7 @@ abstract class field extends persistent {
      * @return string
      */
     protected function get_visibility(): string {
-        return $this->get('configdata')['visibility'];
+        return $this->raw_get('configdata')['visibility'];
     }
 
     /**
