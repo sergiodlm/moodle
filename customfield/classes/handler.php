@@ -267,6 +267,15 @@ abstract class handler {
     abstract public function can_edit(field $field, $recordid = null): bool;
 
     /**
+     * The current user can view the value of the custom field on the given record on this component.
+     *
+     * @param field $field
+     * @param null $recordid
+     * @return bool
+     */
+    abstract public function can_view(field $field, $recordid = null): bool;
+
+    /**
      * The given field is supported on by this handler
      *
      * @param field $field
@@ -301,18 +310,18 @@ abstract class handler {
      * @return data[]
      */
     public function get_fields_with_data(array $fields, int $recordid) : array {
+        // TODO this function is always used either with "get visibile fields" or with "get editable fields", should really be simplified.
         return api::get_fields_with_data($fields, $this->get_data_context($recordid), $recordid);
     }
 
     /**
      * List of fields with their data (only fields with data).
-     * This function looks very similar to fields_array, except it returns only fields with data associated to it
-     *  on the given recordid
      *
      * @param int $recordid
      * @return array
      */
     public function get_fields_with_data_for_backup(int $recordid) : array {
+        // TODO (by Marina): take another look at it.
         $editablefields = $this->get_editable_fields($recordid);
         return api::get_fields_with_data_for_backup($editablefields, $this->get_data_context($recordid), $recordid);
     }
@@ -334,31 +343,34 @@ abstract class handler {
     }
 
     /**
-     * Add the field to the $data received
+     * Add the field to the $record received
      *
-     * @param $data
+     * $data->customfield_{fieldshortname} = {fieldvalue};
+     *
+     * @param stdClass $record
+     * @param bool $foredit only return editable fields
      * @throws \moodle_exception
      */
-    public function load_data($data) {
-        if (!isset($data->id)) {
-            $data->id = 0;
+    public function load_data(stdClass $record, bool $foredit = false) {
+        if (!isset($record->id)) {
+            $record->id = 0;
         }
-        $editablefields = $this->get_editable_fields($data->id);
-        $fields = $this->get_fields_with_data($editablefields, $data->id);
+        $fields = $foredit ? $this->get_editable_fields($record->id) : $this->get_visible_fields($record->id);
+        $fields = $this->get_fields_with_data($fields, $record->id);
 
         foreach ($fields as $formfield) {
-            $formfield->edit_load_data($data);
+            $formfield->edit_load_data($record);
         }
     }
 
     /**
      * Saves the given data for custom fields
      *
-     * @param $data
+     * @param stdClass $data
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function save_customfield_data($data) {
+    public function save_customfield_data(stdClass $data) {
         $editablefields = $this->get_editable_fields($data->id);
         $fields = $this->get_fields_with_data($editablefields, $data->id);
         foreach ($fields as $formfield) {
@@ -530,16 +542,30 @@ abstract class handler {
         return null;
     }
 
-    protected function get_editable_fields(int $recordid): array {
+    protected function get_flat_fields_list(callable $filter = null) {
         $categories = $this->get_fields_definitions();
-        $editablefields = [];
+        $fields = [];
         foreach ($categories as $category) {
             foreach ($category->fields() as $field) {
-                if ($this->can_edit($field, $recordid)) {
-                    $editablefields[$field->get('id')] = $field;
+                if ($filter === null || $filter($field)) {
+                    $fields[$field->get('id')] = $field;
                 }
             }
         }
-        return $editablefields;
+        return $fields;
+    }
+
+    public function get_visible_fields(int $recordid): array {
+        $handler = $this;
+        return $this->get_flat_fields_list(function($field) use($handler, $recordid) {
+            return $handler->can_view($field, $recordid);
+        });
+    }
+
+    public function get_editable_fields(int $recordid): array {
+        $handler = $this;
+        return $this->get_flat_fields_list(function($field) use($handler, $recordid) {
+            return $handler->can_edit($field, $recordid);
+        });
     }
 }

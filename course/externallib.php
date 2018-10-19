@@ -488,7 +488,17 @@ class core_course_external extends external_api {
             }
 
             $handler = core_course\customfield\course_handler::instance();
-            $courseinfo['customfields'] = $handler->fields_array($course->id);
+            if ($customfields = $handler->get_fields_with_data($handler->get_visible_fields($course->id), $course->id)) {
+                $courseinfo['customfields'] = [];
+                foreach ($customfields as $data) {
+                    $courseinfo['customfields'][] = [
+                        'type' => $data->get_field()->get('type'),
+                        'value' => $data->get_formvalue(),
+                        'name' => $data->get_field()->get('name'),
+                        'shortname' => $data->get_field()->get('shortname')
+                    ];
+                }
+            }
 
             //some field should be returned only if the user has update permission
             $courseadmin = has_capability('moodle/course:update', $context);
@@ -776,6 +786,7 @@ class core_course_external extends external_api {
                 }
             }
 
+            // Custom fields.
             if (!empty($course['customfields'])) {
                 foreach ($course['customfields'] as $field) {
                     $course['customfield_'.$field['shortname']] = $field['value'];
@@ -912,17 +923,6 @@ class core_course_external extends external_api {
                     $course['category'] = $course['categoryid'];
                 }
 
-                // Check if user can change customfields.
-                if (array_key_exists('customfields', $course)) {
-                    $customfields = [];
-                    foreach($oldcourse->customfields as $field) {
-                        $customfields[] = ['shortname' => $field['shortname'], 'value' => $field['value']];
-                    }
-                    if ($course['customfields'] != $customfields) {
-                        require_capability('moodle/course:changecustomfields', $context);
-                    }
-                }
-
                 // Check if the user can change fullname.
                 if (array_key_exists('fullname', $course) && ($oldcourse->fullname != $course['fullname'])) {
                     require_capability('moodle/course:changefullname', $context);
@@ -995,10 +995,17 @@ class core_course_external extends external_api {
                     }
                 }
 
-                if (!empty($course['customfields'])) {
+                // Prepare list of custom fields checking editing permissions.
+                if (isset($course['customfields'])) {
+                    $handler = \core_course\customfield\course_handler::instance();
+                    $editablefields = array_map(function($field) {
+                        return $field->get('shortname');
+                    }, $handler->get_editable_fields($course['id']));
                     foreach ($course['customfields'] as $field) {
-                        if (isset($field['shortname']) && isset($field['value'])) {
+                        if (in_array($field['shortname'], $editablefields)) {
                             $course['customfield_'.$field['shortname']] = $field['value'];
+                        } else {
+                            throw new moodle_exception('nopermissions', 'error', s($field['shortname']));
                         }
                     }
                 }

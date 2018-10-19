@@ -418,7 +418,8 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $category  = self::getDataGenerator()->create_category();
 
         // Custom fields
-        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(
+            'core_course', 'course', 0, ['name' => 'Other fields']);
 
         $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
         $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
@@ -465,8 +466,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $course4['fullname'] = 'Test course with custom fields';
         $course4['shortname'] = 'Testcoursecustomfields';
         $course4['categoryid'] = $category->id;
-        $course4customfields = [$customfield];
-        $course4['customfields'] = $course4customfields;
+        $course4['customfields'] = [['shortname' => $customfield['shortname'], 'value' => 'Test value']];
         $courses = array($course4, $course1, $course2, $course3);
 
         $createdcourses = core_course_external::create_courses($courses);
@@ -535,9 +535,10 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 $this->assertEquals($courseinfo->fullname, $course4['fullname']);
                 $this->assertEquals($courseinfo->shortname, $course4['shortname']);
                 $this->assertEquals($courseinfo->category, $course4['categoryid']);
+                //print_r($course4);
 
-                 $handler  = core_course\customfield\course_handler::instance();
-                 $editablefields = $this->get_editable_fields($createdcourse['id']);
+                 $handler = core_course\customfield\course_handler::instance();
+                 $editablefields = $handler->get_editable_fields($createdcourse['id']);
                  $customfields = $handler->get_fields_with_data($editablefields, $createdcourse['id']);
                  foreach($customfields as $field) {
                      $fieldarray = ['shortname' => $field->get('shortname'), 'value' => $field->get_data()];
@@ -631,7 +632,8 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $coursedata['summaryformat'] = FORMAT_MOODLE;
         $course1  = self::getDataGenerator()->create_course($coursedata);
 
-        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(
+            'core_course', 'course', 0, ['name' => 'Other fields']);
 
         $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
         $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
@@ -763,7 +765,8 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $course2  = self::getDataGenerator()->create_course($coursedata2);
 
         // Custom fields
-        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(
+            'core_course', 'course', 0, ['name' => 'Other fields']);
 
         $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
         $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
@@ -1178,7 +1181,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('moodle/course:update', $contextid);
         $this->assignUserCapability('moodle/course:changecategory', $contextid, $roleid);
-        $this->assignUserCapability('moodle/course:changecustomfields', $contextid, $roleid);
+        $this->assignUserCapability('moodle/course:changelockedcustomfields', $contextid, $roleid);
         $this->assignUserCapability('moodle/course:changefullname', $contextid, $roleid);
         $this->assignUserCapability('moodle/course:changeshortname', $contextid, $roleid);
         $this->assignUserCapability('moodle/course:changeidnumber', $contextid, $roleid);
@@ -1188,9 +1191,11 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $this->assignUserCapability('moodle/course:setforcedlanguage', $contextid, $roleid);
 
         // Custom fields.
-        $fieldcategory = self::getDataGenerator()->create_custom_field_category(['name' => 'Other fields']);
+        $fieldcategory = self::getDataGenerator()->create_custom_field_category(
+            'core_course', 'course', 0, ['name' => 'Other fields']);
 
-        $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
+        $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text',
+            'configdata' => ['visibility' => \core_course\customfield\course_handler::VISIBLETOALL, 'locked' => 1]];
         $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
 
         // Create category and course.
@@ -1288,8 +1293,8 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 $this->assertEquals(0, $courseinfo->newsitems);
                 $this->assertEquals(FORMAT_MOODLE, $courseinfo->summaryformat);
             } else if ($course['id'] == $course3['id']) {
-                $updatedcustomfields = [array_merge($customfield, $updatedcustomfieldvalue)];
-                $this->assertEquals($updatedcustomfields, $courseinfo->customfields);
+                $this->assertEquals($updatedcustomfieldvalue['value'],
+                    $courseinfo->{'customfield_'.$updatedcustomfieldvalue['shortname']});
             } else {
                 throw new moodle_exception('Unexpected shortname');
             }
@@ -1422,17 +1427,11 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $this->assertEquals(1, count($updatedcoursewarnings['warnings']));
 
         // Try update course custom fields without capability.
-        $this->unassignUserCapability('moodle/course:changecustomfields', $contextid, $roleid);
+        $this->unassignUserCapability('moodle/course:changelockedcustomfields', $contextid, $roleid);
         $user = self::getDataGenerator()->create_user();
         $this->setUser($user);
         self::getDataGenerator()->enrol_user($user->id, $course3['id'], $roleid);
         $updatedcoursewarnings = core_course_external::update_courses([$course3]);
-        $updatedcoursewarnings = external_api::clean_returnvalue(core_course_external::update_courses_returns(),
-                                                                    $updatedcoursewarnings);
-        $this->assertEquals(0, count($updatedcoursewarnings['warnings']));
-        $course3['customfields'] = [['shortname' => 'test', 'value' => 'Testing customfield without permission']];
-        $courses = array($course3);
-        $updatedcoursewarnings = core_course_external::update_courses($courses);
         $updatedcoursewarnings = external_api::clean_returnvalue(core_course_external::update_courses_returns(),
                                                                     $updatedcoursewarnings);
         $this->assertEquals(1, count($updatedcoursewarnings['warnings']));

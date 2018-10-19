@@ -39,6 +39,15 @@ class course_handler extends \core_customfield\handler {
     static protected $singleton;
 
     /**
+     * @var \context
+     */
+    protected $parentcontext;
+
+    const VISIBLETOALL = 2;
+    const VISIBLETOTEACHERS = 1;
+    const NOTVISIBLE = 0;
+
+    /**
      * Returns a singleton
      *
      * @param int $itemid
@@ -57,8 +66,7 @@ class course_handler extends \core_customfield\handler {
      * @return bool true if the current can configure custom fields, false otherwise
      */
     public function can_configure() : bool {
-        // TODO separate capability.
-        return has_capability('moodle/category:manage', \context_system::instance());
+        return has_capability('moodle/course:configurecustomfields', $this->get_configuration_context());
     }
 
     /**
@@ -68,13 +76,48 @@ class course_handler extends \core_customfield\handler {
      * @return bool true if the current can edit custom fields, false otherwise
      */
     public function can_edit(field $field, $recordid = null) : bool {
-        // TODO check field is locked, check different capability for the locked fields.
         if ($recordid) {
+            $context = $this->get_data_context($recordid);
+            return has_capability('moodle/course:update', $context) &&
+                (!$field->get_configdata_property('locked') ||
+                    has_capability('moodle/course:changelockedcustomfields', $context));
+        } else {
+            $context = $this->get_parent_context();
+            return guess_if_creator_will_have_course_capability('moodle/course:update', $context) &&
+            (!$field->get_configdata_property('locked') ||
+                guess_if_creator_will_have_course_capability('moodle/course:changelockedcustomfields', $context));
+        }
+    }
+
+    public function can_view(field $field, $recordid = null): bool {
+        $visibility = $field->get_configdata_property('visibility');
+        if ($visibility == self::NOTVISIBLE) {
+            return false;
+        } else if ($visibility == self::VISIBLETOTEACHERS) {
             return has_capability('moodle/course:update', $this->get_data_context($recordid));
         } else {
-            // guess_if_creator_will_have_course_capability()
-            return true; // TODO.
+            return true;
         }
+    }
+
+    /**
+     * Sets parent context for the course
+     *
+     * This may be needed when course is being created, there is no course context but we need to check capabilities
+     *
+     * @param \context $context
+     */
+    public function set_parent_context(\context $context) {
+        $this->parentcontext = $context;
+    }
+
+    /**
+     * Returns the parent context for the course
+     *
+     * @return \context
+     */
+    protected function get_parent_context() : \context {
+        return $this->parentcontext ?: \context_system::instance();
     }
 
     /**
@@ -125,50 +168,6 @@ class course_handler extends \core_customfield\handler {
         }
     }
 
-    protected function get_visible_fields(int $recordid): array {
-        $categories = $this->get_fields_definitions();
-        $visiblefields = [];
-        foreach ($categories as $category) {
-            foreach ($category->fields() as $field) {
-                if ( is_null($field->get_configdata_property('visibility')) ) {
-                    throw new \coding_exception('null value not allowed');
-                } else {
-                    $visibility = (bool) $field->get_configdata_property('visibility');
-                }
-
-                if ($visibility == 0) {
-                    $canview = false;
-                } else if ($visibility == 1) {
-                    $canview = has_capability('moodle/course:update', $this->get_data_context($recordid));
-                } else {
-                    $canview = true;
-                }
-                if ($canview) {
-                    $visiblefields[$field->get('id')] = $field;
-                }
-            }
-        }
-        return $visiblefields;
-    }
-
-    /**
-     * Returns get_fields_with_data as an array for webservices use.
-     *
-     * @param int $recordid id of the record to get fields for
-     * @return array custom fields with it's values for the specified recordid
-     */
-    public function fields_array($recordid) : array {
-        $visiblefields = $this->get_visible_fields($recordid);
-        $datafields = $this->get_fields_with_data($visiblefields, $recordid);
-        $fieldsarray = array();
-        foreach ($datafields as $data) {
-            $field = $data->get_field();
-            $fieldsarray[] = ['type' => $field->get('type'), 'value' => $data->get_formvalue(),
-                'name' => $field->get('name'), 'shortname' => $field->get('shortname')];
-        }
-        return $fieldsarray;
-    }
-
     /**
      * Add fields for editing a text field.
      *
@@ -182,9 +181,9 @@ class course_handler extends \core_customfield\handler {
         $mform->setType('configdata[locked]', PARAM_BOOL);
 
         // Field data visibility.
-        $visibilityoptions = [get_string('notvisible', 'core_customfield'),
-                              get_string('courseeditors', 'core_customfield'),
-                              get_string('everyone', 'core_customfield')];
+        $visibilityoptions = [self::VISIBLETOALL => get_string('everyone', 'core_customfield'),
+            self::VISIBLETOTEACHERS => get_string('courseeditors', 'core_customfield'),
+            self::NOTVISIBLE => get_string('notvisible', 'core_customfield')];
         $mform->addElement('select', 'configdata[visibility]', get_string('visibility', 'core_customfield'), $visibilityoptions);
         $mform->setType('configdata[visibility]', PARAM_INT);
     }
