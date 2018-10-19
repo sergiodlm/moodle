@@ -22,8 +22,6 @@
 
 namespace customfield_textarea;
 
-use core\persistent;
-
 defined('MOODLE_INTERNAL') || die;
 
 /**

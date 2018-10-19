@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die;
  *
  * @package core_customfield
  */
-class data extends persistent {
+abstract class data extends persistent {
     /**
      * Database data.
      */
@@ -113,7 +113,7 @@ class data extends persistent {
 
         $dbdata = $DB->get_record(self::TABLE, ['fieldid' => $fieldid, 'recordid' => $recordid]);
 
-        return new self($dbdata->id);
+        return new static($dbdata->id);
     }
 
     /**
@@ -127,9 +127,9 @@ class data extends persistent {
         $dbdata = $DB->get_record(self::TABLE, ['fieldid' => $fieldid]);
 
         if ($dbdata) {
-            return new self($dbdata->id);
+            return new static($dbdata->id);
         } else {
-            return new self();
+            return new static();
         }
     }
 
@@ -196,19 +196,14 @@ class data extends persistent {
      *
      * @return string field name of customfield_data table used to store data.
      */
-    public function datafield(): string {
-        throw new coding_exception('datafield() method needs to be overridden in each subclass of \core_customfield\data');
-    }
+    abstract public function datafield(): string;
 
     /**
      * Add fields on the context edit form.
      *
-     * @param moodleform $mform
-     * @throws \coding_exception
+     * @param \MoodleQuickForm $mform
      */
-    public function edit_field_add(\MoodleQuickForm $mform) {
-        throw new coding_exception('edit_field_add() method needs to be overridden in each subclass of \core_customfield\data');
-    }
+    abstract public function edit_field_add(\MoodleQuickForm $mform);
 
     /**
      * Saves the data coming from form
@@ -273,9 +268,10 @@ class data extends persistent {
      * Loads an object with data for this field.
      *
      * @param \stdClass $data
+     * @param array $files
      * @return array
      */
-    public function validate_data($data): array {
+    public function validate_data(\stdClass $data, array $files): array {
         global $DB;
 
         $errors = [];
@@ -302,7 +298,6 @@ class data extends persistent {
      * @throws \moodle_exception
      */
     public function get_field_configdata() {
-        // TODO add defaults here.
         return $this->get_field()->get('configdata');
     }
 
@@ -320,20 +315,20 @@ class data extends persistent {
     /**
      * Displays the data as html. Used by handler to display data on various places.
      * @return string
-     * @throws \coding_exception
      */
-    public function display() {
-        throw new coding_exception('display() method needs to be overridden in each subclass of \core_customfield\data');
-    }
+    abstract public function display();
 
     /**
+     * Creates an instance of class
+     *
+     * @param int $id
      * @param \stdClass $data
      * @param field $field
      * @return data
      * @throws \coding_exception
      * @throws \moodle_exception
      */
-    public static function load_data(int $id = 0, \stdClass $data = null, field $field): data {
+    public static function load_data(int $id, \stdClass $data, field $field): data {
         $fieldtype      = $field->get('type');
         $customdatatype = "\\customfield_{$fieldtype}\\data";
         if (!class_exists($customdatatype) || !is_subclass_of($customdatatype, data::class)) {
@@ -343,6 +338,7 @@ class data extends persistent {
         $dataobject = new $customdatatype($id, $data);
         $dataobject->set_field($field);
         if (!is_null($data)) {
+            // TODO we just called constructor with $data, why do we need to pass it again?
             $dataobject->set_formvalue($data);
         }
 

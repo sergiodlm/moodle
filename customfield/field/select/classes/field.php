@@ -33,9 +33,9 @@ class field extends \core_customfield\field {
 
     /**
      * Add fields for editing a text field.
-     * @param moodleform $mform
+     * @param \MoodleQuickForm $mform
      */
-    public function add_field_to_config_form( \MoodleQuickForm $mform) {
+    public function add_field_to_config_form(\MoodleQuickForm $mform) {
         $mform->addElement('textarea', 'configdata[options]', 'Menu options (one per line)');
 
         $mform->addElement('text', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), 'size="50"');

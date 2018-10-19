@@ -232,28 +232,4 @@ class api {
         }
         $event->trigger();
     }
-
-    /**
-     * Updates or creates a category with data that came from a form
-     *
-     * @param category $category
-     * @param \stdClass $formdata
-     * @throws \coding_exception
-     * @throws \dml_exception
-     */
-    public static function save_category(category $category, \stdClass $formdata) {
-        $created = !$field->get('id');
-
-        $category->set('name', $formdata->name);
-        $category->save();
-
-        $eventparams = ['objectid' => $category->get('id'), 'context' => \context_system::instance(),
-                        'other' => ['name' => $category->get('name')]];
-        if ($created) {
-            $event = \core_customfield\event\category_created::create($eventparams);
-        } else {
-            $event = \core_customfield\event\category_updated::create($eventparams);
-        }
-        $event->trigger();
-    }
 }

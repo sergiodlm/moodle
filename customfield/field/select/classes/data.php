@@ -36,7 +36,7 @@ class data extends \core_customfield\data {
     /**
      * Add fields for editing a textarea field.
      *
-     * @param moodleform $mform
+     * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
     public function edit_field_add(\MoodleQuickForm $mform) {

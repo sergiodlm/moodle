@@ -22,8 +22,6 @@
 
 namespace customfield_date;
 
-use core\persistent;
-
 defined('MOODLE_INTERNAL') || die;
 
 /**
@@ -101,7 +99,7 @@ class data extends \core_customfield\data {
      * If timestamp is in YYYY-MM-DD or YYYY-MM-DD-HH-MM-SS format, then convert it to timestamp.
      *
      * @param string|array $data
-     * @param stdClass $datarecord The object that will be used to save the record
+     * @param \stdClass $datarecord The object that will be used to save the record
      * @return mixed
      * @throws \coding_exception
      */

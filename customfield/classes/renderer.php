@@ -29,8 +29,4 @@ class core_customfield_renderer extends plugin_renderer_base {
 
         return $this->render_from_template('core_customfield/customfield', $data);
     }
-
-    public function load($id) {
-
-    }
 }
