@@ -199,6 +199,7 @@ abstract class data extends persistent {
      * @throws \dml_exception
      */
     public function edit_save_data(\stdClass $datanew) {
+        // TODO: Full refactor of this function.
         global $DB;
 
         if (!isset($datanew->{$this->inputname()})) {
@@ -221,6 +222,9 @@ abstract class data extends persistent {
         $datapreprocessed = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
         $this->set($this->datafield(), $datapreprocessed);
         $this->set('timemodified', $now);
+
+        $this->set('value', $datapreprocessed);
+        $this->set('valueformat', $this->datafield());
 
         $this->save();
         return $this;
