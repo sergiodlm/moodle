@@ -208,7 +208,6 @@ abstract class data extends persistent {
 
         $datarecord = $DB->get_record('customfield_data', ['recordid' => $datanew->id, 'fieldid' => $this->get_field()->get('id')]);
 
-        $now = time();
         if ($datarecord) {
             $this->set('id', $datarecord->id);
         } else {
@@ -216,11 +215,12 @@ abstract class data extends persistent {
             $this->set('fieldid', $this->get_field()->get('id'));
             $this->set('recordid', $datanew->id);
             $this->set('contextid', $datanew->contextid);
+            $now = time();
             $this->set('timecreated', $now);
+            $this->set('timemodified', $now);
         }
         $datapreprocessed = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
         $this->set($this->datafield(), $datapreprocessed);
-        $this->set('timemodified', $now);
 
         $this->set('value', $datapreprocessed);
         $this->set('valueformat', $this->get_valueformat($this->datafield()));
