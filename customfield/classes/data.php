@@ -228,9 +228,9 @@ abstract class data extends persistent {
         return $this;
     }
 
-    protected function get_valueformat($stringformat) {
-        if (is_int($stringformat)) {
-            return $stringformat;
+    protected function get_valueformat() {
+        if (is_int($this->raw_get('valueformat'))) {
+            return $this->raw_get('valueformat');
         }
 
         return FORMAT_PLAIN;
@@ -260,7 +260,7 @@ abstract class data extends persistent {
     }
 
     /**
-     * Loads an object with data for this field.
+     * Validates data for this field.
      *
      * @param \stdClass $data
      * @param array $files
