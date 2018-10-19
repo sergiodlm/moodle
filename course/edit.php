@@ -145,7 +145,7 @@ if (!empty($course)) {
 
 // Load custom fields data.
 $handler  = core_course\customfield\course_handler::instance();
-$handler->load_data($course);
+$handler->load_data($course, true);
 
 // First create the form.
 $args = array(

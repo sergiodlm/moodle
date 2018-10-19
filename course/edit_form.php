@@ -321,6 +321,7 @@ class course_edit_form extends moodleform {
         }
 
         $handler  = core_course\customfield\course_handler::instance();
+        $handler->set_parent_context($categorycontext);
         $handler->add_custom_fields($mform, $course);
 
         // When two elements we need a group.
