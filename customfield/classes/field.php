@@ -285,21 +285,16 @@ abstract class field extends persistent {
     }
 
     /**
-     * Custom getter for required
-     *
-     * @return array
+     * @param string $property
+     * @return mixed
+     * @throws \moodle_exception
      */
-    protected function get_required(): bool {
-        return (bool) $this->raw_get('configdata')['required'];
-    }
-
-    /**
-     * Custom getter for visibility
-     *
-     * @return string
-     */
-    protected function get_visibility(): string {
-        return $this->raw_get('configdata')['visibility'];
+    public function get_configdata_property(string $property) {
+        $configdata = json_decode($this->raw_get('configdata'), true);
+        if ( !isset($configdata[$property]) ) {
+            throw new \moodle_exception("Field property \"$property\" not defined.");
+        }
+        return $configdata[$property];
     }
 
     /**
