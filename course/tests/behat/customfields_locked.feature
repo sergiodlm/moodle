@@ -1,4 +1,4 @@
-@core @core_course @course_customfield
+@core @core_course @core_customfield
 Feature: The visibility of fields control where they are displayed
   In order to display custom fields on course listing
   As a manager

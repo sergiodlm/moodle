@@ -51,4 +51,9 @@ class field extends \core_customfield\field {
         $mform->addElement('editor', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), null, $desceditoroptions);
         $mform->setType('configdata[defaultvalue]', PARAM_RAW);
     }
+
+    public function before_delete(): bool {
+        // TODO delete all files that are associated with data records that are about to be deleted.
+        return parent::before_delete();
+    }
 }

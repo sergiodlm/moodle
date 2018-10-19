@@ -1,4 +1,4 @@
-@core @core_course @course_customfield
+@core @core_course @core_customfield
 Feature: The course custom fields can be mandatory or not
   In order to make users required to fill a custom field
   As a manager

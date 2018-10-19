@@ -146,25 +146,13 @@ abstract class field extends persistent {
     }
 
     /**
-     * @return data|null
-     * @throws \moodle_exception
-     */
-    public function data(): data {
-        return data::fieldload($this->get('id'));
-    }
-
-    /**
      * Delete associated data before delete field
      *
-     * @return bool
-     * @throws \moodle_exception
+     * @return void
      */
-    protected function before_delete(): bool {
-        if ($this->data()->get('id') > 0) {
-            $this->data()->delete();
-            return false;
-        }
-        return true;
+    protected function before_delete() {
+        global $DB;
+        $DB->delete_records(data::TABLE, ['fieldid' => $this->get('id')]);
     }
 
     /**

@@ -87,4 +87,8 @@ class data extends \core_customfield\data {
             $data->{$this->inputname()} = array('text' => $this->get($this->datafield()), 'format' => $this->get('valueformat'));
         }
     }
+
+    public function before_delete() {
+        // TODO delete files associated with this data record.
+    }
 }

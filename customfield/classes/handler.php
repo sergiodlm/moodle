@@ -501,7 +501,7 @@ abstract class handler {
             if ($datarecord) {
                 $dataobject = data::load_data($datarecord->id, $datarecord, $field);
             } else {
-                $dataobject = data::load_data(0, null, $field);
+                $dataobject = data::load_data(0, new stdClass(), $field);
             }
             $dataobject->set('recordid', $recordid);
             $dataobject->set('fieldid', $field->get('id'));
@@ -522,12 +522,13 @@ abstract class handler {
     }
 
     /**
-     * Add fields for editing a text field.
+     * Add additional fields (properties) to the field configuration form.
      *
      * @param \MoodleQuickForm $mform
-     * @throws \coding_exception
      */
-    abstract static public function add_to_field_config_form(\MoodleQuickForm $mform);
+    public function add_to_field_config_form(\MoodleQuickForm $mform) {
+        return null;
+    }
 
     protected function get_editable_fields(int $recordid): array {
         $categories = $this->get_fields_definitions();

@@ -175,8 +175,8 @@ class course_handler extends \core_customfield\handler {
      * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
-    public static function add_to_field_config_form(\MoodleQuickForm $mform) {
-        // TODO: should we use a separate category on form for "handler" fields?
+    public function add_to_field_config_form(\MoodleQuickForm $mform) {
+        // TODO: should we use a separate category on form for "handler" fields? - Yes (Marina).
         // If field is locked.
         $mform->addElement('selectyesno', 'configdata[locked]', get_string('isfieldlocked', 'core_customfield'));
         $mform->setType('configdata[locked]', PARAM_BOOL);
