@@ -82,7 +82,7 @@ class data extends \core_customfield\data {
      */
     public function edit_load_data(\stdClass $data) {
         if ($this->get($this->datafield()) !== null) {
-            $this->set('valueformat', TYPEMULTIPART);
+            $this->set('valueformat', FORMAT_MOODLE);
             $this->set($this->datafield(), clean_text($this->get($this->datafield()), $this->get('valueformat')));
             $data->{$this->inputname()} = array('text' => $this->get($this->datafield()), 'format' => $this->get('valueformat'));
         }

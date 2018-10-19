@@ -89,9 +89,8 @@ abstract class data extends persistent {
                 ],
                 // Mandatory field.
                 'valueformat'    => [
-                        'type'    => PARAM_TEXT,
+                        'type'    => PARAM_INT,
                         'null'    => NULL_NOT_ALLOWED,
-                        'default' => ''
                 ],
                 'contextid'      => [
                         'type'     => PARAM_INT,
@@ -224,10 +223,17 @@ abstract class data extends persistent {
         $this->set('timemodified', $now);
 
         $this->set('value', $datapreprocessed);
-        $this->set('valueformat', $this->datafield());
-
+        $this->set('valueformat', $this->get_valueformat($this->datafield()));
         $this->save();
         return $this;
+    }
+
+    protected function get_valueformat($stringformat) {
+        if (is_int($stringformat)) {
+            return $stringformat;
+        }
+
+        return FORMAT_PLAIN;
     }
 
     /**
