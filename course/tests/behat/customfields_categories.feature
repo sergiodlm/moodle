@@ -1,4 +1,4 @@
-@core @core_course @course_customfield
+@core @core_course @core_customfield
 Feature: Managers can manage categories for course custom fields
   In order to have additional data on the course
   As a manager

@@ -103,21 +103,6 @@ abstract class data extends persistent {
 
     /**
      * @param int $fieldid
-     * @param int $recordid
-     * @return data|null
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    public static function load(int $recordid, int $fieldid): self {
-        global $DB;
-
-        $dbdata = $DB->get_record(self::TABLE, ['fieldid' => $fieldid, 'recordid' => $recordid]);
-
-        return new static($dbdata->id);
-    }
-
-    /**
-     * @param int $fieldid
      * @return data
      * @throws \dml_exception
      */
@@ -337,10 +322,6 @@ abstract class data extends persistent {
 
         $dataobject = new $customdatatype($id, $data);
         $dataobject->set_field($field);
-        if (!is_null($data)) {
-            // TODO we just called constructor with $data, why do we need to pass it again?
-            $dataobject->set_formvalue($data);
-        }
 
         return $dataobject;
     }

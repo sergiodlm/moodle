@@ -26,12 +26,8 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                         templates.render('core_customfield/customfield', response).done(function (html, js) {
                             $('[data-region="list-page"]').replaceWith(html);
                             templates.runTemplateJS(js);
-                        }).fail(function () {
-                            // Deal with this exception (I recommend core/notify exception function for this).
-                        });
-                    }).fail(function () {
-                        // Do something with the exception.
-                    });
+                        }).fail(notification.exception);
+                    }).fail(notification.exception);
                 });
             }).fail(notification.exception);
         };
