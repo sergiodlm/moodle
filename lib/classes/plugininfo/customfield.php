@@ -33,7 +33,6 @@ defined('MOODLE_INTERNAL') || die();
 class customfield extends base {
 
     public function is_uninstall_allowed() {
-        global $DB;
         return true;
     }
 
@@ -42,7 +41,7 @@ class customfield extends base {
      * @return moodle_url
      */
     public static function get_manage_url() {
-        return new moodle_url('/customfield/index.php');
+        return new moodle_url('/admin/settings.php', array('section' => 'managecustomfields'));
     }
 
     public static function get_enabled_plugins() {
