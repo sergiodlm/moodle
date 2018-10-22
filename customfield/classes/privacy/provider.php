@@ -118,25 +118,22 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
 
-        if (!$context instanceof \context_module) {
-            return;
-        }
-        $recordstobedeleted = [];
+        $datatobedeleted = [];
 
         $sql = "SELECT " . self::sql_fields() . "
                   FROM {customfield_data} cfd
                   JOIN {customfield_field} cff
                     ON (cff.id = cfd.fieldid)
                  WHERE cfd.contextid = :contextid
-              ORDER BY dr.id";
+              ORDER BY cfd.id";
         $rs = $DB->get_recordset_sql($sql, ['contextid' => $context->id]);
         foreach ($rs as $row) {
             self::mark_customfield_data_for_deletion($context, $row);
-            $recordstobedeleted[$row->recordid] = $row->recordid;
+            $datatobedeleted[$row->dataid] = $row->dataid;
         }
         $rs->close();
 
-        self::delete_customfield_data($context, $recordstobedeleted);
+        self::delete_customfield_data($context, $datatobedeleted);
     }
 
     /**
@@ -168,21 +165,21 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * Deletes records from customfield_data table and associated files
      *
      * @param \context $context
-     * @param array $recordstobedeleted list of ids of the data records that need to be deleted
+     * @param array $datatobedeleted list of ids of the customfield_data that need to be deleted
      */
-    protected static function delete_customfield_data($context, $recordstobedeleted) {
+    protected static function delete_customfield_data($context, $datatobedeleted) {
         global $DB;
         if (empty($recordstobedeleted)) {
             return;
         }
 
-        list($sql, $params) = $DB->get_in_or_equal($recordstobedeleted, SQL_PARAMS_NAMED);
+        list($sql, $params) = $DB->get_in_or_equal($datatobedeleted, SQL_PARAMS_NAMED);
 
         // Delete files.
         get_file_storage()->delete_area_files_select($context->id, 'core_customfield', 'customfield_data',
             "IN (SELECT cfd.id FROM {customfield_data} cfd WHERE cfd.fieldid $sql)", $params);
         // Delete from data_content.
-        $DB->delete_records_select('data_content', 'recordid ' . $sql, $params);
+        $DB->delete_records_select('customfield_data', 'fieldid ' . $sql, $params);
     }
 
     /**
