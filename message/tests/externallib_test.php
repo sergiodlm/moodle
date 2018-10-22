@@ -115,6 +115,18 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
 
         $sentmessages = core_message_external::send_instant_messages($messages);
         $sentmessages = external_api::clean_returnvalue(core_message_external::send_instant_messages_returns(), $sentmessages);
+        $this->assertEquals(
+            get_string('usercantbemessaged', 'message', fullname(\core_user::get_user($message1['touserid']))),
+            array_pop($sentmessages)['errormessage']
+        );
+
+        // Add the user1 as a contact.
+        \core_message\api::add_contact($user1->id, $user2->id);
+
+        // Send message again. Now it should work properly.
+        $sentmessages = core_message_external::send_instant_messages($messages);
+        // We need to execute the return values cleaning process to simulate the web service server.
+        $sentmessages = external_api::clean_returnvalue(core_message_external::send_instant_messages_returns(), $sentmessages);
 
         $sentmessage = reset($sentmessages);
 
@@ -165,7 +177,7 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
 
         $sentmessage = reset($sentmessages);
 
-        $this->assertEquals(get_string('userisblockingyou', 'message'), $sentmessage['errormessage']);
+        $this->assertEquals(get_string('usercantbemessaged', 'message', fullname($user2)), $sentmessage['errormessage']);
 
         $this->assertEquals(0, $DB->count_records('messages'));
     }
@@ -187,7 +199,7 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $this->setUser($user1);
 
         // Set the user preference so user 2 does not accept messages from non-contacts.
-        set_user_preference('message_blocknoncontacts', 1, $user2);
+        set_user_preference('message_blocknoncontacts', \core_message\api::MESSAGE_PRIVACY_ONLYCONTACTS, $user2);
 
         // Create test message data.
         $message1 = array();
@@ -201,7 +213,7 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
 
         $sentmessage = reset($sentmessages);
 
-        $this->assertEquals(get_string('userisblockingyounoncontact', 'message', fullname($user2)), $sentmessage['errormessage']);
+        $this->assertEquals(get_string('usercantbemessaged', 'message', fullname($user2)), $sentmessage['errormessage']);
 
         $this->assertEquals(0, $DB->count_records('messages'));
     }
@@ -223,7 +235,7 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $this->setUser($user1);
 
         // Set the user preference so user 2 does not accept messages from non-contacts.
-        set_user_preference('message_blocknoncontacts', 1, $user2);
+        set_user_preference('message_blocknoncontacts', \core_message\api::MESSAGE_PRIVACY_ONLYCONTACTS, $user2);
 
         \core_message\api::add_contact($user1->id, $user2->id);
 
@@ -1648,7 +1660,7 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
             $result = core_message_external::delete_message(-1, $user1->id);
             $this->fail('Exception expected due invalid messageid.');
         } catch (dml_missing_record_exception $e) {
-            $this->assertEquals('invalidrecordunknown', $e->errorcode);
+            $this->assertEquals('invalidrecord', $e->errorcode);
         }
 
         // Invalid user.
@@ -3445,6 +3457,13 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $user2 = self::getDataGenerator()->create_user();
         $user3 = self::getDataGenerator()->create_user();
 
+        // Send some messages back and forth.
+        $time = time();
+        $this->send_message($user1, $user2, 'Yo!', 0, $time);
+        $this->send_message($user2, $user1, 'Sup mang?', 0, $time + 1);
+        $this->send_message($user1, $user2, 'Writing PHPUnit tests!', 0, $time + 2);
+        $this->send_message($user2, $user1, 'Word.', 0, $time + 3);
+
         // The person wanting to delete the conversation.
         $this->setUser($user3);
 
@@ -3474,6 +3493,173 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         // Ensure an exception is thrown.
         $this->expectException('moodle_exception');
         core_message_external::delete_conversation($user1->id, $user2->id);
+    }
+
+    /**
+     * Test deleting conversations.
+     */
+    public function test_delete_conversations_by_id() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        // Create some users.
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+
+        // The person wanting to delete the conversation.
+        $this->setUser($user1);
+
+        // Send some messages back and forth.
+        $time = time();
+        $m1id = $this->send_message($user1, $user2, 'Yo!', 0, $time);
+        $m2id = $this->send_message($user2, $user1, 'Sup mang?', 0, $time + 1);
+        $m3id = $this->send_message($user1, $user2, 'Writing PHPUnit tests!', 0, $time + 2);
+        $m4id = $this->send_message($user2, $user1, 'Word.', 0, $time + 3);
+
+        $conversationid = \core_message\api::get_conversation_between_users([$user1->id, $user2->id]);
+
+        // Delete the conversation.
+        core_message_external::delete_conversations_by_id($user1->id, [$conversationid]);
+
+        $muas = $DB->get_records('message_user_actions', array(), 'timecreated ASC');
+        $this->assertCount(4, $muas);
+        // Sort by id.
+        ksort($muas);
+
+        $mua1 = array_shift($muas);
+        $mua2 = array_shift($muas);
+        $mua3 = array_shift($muas);
+        $mua4 = array_shift($muas);
+
+        $this->assertEquals($user1->id, $mua1->userid);
+        $this->assertEquals($m1id, $mua1->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua1->action);
+
+        $this->assertEquals($user1->id, $mua2->userid);
+        $this->assertEquals($m2id, $mua2->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua2->action);
+
+        $this->assertEquals($user1->id, $mua3->userid);
+        $this->assertEquals($m3id, $mua3->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua3->action);
+
+        $this->assertEquals($user1->id, $mua4->userid);
+        $this->assertEquals($m4id, $mua4->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua4->action);
+    }
+
+    /**
+     * Test deleting conversations as other user.
+     */
+    public function test_delete_conversations_by_id_as_other_user() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $this->setAdminUser();
+
+        // Create some users.
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+
+        // Send some messages back and forth.
+        $time = time();
+        $m1id = $this->send_message($user1, $user2, 'Yo!', 0, $time);
+        $m2id = $this->send_message($user2, $user1, 'Sup mang?', 0, $time + 1);
+        $m3id = $this->send_message($user1, $user2, 'Writing PHPUnit tests!', 0, $time + 2);
+        $m4id = $this->send_message($user2, $user1, 'Word.', 0, $time + 3);
+
+        $conversationid = \core_message\api::get_conversation_between_users([$user1->id, $user2->id]);
+
+        // Delete the conversation.
+        core_message_external::delete_conversations_by_id($user1->id, [$conversationid]);
+
+        $muas = $DB->get_records('message_user_actions', array(), 'timecreated ASC');
+        $this->assertCount(4, $muas);
+        // Sort by id.
+        ksort($muas);
+
+        $mua1 = array_shift($muas);
+        $mua2 = array_shift($muas);
+        $mua3 = array_shift($muas);
+        $mua4 = array_shift($muas);
+
+        $this->assertEquals($user1->id, $mua1->userid);
+        $this->assertEquals($m1id, $mua1->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua1->action);
+
+        $this->assertEquals($user1->id, $mua2->userid);
+        $this->assertEquals($m2id, $mua2->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua2->action);
+
+        $this->assertEquals($user1->id, $mua3->userid);
+        $this->assertEquals($m3id, $mua3->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua3->action);
+
+        $this->assertEquals($user1->id, $mua4->userid);
+        $this->assertEquals($m4id, $mua4->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua4->action);
+    }
+
+    /**
+     * Test deleting conversations as other user without proper capability.
+     */
+    public function test_delete_conversations_by_id_as_other_user_without_cap() {
+        $this->resetAfterTest(true);
+
+        // Create some users.
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+        $user3 = self::getDataGenerator()->create_user();
+
+        // Send some messages back and forth.
+        $time = time();
+        $this->send_message($user1, $user2, 'Yo!', 0, $time);
+        $this->send_message($user2, $user1, 'Sup mang?', 0, $time + 1);
+        $this->send_message($user1, $user2, 'Writing PHPUnit tests!', 0, $time + 2);
+        $this->send_message($user2, $user1, 'Word.', 0, $time + 3);
+
+        $conversationid = \core_message\api::get_conversation_between_users([$user1->id, $user2->id]);
+
+        // The person wanting to delete the conversation.
+        $this->setUser($user3);
+
+        // Ensure an exception is thrown.
+        $this->expectException('moodle_exception');
+        core_message_external::delete_conversations_by_id($user1->id, [$conversationid]);
+    }
+
+    /**
+     * Test deleting conversations with messaging disabled.
+     */
+    public function test_delete_conversations_by_id_messaging_disabled() {
+        global $CFG;
+
+        $this->resetAfterTest(true);
+
+        // Create some users.
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+
+        // Send some messages back and forth.
+        $time = time();
+        $this->send_message($user1, $user2, 'Yo!', 0, $time);
+        $this->send_message($user2, $user1, 'Sup mang?', 0, $time + 1);
+        $this->send_message($user1, $user2, 'Writing PHPUnit tests!', 0, $time + 2);
+        $this->send_message($user2, $user1, 'Word.', 0, $time + 3);
+
+        $conversationid = \core_message\api::get_conversation_between_users([$user1->id, $user2->id]);
+
+        // The person wanting to delete the conversation.
+        $this->setUser($user1);
+
+        // Disable messaging.
+        $CFG->messaging = 0;
+
+        // Ensure an exception is thrown.
+        $this->expectException('moodle_exception');
+        core_message_external::delete_conversations_by_id($user1->id, [$conversationid]);
     }
 
     /**
@@ -3507,10 +3693,13 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $user = self::getDataGenerator()->create_user();
         $this->setUser($user);
 
+        // Enable site-wide messagging privacy setting. The user will be able to receive messages from everybody.
+        set_config('messagingallusers', true);
+
         // Set a couple of preferences to test.
         set_user_preference('message_provider_moodle_instantmessage_loggedin', 'email', $user);
         set_user_preference('message_provider_moodle_instantmessage_loggedoff', 'email', $user);
-        set_user_preference('message_blocknoncontacts', 1, $user);
+        set_user_preference('message_blocknoncontacts', \core_message\api::MESSAGE_PRIVACY_SITE, $user);
 
         $prefs = core_message_external::get_user_message_preferences();
         $prefs = external_api::clean_returnvalue(core_message_external::get_user_message_preferences_returns(), $prefs);
@@ -3518,7 +3707,7 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
 
         // Check components.
         $this->assertCount(1, $prefs['preferences']['components']);
-        $this->assertTrue($prefs['blocknoncontacts']);
+        $this->assertEquals(\core_message\api::MESSAGE_PRIVACY_SITE, $prefs['blocknoncontacts']);
 
         // Check some preferences that we previously set.
         $found = false;

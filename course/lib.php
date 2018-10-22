@@ -55,6 +55,7 @@ define('FIRSTUSEDEXCELROW', 3);
 define('MOD_CLASS_ACTIVITY', 0);
 define('MOD_CLASS_RESOURCE', 1);
 
+define('COURSE_TIMELINE_ALL', 'all');
 define('COURSE_TIMELINE_PAST', 'past');
 define('COURSE_TIMELINE_INPROGRESS', 'inprogress');
 define('COURSE_TIMELINE_FUTURE', 'future');
@@ -3721,6 +3722,41 @@ function core_course_inplace_editable($itemtype, $itemid, $newvalue) {
 }
 
 /**
+ * This function calculates the minimum and maximum cutoff values for the timestart of
+ * the given event.
+ *
+ * It will return an array with two values, the first being the minimum cutoff value and
+ * the second being the maximum cutoff value. Either or both values can be null, which
+ * indicates there is no minimum or maximum, respectively.
+ *
+ * If a cutoff is required then the function must return an array containing the cutoff
+ * timestamp and error string to display to the user if the cutoff value is violated.
+ *
+ * A minimum and maximum cutoff return value will look like:
+ * [
+ *     [1505704373, 'The date must be after this date'],
+ *     [1506741172, 'The date must be before this date']
+ * ]
+ *
+ * @param calendar_event $event The calendar event to get the time range for
+ * @param stdClass $course The course object to get the range from
+ * @return array Returns an array with min and max date.
+ */
+function core_course_core_calendar_get_valid_event_timestart_range(\calendar_event $event, $course) {
+    $mindate = null;
+    $maxdate = null;
+
+    if ($course->startdate) {
+        $mindate = [
+            $course->startdate,
+            get_string('errorbeforecoursestart', 'calendar')
+        ];
+    }
+
+    return [$mindate, $maxdate];
+}
+
+/**
  * Returns course modules tagged with a specified tag ready for output on tag/index.php page
  *
  * This is a callback used by the tag area core/course_modules to search for course modules
@@ -4214,8 +4250,9 @@ function course_filter_courses_by_timeline_classification(
     int $limit = 0
 ) : array {
 
-    if (!in_array($classification, [COURSE_TIMELINE_PAST, COURSE_TIMELINE_INPROGRESS, COURSE_TIMELINE_FUTURE])) {
-        $message = 'Classification must be one of COURSE_TIMELINE_PAST, '
+    if (!in_array($classification,
+            [COURSE_TIMELINE_ALL, COURSE_TIMELINE_PAST, COURSE_TIMELINE_INPROGRESS, COURSE_TIMELINE_FUTURE])) {
+        $message = 'Classification must be one of COURSE_TIMELINE_ALL, COURSE_TIMELINE_PAST, '
             . 'COURSE_TIMELINE_INPROGRESS or COURSE_TIMELINE_FUTURE';
         throw new moodle_exception($message);
     }
@@ -4227,7 +4264,7 @@ function course_filter_courses_by_timeline_classification(
     foreach ($courses as $course) {
         $numberofcoursesprocessed++;
 
-        if ($classification == course_classify_for_timeline($course)) {
+        if ($classification == COURSE_TIMELINE_ALL || $classification == course_classify_for_timeline($course)) {
             $filteredcourses[] = $course;
             $filtermatches++;
         }

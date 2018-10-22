@@ -109,6 +109,7 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
 
         // Create user to add to the admin's block list.
         $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
 
         $this->assertEquals(0, \core_message\api::count_blocked_users());
 
@@ -1146,17 +1147,26 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $user1 = self::getDataGenerator()->create_user();
         $user2 = self::getDataGenerator()->create_user();
 
+        // Send some messages back and forth.
+        $time = 1;
+        $this->send_fake_message($user1, $user2, 'Yo!', 0, $time + 1);
+        $this->send_fake_message($user2, $user1, 'Sup mang?', 0, $time + 2);
+        $this->send_fake_message($user1, $user2, 'Writing PHPUnit tests!', 0, $time + 3);
+        $this->send_fake_message($user2, $user1, 'Word.', 0, $time + 4);
+
+        $conversationid = \core_message\api::get_conversation_between_users([$user1->id, $user2->id]);
+
         // The admin can do anything.
-        $this->assertTrue(\core_message\api::can_delete_conversation($user1->id));
+        $this->assertTrue(\core_message\api::can_delete_conversation($user1->id, $conversationid));
 
         // Set as the user 1.
         $this->setUser($user1);
 
         // They can delete their own messages.
-        $this->assertTrue(\core_message\api::can_delete_conversation($user1->id));
+        $this->assertTrue(\core_message\api::can_delete_conversation($user1->id, $conversationid));
 
         // They can't delete someone elses.
-        $this->assertFalse(\core_message\api::can_delete_conversation($user2->id));
+        $this->assertFalse(\core_message\api::can_delete_conversation($user2->id, $conversationid));
     }
 
     /**
@@ -1181,6 +1191,58 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
 
         // Delete the conversation as user 1.
         \core_message\api::delete_conversation($user1->id, $user2->id);
+        $this->assertDebuggingCalled();
+
+        $muas = $DB->get_records('message_user_actions', array(), 'timecreated ASC');
+        $this->assertCount(4, $muas);
+        // Sort by id.
+        ksort($muas);
+
+        $mua1 = array_shift($muas);
+        $mua2 = array_shift($muas);
+        $mua3 = array_shift($muas);
+        $mua4 = array_shift($muas);
+
+        $this->assertEquals($user1->id, $mua1->userid);
+        $this->assertEquals($m1id, $mua1->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua1->action);
+
+        $this->assertEquals($user1->id, $mua2->userid);
+        $this->assertEquals($m2id, $mua2->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua2->action);
+
+        $this->assertEquals($user1->id, $mua3->userid);
+        $this->assertEquals($m3id, $mua3->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua3->action);
+
+        $this->assertEquals($user1->id, $mua4->userid);
+        $this->assertEquals($m4id, $mua4->messageid);
+        $this->assertEquals(\core_message\api::MESSAGE_ACTION_DELETED, $mua4->action);
+    }
+
+    /**
+     * Tests deleting a conversation by conversation id.
+     */
+    public function test_delete_conversation_by_id() {
+        global $DB;
+
+        // Create some users.
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+
+        // The person doing the search.
+        $this->setUser($user1);
+
+        // Send some messages back and forth.
+        $time = 1;
+        $m1id = $this->send_fake_message($user1, $user2, 'Yo!', 0, $time + 1);
+        $m2id = $this->send_fake_message($user2, $user1, 'Sup mang?', 0, $time + 2);
+        $m3id = $this->send_fake_message($user1, $user2, 'Writing PHPUnit tests!', 0, $time + 3);
+        $m4id = $this->send_fake_message($user2, $user1, 'Word.', 0, $time + 4);
+
+        // Delete the conversation as user 1.
+        $conversationid = \core_message\api::get_conversation_between_users([$user1->id, $user2->id]);
+        \core_message\api::delete_conversation_by_id($user1->id, $conversationid);
 
         $muas = $DB->get_records('message_user_actions', array(), 'timecreated ASC');
         $this->assertCount(4, $muas);
@@ -1273,10 +1335,17 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $user1 = self::getDataGenerator()->create_user();
         $user2 = self::getDataGenerator()->create_user();
 
-        // Set as the user 1.
+        // Set as the first user.
         $this->setUser($user1);
 
-        // They can post to someone else.
+        // With the default privacy setting, users can't message them.
+        $this->assertFalse(\core_message\api::can_post_message($user2));
+
+        // Enrol users to the same course.
+        $course = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id);
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id);
+        // After enrolling users to the course, they should be able to message them with the default privacy setting.
         $this->assertTrue(\core_message\api::can_post_message($user2));
     }
 
@@ -1303,6 +1372,27 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
     }
 
     /**
+     * Tests the user can post a message when they are contact.
+     */
+    public function test_can_post_message_when_contact() {
+        // Create some users.
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+
+        // Set as the first user.
+        $this->setUser($user1);
+
+        // Check that we can not send user2 a message.
+        $this->assertFalse(\core_message\api::can_post_message($user2));
+
+        // Add users as contacts.
+        \core_message\api::add_contact($user1->id, $user2->id);
+
+        // Check that the return result is now true.
+        $this->assertTrue(\core_message\api::can_post_message($user2));
+    }
+
+    /**
      * Tests the user can't post a message if they are not a contact and the user
      * has requested messages only from contacts.
      */
@@ -1315,7 +1405,7 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $this->setUser($user1);
 
         // Set the second user's preference to not receive messages from non-contacts.
-        set_user_preference('message_blocknoncontacts', 1, $user2->id);
+        set_user_preference('message_blocknoncontacts', \core_message\api::MESSAGE_PRIVACY_ONLYCONTACTS, $user2->id);
 
         // Check that we can not send user 2 a message.
         $this->assertFalse(\core_message\api::can_post_message($user2));
@@ -1340,6 +1430,77 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
     }
 
     /**
+     * Tests the user can post a message when site-wide messaging setting is enabled,
+     * even if they are not a contact and are not members of the same course.
+     */
+    public function test_can_post_message_site_messaging_setting() {
+        // Create some users.
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+
+        // Set as the first user.
+        $this->setUser($user1);
+
+        // Set the second user's preference to receive messages from everybody. As site-wide messaging setting
+        // is disabled by default, the value will be changed to MESSAGE_PRIVACY_COURSEMEMBER.
+        set_user_preference('message_blocknoncontacts', \core_message\api::MESSAGE_PRIVACY_SITE, $user2->id);
+        $this->assertFalse(\core_message\api::can_post_message($user2));
+
+        // Enable site-wide messagging privacy setting. The user will be able to receive messages from everybody.
+        set_config('messagingallusers', true);
+        // Check that we can send user2 a message.
+        $this->assertTrue(\core_message\api::can_post_message($user2));
+    }
+
+    /**
+     * Tests get_user_privacy_messaging_preference method.
+     */
+    public function test_get_user_privacy_messaging_preference() {
+        // Create some users.
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+        $user3 = self::getDataGenerator()->create_user();
+
+        // Enable site-wide messagging privacy setting. The user will be able to receive messages from everybody.
+        set_config('messagingallusers', true);
+
+        // Set some user preferences.
+        set_user_preference('message_blocknoncontacts', \core_message\api::MESSAGE_PRIVACY_SITE, $user1->id);
+        set_user_preference('message_blocknoncontacts', \core_message\api::MESSAGE_PRIVACY_ONLYCONTACTS, $user2->id);
+
+        // Check the returned value for each user.
+        $this->assertEquals(
+            \core_message\api::MESSAGE_PRIVACY_SITE,
+            \core_message\api::get_user_privacy_messaging_preference($user1->id)
+        );
+        $this->assertEquals(
+            \core_message\api::MESSAGE_PRIVACY_ONLYCONTACTS,
+            \core_message\api::get_user_privacy_messaging_preference($user2->id)
+        );
+        $this->assertEquals(
+            \core_message\api::MESSAGE_PRIVACY_SITE,
+            \core_message\api::get_user_privacy_messaging_preference($user3->id)
+        );
+
+        // Disable site-wide messagging privacy setting. The user will be able to receive messages from members of their course.
+        set_config('messagingallusers', false);
+
+        // Check the returned value for each user.
+        $this->assertEquals(
+            \core_message\api::MESSAGE_PRIVACY_COURSEMEMBER,
+            \core_message\api::get_user_privacy_messaging_preference($user1->id)
+        );
+        $this->assertEquals(
+            \core_message\api::MESSAGE_PRIVACY_ONLYCONTACTS,
+            \core_message\api::get_user_privacy_messaging_preference($user2->id)
+        );
+        $this->assertEquals(
+            \core_message\api::MESSAGE_PRIVACY_COURSEMEMBER,
+            \core_message\api::get_user_privacy_messaging_preference($user3->id)
+        );
+    }
+
+    /**
      * Tests that when blocking messages from non-contacts is enabled that
      * non-contacts trying to send a message return false.
      */
@@ -1351,13 +1512,18 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         // Set as the first user.
         $this->setUser($user1);
 
-        // User hasn't sent their preference to block non-contacts, so should return false.
+        // By default, user only can be messaged by contacts and members of any of his/her courses.
+        $this->assertTrue(\core_message\api::is_user_non_contact_blocked($user2));
+
+        // Enable all users privacy messaging and check now the default user's preference has been set to allow receiving
+        // messages from everybody.
+        set_config('messagingallusers', true);
+        // Check that the return result is now false because any site user can contact him/her.
         $this->assertFalse(\core_message\api::is_user_non_contact_blocked($user2));
 
         // Set the second user's preference to not receive messages from non-contacts.
-        set_user_preference('message_blocknoncontacts', 1, $user2->id);
-
-        // Check that the return result is now true.
+        set_user_preference('message_blocknoncontacts', \core_message\api::MESSAGE_PRIVACY_ONLYCONTACTS, $user2->id);
+        // Check that the return result is still true (because is even more restricted).
         $this->assertTrue(\core_message\api::is_user_non_contact_blocked($user2));
 
         // Add the first user as a contact for the second user.
@@ -1366,12 +1532,10 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         // Check that the return result is now false.
         $this->assertFalse(\core_message\api::is_user_non_contact_blocked($user2));
 
-        // Set the first user's preference to not receive messages from non-contacts.
-        set_user_preference('message_blocknoncontacts', 1, $user1->id);
-        $this->setUser($user2);
-        // Confirm it is still false. We want to ensure a contact request works both ways
-        // as it is now an agreement between users.
-        $this->assertFalse(\core_message\api::is_user_non_contact_blocked($user1));
+        // Set the second user's preference to receive messages from course members.
+        set_user_preference('message_blocknoncontacts', \core_message\api::MESSAGE_PRIVACY_COURSEMEMBER, $user2->id);
+        // Check that the return result is still false (because $user1 is still his/her contact).
+        $this->assertFalse(\core_message\api::is_user_non_contact_blocked($user2));
     }
 
     /**
@@ -1696,6 +1860,7 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
 
         // Get the contacts and the unread message count.
         $messages = \core_message\api::get_contacts_with_unread_message_count($user2->id);
+
         // Confirm the size is correct.
         $this->assertCount(2, $messages);
         ksort($messages);
@@ -2224,6 +2389,31 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
 
         $this->assertTrue(\core_message\api::does_contact_request_exist($user1->id, $user2->id));
         $this->assertTrue(\core_message\api::does_contact_request_exist($user2->id, $user1->id));
+    }
+
+    /**
+     * Test the user in conversation check.
+     */
+    public function test_is_user_in_conversation() {
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+
+        $conversationid = \core_message\api::create_conversation_between_users([$user1->id, $user2->id]);
+
+        $this->assertTrue(\core_message\api::is_user_in_conversation($user1->id, $conversationid));
+    }
+
+    /**
+     * Test the user in conversation check when they are not.
+     */
+    public function test_is_user_in_conversation_when_not() {
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+        $user3 = self::getDataGenerator()->create_user();
+
+        $conversationid = \core_message\api::create_conversation_between_users([$user1->id, $user2->id]);
+
+        $this->assertFalse(\core_message\api::is_user_in_conversation($user3->id, $conversationid));
     }
 
     /**

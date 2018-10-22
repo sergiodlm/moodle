@@ -135,6 +135,30 @@ the groupid field.
   - message_contact_unblocked
   The reason for this is because you can now block/unblock users without them necessarily being a contact. These events
   have been replaced with message_user_blocked and message_user_unblocked respectively.
+* The event message_deleted has been changed, it no longer records the value of the 'useridto' due to
+  the introduction of group messaging. Please, if you have any observers or are triggering this event
+  in your code you will have to make some changes!
+* The gradebook now supports the ability to accept files as feedback. This can be achieved by adding
+  'feedbackfiles' to the $grades parameter passed to grade_update().
+    For example -
+        $grades['feedbackfiles'] = [
+            'contextid' => 1,
+            'component' => 'mod_xyz',
+            'filearea' => 'mod_xyz_feedback',
+            'itemid' => 2
+        ];
+  These files will be then copied to the gradebook file area.
+* Allow users to choose who can message them for privacy reasons, with a 'growing circle of contactability':
+  - Added $CFG->messagingallusers, for enabling messaging to all site users. Default value: 0.
+    When $CFG->messagingallusers = false users can choose being contacted by only contacts or contacts and users sharing a course with them.
+    In that case, the default user preference is MESSAGE_PRIVACY_COURSEMEMBER (users sharing a course).
+    When $CFG->messagingallusers = true users have a new option for the privacy messaging preferences: "Anyone on the site". In that case,
+    the default user preference is MESSAGE_PRIVACY_SITE (all site users).
+  - Added $CFG->keepmessagingallusersenabled setting to config.php to force enabling $CFG->messagingallusers during the upgrading process.
+    Default value: 0.
+    When $CFG->keepmessagingallusersenabled is set to true, $CFG->messagingallusers will be also set to true to enable messaging site users.
+    However, when it is empty, $CFG->messagingallusers will be disabled during the upgrading process, so the users will only be able to
+    message contacts and users sharing a course with them.
 
 === 3.5 ===
 

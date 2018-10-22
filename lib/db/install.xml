@@ -3946,7 +3946,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="fieldid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="instanceid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="recordid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="intvalue" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="decvalue" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="5"/>
         <FIELD NAME="shortcharvalue" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
@@ -3963,7 +3963,7 @@
         <KEY NAME="contextid" TYPE="foreign" FIELDS="contextid" REFTABLE="context" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="instanceid-fieldid" UNIQUE="true" FIELDS="instanceid, fieldid"/>
+        <INDEX NAME="recordid-fieldid" UNIQUE="true" FIELDS="recordid, fieldid"/>
       </INDEXES>
     </TABLE>
   </TABLES>
