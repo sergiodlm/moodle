@@ -177,6 +177,58 @@ abstract class data extends persistent {
     }
 
     /**
+     * Return the default value if the field has not been set.
+     *
+     * @return mixed
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    protected function get_charvalue() {
+        if ($this->get('id') == 0) {
+            return $this->get_field()->get_configdata_property('defaultvalue');
+        }
+        return $this->raw_get('charvalue');
+    }
+
+    /**
+     * Return the default value if the field has not been set.
+     * Work with checkbox field and select field.
+     *
+     * @return mixed
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    protected function get_intvalue() {
+        $type = $this->field->get('type');
+        if ($this->get('id') == 0 && $type == 'checkbox') {
+            return $this->get_field()->get_configdata_property('checkbydefault');
+        }
+        if ($this->get('id') == 0 && $type == 'select') {
+            $configoptions = $this->get_field()->get_configdata_property('options');
+            $options = explode("\r\n", $configoptions);
+            $defaultvalue = $this->get_field()->get_configdata_property('defaultvalue');
+            return array_search($defaultvalue, $options);
+        }
+        return $this->raw_get('intvalue');
+    }
+
+    /**
+     * Return the default value if the field has not been set.
+     *
+     * @return mixed
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    protected function get_value() {
+        $type = $this->field->get('type');
+        if ($this->get('id') == 0 && $type == 'textarea') {
+            $defaultvalue = $this->get_field()->get_configdata_property('defaultvalue');
+            return $defaultvalue['text'];
+        }
+        return $this->raw_get('value');
+    }
+
+    /**
      * Must return the name of the field on customfield_data table that is used to store data.
      *
      * @return string field name of customfield_data table used to store data.

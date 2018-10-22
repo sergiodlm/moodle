@@ -114,6 +114,7 @@ class api {
             }
             $formfields[] = self::load_data($data->id, $data, $field);
         }
+
         return $formfields;
     }
 
@@ -231,5 +232,48 @@ class api {
             $event = \core_customfield\event\field_updated::create($eventparams);
         }
         $event->trigger();
+    }
+
+    /**
+     * Get the custom fields and data from a context.
+     *
+     * @param $contextid
+     *
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function get_fields_with_data_fromcontext($contextid): array {
+        global $DB;
+
+        $sql = "SELECT f.id as field_id, f.shortname, f.categoryid, f.type, f.configdata,
+                       c.name as categoryname, d.*
+                  FROM {customfield_category} c
+                  JOIN {customfield_field} f
+                    ON (c.id = f.categoryid)
+             LEFT JOIN {customfield_data} d
+                    ON (f.id = d.fieldid AND d.contextid = :contextid)
+              ORDER BY c.sortorder, f.sortorder DESC";
+
+        $params['contextid'] = $contextid;
+        $fieldsdata = $DB->get_records_sql($sql, $params);
+
+        $formfields = [];
+        foreach ($fieldsdata as $data) {
+            $fieldobj    = (object) ['id'         => $data->field_id, 'shortname' => $data->shortname, 'type' => $data->type,
+                                     'configdata' => $data->configdata, 'categoryid' => $data->categoryid];
+            $field       = self::get_field(0, $fieldobj);
+            $categoryobj = (object) ['id' => $data->categoryid, 'name' => $data->categoryname];
+            $field->set_category(new category(0, $categoryobj));
+            unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata, $data->categoryname);
+            if (empty($data->id)) {
+                $data->id        = 0;
+                $data->fieldid   = $field->get('id');
+                $data->contextid = $contextid;
+            }
+            $formfields[] = self::load_data($data->id, $data, $field);
+        }
+        return $formfields;
     }
 }
