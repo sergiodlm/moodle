@@ -54,7 +54,7 @@ abstract class data extends persistent {
                 'fieldid'        => [
                         'type' => PARAM_TEXT,
                 ],
-                'recordid'       => [
+                'instanceid'       => [
                         'type' => PARAM_TEXT,
                 ],
                 'intvalue'       => [
@@ -206,21 +206,21 @@ abstract class data extends persistent {
             return false;
         }
 
-        $datarecord = $DB->get_record('customfield_data', ['recordid' => $datanew->id, 'fieldid' => $this->get_field()->get('id')]);
+        $datarecord = $DB->get_record('customfield_data', ['instanceid' => $datanew->id, 'fieldid' => $this->get_field()->get('id')]);
 
-        $now = time();
         if ($datarecord) {
             $this->set('id', $datarecord->id);
         } else {
             $this->set('id', 0);
             $this->set('fieldid', $this->get_field()->get('id'));
-            $this->set('recordid', $datanew->id);
+            $this->set('instanceid', $datanew->id);
             $this->set('contextid', $datanew->contextid);
+            $now = time();
             $this->set('timecreated', $now);
+            $this->set('timemodified', $now);
         }
         $datapreprocessed = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
         $this->set($this->datafield(), $datapreprocessed);
-        $this->set('timemodified', $now);
 
         $this->set('value', $datapreprocessed);
         $this->set('valueformat', $this->get_valueformat($this->datafield()));
@@ -228,9 +228,9 @@ abstract class data extends persistent {
         return $this;
     }
 
-    protected function get_valueformat($stringformat) {
-        if (is_int($stringformat)) {
-            return $stringformat;
+    protected function get_valueformat() {
+        if (is_int($this->raw_get('valueformat'))) {
+            return $this->raw_get('valueformat');
         }
 
         return FORMAT_PLAIN;
@@ -260,7 +260,7 @@ abstract class data extends persistent {
     }
 
     /**
-     * Loads an object with data for this field.
+     * Validates data for this field.
      *
      * @param \stdClass $data
      * @param array $files
@@ -276,7 +276,7 @@ abstract class data extends persistent {
             $where = "fieldid = ? AND {$datafield} = ?";
             $params = [$this->get_field()->get('id'), $data->{$this->inputname()}];
             if (isset($data->id) && $data->id > 1) {
-                $where .= ' AND recordid != ?';
+                $where .= ' AND instanceid != ?';
                 $params[] = $data->id;
             }
             if ($DB->record_exists_select('customfield_data', $where, $params)) {

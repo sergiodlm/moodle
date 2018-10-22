@@ -52,8 +52,8 @@ class field extends \core_customfield\field {
         $mform->setType('configdata[defaultvalue]', PARAM_RAW);
     }
 
-    public function before_delete(): bool {
+    public function before_delete() {
         // TODO delete all files that are associated with data records that are about to be deleted.
-        return parent::before_delete();
+        parent::before_delete();
     }
 }

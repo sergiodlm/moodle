@@ -41,12 +41,7 @@ class data extends \core_customfield\data {
      */
     public function edit_field_add(\MoodleQuickForm $mform) {
         $config = $this->get_field_configdata();
-
-        if (isset($config['options'])) {
-            $options = explode("\r\n", $config['options']);
-        } else {
-            $options = array();
-        }
+        $options = $this->get_options_array();
         $formattedoptions = array();
         foreach ($options as $key => $option) {
             // Multilang formatting with filters.
@@ -64,6 +59,8 @@ class data extends \core_customfield\data {
     }
 
     /**
+     * Return which column from mdl_customfield_data is used to store and retrieve data
+     *
      * @return string
      */
     public function datafield() : string {
@@ -71,17 +68,47 @@ class data extends \core_customfield\data {
     }
 
     /**
-     * @return string
-     * @throws \coding_exception
+     * Validates data for this field.
+     *
+     * @param \stdClass $data
+     * @param array $files
+     * @return array
      */
-    public function display() {
-        $config = $this->get_field_configdata();
+    public function validate_data(\stdClass $data, array $files): array {
+        $options = $this->get_options_array();
+        $errors = parent::validate_data($data, $files);
+        if (isset($data->{$this->inputname()})) {
+            if (!isset($options[$data->{$this->inputname()}])) {
+                $errors[$this->inputname()] = get_string('invalidoption', 'customfield_select');
+            }
+        } else {
+            $errors[$this->inputname()] = get_string('invalidoption', 'customfield_select');
+        }
+        return $errors;
+    }
 
-        if (isset($config['options'])) {
-            $options = explode("\r\n", $config['options']);
+    /**
+     * Returns the options available as an array.
+     *
+     * @return array
+     */
+    private function get_options_array(): array {
+        if (isset($this->get_field_configdata()['options'])) {
+            $options = explode("\r\n", $this->get_field_configdata()['options']);
         } else {
             $options = array();
         }
+        return $options;
+    }
+
+    /**
+     * The HTML representation of the field and selected value.
+     * @return string
+     * @throws \coding_exception
+     */
+    public function display(): string {
+        $options = $this->get_options_array();
+
         if (is_null($this->get_formvalue())) {
             $displaydata = get_string('notset', 'core_customfield');
         } else {

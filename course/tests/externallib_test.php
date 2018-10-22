@@ -418,8 +418,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $category  = self::getDataGenerator()->create_category();
 
         // Custom fields
-        $fieldcategory = self::getDataGenerator()->create_custom_field_category(
-            'core_course', 'course', 0, ['name' => 'Other fields']);
+        $fieldcategory = self::getDataGenerator()->create_course_custom_field_category(['name' => 'Other fields']);
 
         $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
         $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
@@ -632,8 +631,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $coursedata['summaryformat'] = FORMAT_MOODLE;
         $course1  = self::getDataGenerator()->create_course($coursedata);
 
-        $fieldcategory = self::getDataGenerator()->create_custom_field_category(
-            'core_course', 'course', 0, ['name' => 'Other fields']);
+        $fieldcategory = self::getDataGenerator()->create_course_custom_field_category(['name' => 'Other fields']);
 
         $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
         $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
@@ -765,8 +763,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $course2  = self::getDataGenerator()->create_course($coursedata2);
 
         // Custom fields
-        $fieldcategory = self::getDataGenerator()->create_custom_field_category(
-            'core_course', 'course', 0, ['name' => 'Other fields']);
+        $fieldcategory = self::getDataGenerator()->create_course_custom_field_category(['name' => 'Other fields']);
 
         $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text'];
         $field = self::getDataGenerator()->create_custom_field($fieldcategory, $customfield);
@@ -1191,8 +1188,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $this->assignUserCapability('moodle/course:setforcedlanguage', $contextid, $roleid);
 
         // Custom fields.
-        $fieldcategory = self::getDataGenerator()->create_custom_field_category(
-            'core_course', 'course', 0, ['name' => 'Other fields']);
+        $fieldcategory = self::getDataGenerator()->create_course_custom_field_category(['name' => 'Other fields']);
 
         $customfield = ['shortname' => 'test', 'name' => 'Custom field', 'type' => 'text',
             'configdata' => ['visibility' => \core_course\customfield\course_handler::VISIBLETOALL, 'locked' => 1]];

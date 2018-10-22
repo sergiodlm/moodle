@@ -72,12 +72,12 @@ class course_handler extends \core_customfield\handler {
     /**
      * The current user can edit custom fields on the given course.
      *
-     * @param int $recordid id of the course to test edit permission
+     * @param int $instanceid id of the course to test edit permission
      * @return bool true if the current can edit custom fields, false otherwise
      */
-    public function can_edit(field $field, $recordid = null) : bool {
-        if ($recordid) {
-            $context = $this->get_data_context($recordid);
+    public function can_edit(field $field, $instanceid = null) : bool {
+        if ($instanceid) {
+            $context = $this->get_data_context($instanceid);
             return has_capability('moodle/course:update', $context) &&
                 (!$field->get_configdata_property('locked') ||
                     has_capability('moodle/course:changelockedcustomfields', $context));
@@ -89,12 +89,12 @@ class course_handler extends \core_customfield\handler {
         }
     }
 
-    public function can_view(field $field, $recordid = null): bool {
+    public function can_view(field $field, $instanceid = null): bool {
         $visibility = $field->get_configdata_property('visibility');
         if ($visibility == self::NOTVISIBLE) {
             return false;
         } else if ($visibility == self::VISIBLETOTEACHERS) {
-            return has_capability('moodle/course:update', $this->get_data_context($recordid));
+            return has_capability('moodle/course:update', $this->get_data_context($instanceid));
         } else {
             return true;
         }
@@ -155,14 +155,14 @@ class course_handler extends \core_customfield\handler {
     }
 
     /**
-     * Returns the context for the data associated with the given recordid.
+     * Returns the context for the data associated with the given instanceid.
      *
-     * @param int $recordid id of the record to get the context for
+     * @param int $instanceid id of the record to get the context for
      * @return \context the context for the given record
      */
-    public function get_data_context(int $recordid): \context {
-        if ($recordid > 0) {
-            return \context_course::instance($recordid);
+    public function get_data_context(int $instanceid): \context {
+        if ($instanceid > 0) {
+            return \context_course::instance($instanceid);
         } else {
             return \context_system::instance();
         }

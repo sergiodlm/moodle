@@ -1170,10 +1170,13 @@ EOD;
     /**
      * Create a new course custom field category with the given name.
      *
-     * @param   array $data Array with 'name' of category
+     * @param   array $data Array with data['name'] of category
      * @return  \core_customfield\category   The created category
      */
-    public function create_custom_field_category($component, $area, $itemid, $data): \core_customfield\category {
+    public function create_course_custom_field_category($data): \core_customfield\category {
+        $component = 'core_course';
+        $area = 'course';
+        $itemid = 0;
         $handler = \core_customfield\handler::get_handler($component, $area, $itemid);
         $category = $handler->new_category();
         if (!empty($data['name'])) {
