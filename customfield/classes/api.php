@@ -219,9 +219,30 @@ class api {
             $data = (object) ['description_editor' => $formdata->description_editor];
             $data = file_postupdate_standard_editor($data, 'description', $textoptions, $context,
                                                     'core_customfield', 'description', $field->get('id'));
+
             $field->set('description', $data->description);
             $field->set('descriptionformat', $data->descriptionformat);
             $field->save();
+        }
+
+        if (($field->get('type') == 'textarea') && isset($formdata->configdata['defaultvalue']['text'])) {
+
+            // Find context.
+            $context                = \context_system::instance();
+            $textoptions['context'] = $context;
+
+            // Store files.
+            $data = (object) ['defaultvalue_editor' => $formdata->configdata['defaultvalue']];
+
+            $data = file_postupdate_standard_editor($data, 'defaultvalue', $textoptions, $context,
+                'core_customfield', 'defaultvalue_editor', $field->get('id'));
+
+            $configdata = $field->get('configdata');
+            if ($configdata) {
+                $configdata['defaultvalue']['text'] = $data->defaultvalue;
+                $field->set('configdata', json_encode($configdata));
+                $field->save();
+            }
         }
 
         $eventparams = ['objectid' => $field->get('id'), 'context' => \context_system::instance(),
