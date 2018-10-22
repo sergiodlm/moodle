@@ -1173,8 +1173,8 @@ EOD;
      * @param   array $data Array with 'name' of category
      * @return  \core_customfield\category   The created category
      */
-    public function create_custom_field_category($data): \core_customfield\category {
-        $handler = core_course\customfield\course_handler::instance();
+    public function create_custom_field_category($component, $area, $itemid, $data): \core_customfield\category {
+        $handler = \core_customfield\handler::get_handler($component, $area, $itemid);
         $category = $handler->new_category();
         if (!empty($data['name'])) {
             $category->set('name', $data['name']);
@@ -1191,9 +1191,11 @@ EOD;
      */
     public function create_custom_field($category, $data): \core_customfield\field {
         $handler = core_course\customfield\course_handler::instance();
+        $data['configdata'] = empty($data['configdata']) ? [] : $data['configdata'];
         $field = $handler->new_field($category, $data['type']);
         $field->set('shortname', $data['shortname']);
         $field->set('name', $data['name']);
+        $field->set('configdata', json_encode($data['configdata'] + ['required' => 0, 'uniquevalues' => 0]));
         $field->save();
         return $field;
     }

@@ -112,7 +112,7 @@ class api {
                 $data->contextid = $datacontext->id;
                 $data->recordid  = $recordid;
             }
-            $formfields[] = self::load_data($data->id, $data, $field);
+            $formfields[] = self::load_data(0, $data, $field);
         }
 
         return $formfields;

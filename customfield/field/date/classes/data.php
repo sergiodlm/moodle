@@ -83,16 +83,16 @@ class data extends \core_customfield\data {
 
         // Check if a date has been specified.
         if (empty($this->get_formvalue())) {
-            $date = get_string('notset', 'core_customfield');
-        } else {
-            $date = userdate($this->get_formvalue(), $format);
+            // If date is not enabled don't show it.
+            return '';
         }
+        $date = userdate($this->get_formvalue(), $format);
 
         return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname']) .
-               ' : ' .
-               \html_writer::tag('span', $date, ['class' => 'customfieldvalue']) .
-               \html_writer::end_tag('div');
+            \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname']) .
+            ' : ' .
+            \html_writer::tag('span', $date, ['class' => 'customfieldvalue']) .
+            \html_writer::end_tag('div');
     }
 
     /**
@@ -104,7 +104,6 @@ class data extends \core_customfield\data {
      * @throws \coding_exception
      */
     public function edit_save_data_preprocess($data, \stdClass $datarecord) {
-
         if (!$data) {
             return 0;
         }

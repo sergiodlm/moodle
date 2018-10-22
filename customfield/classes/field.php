@@ -278,7 +278,7 @@ abstract class field extends persistent {
      * @throws \moodle_exception
      */
     public function get_configdata_property(string $property) {
-        $configdata = json_decode($this->raw_get('configdata'), true);
+        $configdata = $this->get('configdata');
         if ( !isset($configdata[$property]) ) {
             return null;
         }
