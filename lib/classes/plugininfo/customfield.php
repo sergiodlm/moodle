@@ -65,4 +65,31 @@ class customfield extends base {
 
         return $enabled;
     }
+
+    /**
+     * Gathers and returns the information about all plugins of the given type
+     *
+     * @param string $type the name of the plugintype, eg. mod, auth or workshopform
+     * @param string $typerootdir full path to the location of the plugin dir
+     * @param string $typeclass the name of the actually called class
+     * @param core_plugin_manager $pluginman the plugin manager calling this method
+     * @return array of plugintype classes, indexed by the plugin name
+     */
+    public static function get_plugins($type, $typerootdir, $typeclass, $pluginman) {
+        global $CFG;
+        $formats = parent::get_plugins($type, $typerootdir, $typeclass, $pluginman);
+
+        if (!empty($CFG->customfield_plugins_sortorder)) {
+            $order = explode(',', $CFG->customfield_plugins_sortorder);
+            $order = array_merge(array_intersect($order, array_keys($formats)),
+                        array_diff(array_keys($formats), $order));
+        } else {
+            $order = array_keys($formats);
+        }
+        $sortedformats = array();
+        foreach ($order as $formatname) {
+            $sortedformats[$formatname] = $formats[$formatname];
+        }
+        return $sortedformats;
+    }
 }

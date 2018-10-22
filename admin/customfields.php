@@ -56,6 +56,25 @@ switch ($action) {
         if (!$customfieldplugins[$customfieldname]->is_enabled()) {
             unset_config('disabled', 'customfield_'. $customfieldname);
             core_plugin_manager::reset_caches();
+            // TODO: reset other caches
+        }
+        break;
+    case 'up':
+        if ($sortorder[$customfieldname]) {
+            $currentindex = $sortorder[$customfieldname];
+            $seq = array_keys($customfieldplugins);
+            $seq[$currentindex] = $seq[$currentindex-1];
+            $seq[$currentindex-1] = $customfieldname;
+            set_config('customfield_plugins_sortorder', implode(',', $seq));
+        }
+        break;
+    case 'down':
+        if ($sortorder[$customfieldname] < count($sortorder)-1) {
+            $currentindex = $sortorder[$customfieldname];
+            $seq = array_keys($customfieldplugins);
+            $seq[$currentindex] = $seq[$currentindex+1];
+            $seq[$currentindex+1] = $customfieldname;
+            set_config('customfield_plugins_sortorder', implode(',', $seq));
         }
         break;
 }
