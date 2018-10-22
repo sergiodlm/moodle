@@ -2566,8 +2566,7 @@ function xmldb_main_upgrade($oldversion) {
     }
 
 
-    if ($oldversion < 2018101900.01) {
-
+    if ($oldversion < 2018101900.02) {
         // Define table customfield_field to be created.
         $table = new xmldb_table('customfield_field');
 
@@ -2578,10 +2577,6 @@ function xmldb_main_upgrade($oldversion) {
         $table->add_field('type', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
         $table->add_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('descriptionformat', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('required', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
-        $table->add_field('locked', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
-        $table->add_field('uniquevalues', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
-        $table->add_field('visibility', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
         $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('categoryid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('configdata', XMLDB_TYPE_TEXT, null, null, null, null, null);
@@ -2613,7 +2608,7 @@ function xmldb_main_upgrade($oldversion) {
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('component', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
         $table->add_field('area', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('contextid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
 
         // Adding keys to table customfield_category.
@@ -2634,12 +2629,12 @@ function xmldb_main_upgrade($oldversion) {
         // Adding fields to table customfield_data.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('fieldid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('instanceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('recordid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('intvalue', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('decvalue', XMLDB_TYPE_NUMBER, '10, 5', null, null, null, null);
         $table->add_field('shortcharvalue', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('charvalue', XMLDB_TYPE_CHAR, '400', null, null, null, null);
-        $table->add_field('value', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('value', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
         $table->add_field('valueformat', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
@@ -2651,7 +2646,7 @@ function xmldb_main_upgrade($oldversion) {
         $table->add_key('contextid', XMLDB_KEY_FOREIGN, ['contextid'], 'context', ['id']);
 
         // Adding indexes to table customfield_data.
-        $table->add_index('instanceid-fieldid', XMLDB_INDEX_UNIQUE, ['instanceid', 'fieldid']);
+        $table->add_index('recordid-fieldid', XMLDB_INDEX_UNIQUE, ['recordid', 'fieldid']);
 
         // Conditionally launch create table for customfield_data.
         if (!$dbman->table_exists($table)) {
@@ -2659,7 +2654,7 @@ function xmldb_main_upgrade($oldversion) {
         }
 
         // Text savepoint reached.
-        upgrade_main_savepoint(true, 2018101900.01);
+        upgrade_main_savepoint(true, 2018101900.02);
     }
 
     return true;
