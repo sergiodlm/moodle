@@ -336,7 +336,20 @@ abstract class field extends persistent {
         global $DB;
 
         $fields  = array();
-        $records = $DB->get_records('customfield_field', ['categoryid' => $categoryid], 'sortorder DESC');
+
+        $plugins = \core\plugininfo\customfield::get_enabled_plugins();
+        // No plugins enabled.
+        if (empty($plugins)) {
+            return $plugins;
+        }
+
+        list($sqlfields, $params) = $DB->get_in_or_equal(array_keys($plugins), SQL_PARAMS_NAMED);
+        $sql = "SELECT *
+                  FROM {customfield_field}
+                 WHERE categoryid = :categoryid
+                   AND type {$sqlfields}
+              ORDER BY sortorder DESC";
+        $records = $DB->get_records_sql($sql, $params + ['categoryid' => $categoryid]);
         foreach ($records as $fielddata) {
             $fields[] = self::load_field($fielddata->id);
         }

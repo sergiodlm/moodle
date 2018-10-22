@@ -50,13 +50,14 @@ switch ($action) {
         if ($customfieldplugins[$customfieldname]->is_enabled()) {
             set_config('disabled', 1, 'customfield_'. $customfieldname);
             core_plugin_manager::reset_caches();
+            \cache::make('core', 'customfield_fields_definitions')->purge();
         }
         break;
     case 'enable':
         if (!$customfieldplugins[$customfieldname]->is_enabled()) {
             unset_config('disabled', 'customfield_'. $customfieldname);
             core_plugin_manager::reset_caches();
-            // TODO: reset other caches
+            \cache::make('core', 'customfield_fields_definitions')->purge();
         }
         break;
     case 'up':
