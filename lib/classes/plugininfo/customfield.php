@@ -35,7 +35,6 @@ class customfield extends base {
     public function is_uninstall_allowed() {
         global $DB;
         return true;
-        //return !$DB->record_exists('user_info_field', array('datatype'=>$this->name));
     }
 
     /**
@@ -44,5 +43,26 @@ class customfield extends base {
      */
     public static function get_manage_url() {
         return new moodle_url('/customfield/index.php');
+    }
+
+    public static function get_enabled_plugins() {
+        global $DB;
+
+        // Get all available plugins.
+        $plugins = \core_plugin_manager::instance()->get_installed_plugins('customfield');
+        if (!$plugins) {
+            return array();
+        }
+
+        // Check they are enabled using get_config (which is cached and hopefully fast).
+        $enabled = array();
+        foreach ($plugins as $plugin => $version) {
+            $disabled = get_config('customfield_' . $plugin, 'disabled');
+            if (empty($disabled)) {
+                $enabled[$plugin] = $plugin;
+            }
+        }
+
+        return $enabled;
     }
 }

@@ -175,7 +175,7 @@ class api {
     public static function field_types() {
         $fieldtypes = array();
 
-        $plugins = \core_component::get_plugin_list('customfield');
+        $plugins = \core\plugininfo\customfield::get_enabled_plugins();
         foreach ($plugins as $type => $unused) {
             $fieldtypes[$type] = get_string('pluginname', 'customfield_' . $type);
         }
