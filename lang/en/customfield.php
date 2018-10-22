@@ -37,6 +37,7 @@ $string['categorysavefailed'] = 'An error occured and the category was not saved
 $string['checkbydefault'] = 'Checked by default';
 $string['checked'] = 'Checked';
 $string['commonsettings'] = 'Common settings';
+$string['componentsettings'] = 'Component settings';
 $string['confirmdelete'] = 'Are you sure?';
 $string['confirmdeletecategory'] = 'Are you sure? (All fields inside this category will be ereased!)';
 $string['createnewcustomfield'] = 'Add a new custom field';

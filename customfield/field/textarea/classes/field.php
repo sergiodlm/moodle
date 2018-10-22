@@ -56,7 +56,7 @@ class field extends \core_customfield\field {
     }
 
     public function before_delete() {
-        // TODO delete all files that are associated with data records that are about to be deleted.
         parent::before_delete();
+        // TODO delete all files associated with configdata[defaultvalue]
     }
 }

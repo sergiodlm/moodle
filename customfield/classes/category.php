@@ -178,13 +178,11 @@ class category extends persistent {
      * @throws \moodle_exception
      * @throws \dml_exception
      */
-    protected function before_delete() : bool {
+    protected function before_delete() {
         foreach ($this->fields() as $field) {
-            if (!$field->delete()) {
-                return false;
-            }
+            $field->delete();
         }
-        return true;
+        $this->clear_cache();
     }
 
     /**
