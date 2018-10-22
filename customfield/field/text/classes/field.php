@@ -51,7 +51,6 @@ class field extends \core_customfield\field {
         $mform->setType('configdata[maxlength]', PARAM_INT);
 
         $mform->addElement('selectyesno', 'configdata[ispassword]', get_string('profilefieldispassword', 'admin'));
-        $mform->setDefault('configdata[ispassword]', 0); // Defaults to 'no'.
         $mform->setType('configdata[ispassword]', PARAM_INT);
 
         $mform->addElement('text', 'configdata[link]', get_string('link', 'core_customfield'));
