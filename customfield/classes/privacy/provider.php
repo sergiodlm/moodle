@@ -93,7 +93,6 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
                     ON (cff.id = cfd.fieldid)
                  WHERE ctx.id {$contextsql}
                    AND ctx.contextlevel = :contextlevel
-                   AND dr.userid = :userid OR
               ORDER BY cff.id, cfd.id";
         $rs = $DB->get_recordset_sql($sql, $contextparams + ['contextlevel' => CONTEXT_COURSE, 'userid' => $user->id]);
         $context = null;
@@ -208,33 +207,6 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
     }
 
     /**
-     * Delete all user data for the specified user, in the specified contexts.
-     *
-     * @param approved_contextlist $contextlist a list of contexts approved for deletion.
-     */
-    public static function delete_customfield_for_user(approved_contextlist $contextlist) {
-        global $DB;
-
-        if (empty($contextlist->count())) {
-            return;
-        }
-
-        $user = $contextlist->get_user();
-        $recordstobedeleted = [];
-
-        foreach ($contextlist->get_contexts() as $context) {
-            // TODO: get context from handler.
-            $rs = $DB->get_recordset_sql($sql, ['ctxid' => $context->id, 'contextlevel' => CONTEXT_COURSE, 'userid' => $user->id]);
-            foreach ($rs as $row) {
-                self::mark_customfield_data_deletion($context, $row);
-                $recordstobedeleted[$row->recordid] = $row->recordid;
-            }
-            $rs->close();
-            self::delete_customfield_data($context, $recordstobedeleted);
-        }
-    }
-
-    /**
      * Marks a customfield_data for deletion
      *
      * Also invokes callback from customfield plugin in case it stores additional data that needs to be deleted
@@ -291,7 +263,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
                 cfd.timecreated AS datatimecreated, cfd.timemodified AS datatimemodified,
                 cff.shortname AS fieldshortname, cff.name AS fieldname, cff.type AS fieldtype, cff.description AS fielddescription,
                 cff.descriptionformat AS descriptionformat, cff.sortorder AS fieldsortorder, cff.categoryid AS fieldcategoryid,
-                cff.configdata AS fieldconfigdata, cff.timecreated AS fieldtimecreated, cff.timemodified AS fieldtimemodified '
+                cff.configdata AS fieldconfigdata, cff.timecreated AS fieldtimecreated, cff.timemodified AS fieldtimemodified ';
     }
 
     /**
