@@ -43,7 +43,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
                 'instanceid' => 'privacy:metadata:customfield_data:instanceid',
                 'intvalue' => 'privacy:metadata:customfield_data:intvalue',
                 'decvalue' => 'privacy:metadata:customfield_data:decvalue',
-                'shortcharvalue' => 'privacy:metadata:customfield_data:shortcarvalue',
+                'shortcharvalue' => 'privacy:metadata:customfield_data:shortcharvalue',
                 'charvalue' => 'privacy:metadata:customfield_data:charvalue',
                 'value' => 'privacy:metadata:customfield_data:value',
                 'valueformat' => 'privacy:metadata:customfield_data:valueformat',
@@ -55,7 +55,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         );
 
         // Link to subplugins.
-        $collection->add_plugintype_link('customfield', [], 'privacy:metadata:customfieldnpluginsummary');
+        $collection->add_plugintype_link('customfield', [], 'privacy:metadata:customfieldpluginsummary');
 
         $collection->link_subsystem('core_files', 'privacy:metadata:filepurpose');
 
@@ -188,7 +188,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * @return string
      */
     protected static function sql_fields() {
-        return 'cfd.instanceid, cfd.intvalue AS dataintvalue, cfd.decvalue AS datadecvalue, cfd.shortcharvalue AS datashortcarvalue,
+        return 'cfd.instanceid, cfd.intvalue AS dataintvalue, cfd.decvalue AS datadecvalue, cfd.shortcharvalue AS datashortcharvalue,
                 cfd.charvalue AS datacharvalue, cfd.value AS datavalue, cfd.valueformat AS datavalueformat,
                 cfd.timecreated AS datatimecreated, cfd.timemodified AS datatimemodified,
                 cff.shortname AS fieldshortname, cff.name AS fieldname, cff.type AS fieldtype, cff.description AS fielddescription,
