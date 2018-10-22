@@ -62,61 +62,6 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         return $collection;
     }
 
-    // Writes user data to the writer for the user to download.
-    public static function export_customfield(\context $context, string $component, string $commentarea, int $itemid,
-            array $subcontext, bool $onlyforthisuser = true) {
-
-    }
-
-    /**
-     * Export personal data for the given approved_contextlist. User and context information is contained within the contextlist.
-     *
-     * @param approved_contextlist $contextlist a list of contexts approved for export.
-     */
-    public static function export_user_data(approved_contextlist $contextlist) {
-        global $DB;
-
-        if (!$contextlist->count()) {
-            return;
-        }
-
-        $user = $contextlist->get_user();
-
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
-
-        $sql = "SELECT cfd.id AS dataid, cff.name AS dataname, cff.configdata" .
-                       self::sql_fields() . "
-                  FROM {context} ctx
-                  JOIN {customfield_data} cfd
-                    ON (cfd.contextid = ctx.id)
-                  JOIN {customfield_field} cff
-                    ON (cff.id = cfd.fieldid)
-                 WHERE ctx.id {$contextsql}
-                   AND ctx.contextlevel = :contextlevel
-              ORDER BY cff.id, cfd.id";
-        $rs = $DB->get_recordset_sql($sql, $contextparams + ['contextlevel' => CONTEXT_COURSE, 'userid' => $user->id]);
-        $context = null;
-        $fieldobj = null;
-        foreach ($rs as $row) {
-            if (!$context || $context->instanceid != $row->instanceid) {
-                // This row belongs to the different data module than the previous row.
-                // Export the data for the previous module.
-                self::export_field($context, $user);
-                // Start new data module.
-                // TODO: get context from handler
-                $context = \context_course::instance($row->instanceid);
-            }
-
-            // TODO: get required from field method
-            $required = json_decode($row->configdata, true)['required'];
-            $fieldobj = self::extract_object_from_record($row, 'field', ['fieldid' => $row->fieldid, 'required' => $required]);
-            $dataobj = self::extract_object_from_record($row, 'data', ['fieldid' => $row->fieldid, 'dataid' => $row->dataid]);
-            self::export_cumtomfield_data($context, $fieldobj, $dataobj);
-        }
-        $rs->close();
-        self::export_field($context, $user);
-    }
-
     /**
      * Export one field data in a component
      *
@@ -165,12 +110,6 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         writer::with_context($context)->export_data([], $contextdata);
     }
 
-    // Deletes all custom fields for a specified context, component, and commentarea.
-    public static function delete_customfield_for_all_users(\context $context, string $component, string $area = null,
-            int $itemid = 0) {
-
-    }
-
     /**
      * Delete all data for all users in the specified context.
      *
@@ -198,12 +137,6 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         $rs->close();
 
         self::delete_customfield_data($context, $recordstobedeleted);
-    }
-
-    // Deletes all custom fields for a specified context, component, and commentarea.
-    public static function delete_customfield_for_all_users_select(\context $context, string $component, string $area,
-            $itemidstest, $params = []) {
-
     }
 
     /**
