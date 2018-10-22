@@ -821,7 +821,7 @@ function get_courses_search($searchterms, $sort, $page, $recordsperpage, &$total
     } else {
         $cfsearchcond = 'OR '. implode(" OR ", $cfsearchcond);
         $cfjoin = 'LEFT JOIN {customfield_data} cfd
-                          ON (cfd.recordid = c.id)
+                          ON (cfd.instanceid = c.id)
                    LEFT JOIN {customfield_field} cff
                           ON (cff.id = cfd.fieldid)
                    LEFT JOIN {customfield_category} cfc

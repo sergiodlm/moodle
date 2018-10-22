@@ -167,10 +167,10 @@ abstract class handler {
     /**
      * Context that should be used for data stored for the given record
      *
-     * @param int $recordid
+     * @param int $instanceid
      * @return \context
      */
-    abstract public function get_data_context(int $recordid) : \context;
+    abstract public function get_data_context(int $instanceid) : \context;
 
     /**
      * @return int|null
@@ -261,19 +261,19 @@ abstract class handler {
      * The current user can edit custom fields on the given record on this component.
      *
      * @param field $field
-     * @param null $recordid
+     * @param null $instanceid
      * @return bool
      */
-    abstract public function can_edit(field $field, $recordid = null): bool;
+    abstract public function can_edit(field $field, $instanceid = null): bool;
 
     /**
      * The current user can view the value of the custom field on the given record on this component.
      *
      * @param field $field
-     * @param null $recordid
+     * @param null $instanceid
      * @return bool
      */
-    abstract public function can_view(field $field, $recordid = null): bool;
+    abstract public function can_view(field $field, $instanceid = null): bool;
 
     /**
      * The given field is supported on by this handler
@@ -306,36 +306,36 @@ abstract class handler {
     /**
      * List of fields with their data
      *
-     * @param int $recordid
+     * @param int $instanceid
      * @return data[]
      */
-    public function get_fields_with_data(array $fields, int $recordid) : array {
+    public function get_fields_with_data(array $fields, int $instanceid) : array {
         // TODO this function is always used either with "get visibile fields" or with "get editable fields", should really be simplified.
-        return api::get_fields_with_data($fields, $this->get_data_context($recordid), $recordid);
+        return api::get_fields_with_data($fields, $this->get_data_context($instanceid), $instanceid);
     }
 
     /**
      * List of fields with their data (only fields with data).
      *
-     * @param int $recordid
+     * @param int $instanceid
      * @return array
      */
-    public function get_fields_with_data_for_backup(int $recordid) : array {
+    public function get_fields_with_data_for_backup(int $instanceid) : array {
         // TODO (by Marina): take another look at it.
-        $editablefields = $this->get_editable_fields($recordid);
-        return api::get_fields_with_data_for_backup($editablefields, $this->get_data_context($recordid), $recordid);
+        $editablefields = $this->get_editable_fields($instanceid);
+        return api::get_fields_with_data_for_backup($editablefields, $this->get_data_context($instanceid), $instanceid);
     }
 
     /**
      * Custom fields definition after data was submitted on data form
      *
      * @param \MoodleQuickForm $mform
-     * @param int $recordid
+     * @param int $instanceid
      * @throws \moodle_exception
      */
-    public function definition_after_data(\MoodleQuickForm $mform, int $recordid) {
-        $editablefields = $this->get_editable_fields($recordid);
-        $fields = $this->get_fields_with_data($editablefields, $recordid);
+    public function definition_after_data(\MoodleQuickForm $mform, int $instanceid) {
+        $editablefields = $this->get_editable_fields($instanceid);
+        $fields = $this->get_fields_with_data($editablefields, $instanceid);
 
         foreach ($fields as $formfield) {
             $formfield->edit_after_data($mform);
@@ -407,13 +407,13 @@ abstract class handler {
     public function add_custom_fields(\MoodleQuickForm $mform, $record) {
 
         if (isset($record->id)) {
-            $recordid = $record->id;
+            $instanceid = $record->id;
         } else {
-            $recordid = 0;
+            $instanceid = 0;
         }
 
-        $editablefields = $this->get_editable_fields($recordid);
-        $fieldswithdata = $this->get_fields_with_data($editablefields, $recordid);
+        $editablefields = $this->get_editable_fields($instanceid);
+        $fieldswithdata = $this->get_fields_with_data($editablefields, $instanceid);
         $categories = [];
         foreach ($fieldswithdata as $data) {
             $categories[$data->get_field()->get('categoryid')][] = $data;
@@ -498,26 +498,26 @@ abstract class handler {
     }
 
     /**
-     * Creates or updates custom field data for a recordid from backup data.
+     * Creates or updates custom field data for a instanceid from backup data.
      *
-     * @param int $recordid
+     * @param int $instanceid
      * @param array $data
      */
-    public function restore_field_data_from_backup(int $recordid, array $data) {
+    public function restore_field_data_from_backup(int $instanceid, array $data) {
         global $DB;
         if ($fieldrecord = $DB->get_record('customfield_field', ['shortname' => $data['shortname']], 'id,type')) {
             $field = field::create_from_type($fieldrecord->type);
             $field->set('id', $fieldrecord->id);
 
-            $datarecord = $DB->get_record('customfield_data', array('recordid' => $recordid, 'fieldid' => $field->get('id')));
+            $datarecord = $DB->get_record('customfield_data', array('instanceid' => $instanceid, 'fieldid' => $field->get('id')));
             if ($datarecord) {
                 $dataobject = data::load_data($datarecord->id, $datarecord, $field);
             } else {
                 $dataobject = data::load_data(0, new stdClass(), $field);
             }
-            $dataobject->set('recordid', $recordid);
+            $dataobject->set('instanceid', $instanceid);
             $dataobject->set('fieldid', $field->get('id'));
-            $dataobject->set('contextid', $this->get_data_context($recordid)->id);
+            $dataobject->set('contextid', $this->get_data_context($instanceid)->id);
             $dataobject->set_rawvalue($data['value']);
             $dataobject->save();
         }
@@ -555,17 +555,17 @@ abstract class handler {
         return $fields;
     }
 
-    public function get_visible_fields(int $recordid): array {
+    public function get_visible_fields(int $instanceid): array {
         $handler = $this;
-        return $this->get_flat_fields_list(function($field) use($handler, $recordid) {
-            return $handler->can_view($field, $recordid);
+        return $this->get_flat_fields_list(function($field) use($handler, $instanceid) {
+            return $handler->can_view($field, $instanceid);
         });
     }
 
-    public function get_editable_fields(int $recordid): array {
+    public function get_editable_fields(int $instanceid): array {
         $handler = $this;
-        return $this->get_flat_fields_list(function($field) use($handler, $recordid) {
-            return $handler->can_edit($field, $recordid);
+        return $this->get_flat_fields_list(function($field) use($handler, $instanceid) {
+            return $handler->can_edit($field, $instanceid);
         });
     }
 }
