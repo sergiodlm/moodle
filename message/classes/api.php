@@ -47,6 +47,21 @@ class api {
     const MESSAGE_ACTION_DELETED = 2;
 
     /**
+     * The privacy setting for being messaged by anyone within courses user is member of.
+     */
+    const MESSAGE_PRIVACY_COURSEMEMBER = 0;
+
+    /**
+     * The privacy setting for being messaged only by contacts.
+     */
+    const MESSAGE_PRIVACY_ONLYCONTACTS = 1;
+
+    /**
+     * The privacy setting for being messaged by anyone on the site.
+     */
+    const MESSAGE_PRIVACY_SITE = 2;
+
+    /**
      * Handles searching for messages in the message area.
      *
      * @param int $userid The user id doing the searching
@@ -628,17 +643,30 @@ class api {
      *
      * @param int $userid The user id of who we want to delete the messages for (this may be done by the admin
      *  but will still seem as if it was by the user)
+     * @param int $conversationid The id of the conversation
      * @return bool Returns true if a user can delete the conversation, false otherwise.
      */
-    public static function can_delete_conversation($userid) {
+    public static function can_delete_conversation(int $userid, int $conversationid = null) : bool {
         global $USER;
+
+        if (is_null($conversationid)) {
+            debugging('\core_message\api::can_delete_conversation() now expects a \'conversationid\' to be passed.',
+                DEBUG_DEVELOPER);
+            return false;
+        }
 
         $systemcontext = \context_system::instance();
 
-        // Let's check if the user is allowed to delete this conversation.
-        if (has_capability('moodle/site:deleteanymessage', $systemcontext) ||
-            ((has_capability('moodle/site:deleteownmessage', $systemcontext) &&
-                $USER->id == $userid))) {
+        if (has_capability('moodle/site:deleteanymessage', $systemcontext)) {
+            return true;
+        }
+
+        if (!self::is_user_in_conversation($userid, $conversationid)) {
+            return false;
+        }
+
+        if (has_capability('moodle/site:deleteownmessage', $systemcontext) &&
+                $USER->id == $userid) {
             return true;
         }
 
@@ -650,13 +678,15 @@ class api {
      *
      * This function does not verify any permissions.
      *
+     * @deprecated since 3.6
      * @param int $userid The user id of who we want to delete the messages for (this may be done by the admin
      *  but will still seem as if it was by the user)
      * @param int $otheruserid The id of the other user in the conversation
      * @return bool
      */
     public static function delete_conversation($userid, $otheruserid) {
-        global $DB, $USER;
+        debugging('\core_message\api::delete_conversation() is deprecated, please use ' .
+            '\core_message\api::delete_conversation_by_id() instead.', DEBUG_DEVELOPER);
 
         $conversationid = self::get_conversation_between_users([$userid, $otheruserid]);
 
@@ -664,6 +694,23 @@ class api {
         if (!$conversationid) {
             return true;
         }
+
+        self::delete_conversation_by_id($userid, $conversationid);
+
+        return true;
+    }
+
+    /**
+     * Deletes a conversation for a specified user.
+     *
+     * This function does not verify any permissions.
+     *
+     * @param int $userid The user id of who we want to delete the messages for (this may be done by the admin
+     *  but will still seem as if it was by the user)
+     * @param int $conversationid The id of the other user in the conversation
+     */
+    public static function delete_conversation_by_id(int $userid, int $conversationid) {
+        global $DB, $USER;
 
         // Get all messages belonging to this conversation that have not already been deleted by this user.
         $sql = "SELECT m.*
@@ -686,16 +733,9 @@ class api {
             $mua->timecreated = time();
             $mua->id = $DB->insert_record('message_user_actions', $mua);
 
-            if ($message->useridfrom == $userid) {
-                $useridto = $otheruserid;
-            } else {
-                $useridto = $userid;
-            }
-            \core\event\message_deleted::create_from_ids($message->useridfrom, $useridto,
-                $USER->id, $message->id, $mua->id)->trigger();
+            \core\event\message_deleted::create_from_ids($userid, $USER->id,
+                $message->id, $mua->id)->trigger();
         }
-
-        return true;
     }
 
     /**
@@ -857,7 +897,7 @@ class api {
         }
 
         // Load general messaging preferences.
-        $preferences->blocknoncontacts = get_user_preferences('message_blocknoncontacts', '', $user->id);
+        $preferences->blocknoncontacts = self::get_user_privacy_messaging_preference($user->id);
         $preferences->mailformat = $user->mailformat;
         $preferences->mailcharset = get_user_preferences('mailcharset', '', $user->id);
 
@@ -928,6 +968,36 @@ class api {
     }
 
     /**
+     * Get the messaging preference for a user.
+     * If the user has not any messaging privacy preference:
+     * - When $CFG->messagingallusers = false the default user preference is MESSAGE_PRIVACY_COURSEMEMBER.
+     * - When $CFG->messagingallusers = true the default user preference is MESSAGE_PRIVACY_SITE.
+     *
+     * @param  int    $userid The user identifier.
+     * @return int    The default messaging preference.
+     */
+    public static function get_user_privacy_messaging_preference(int $userid) : int {
+        global $CFG;
+
+        // When $CFG->messagingallusers is enabled, default value for the messaging preference will be "Anyone on the site";
+        // otherwise, the default value will be "My contacts and anyone in my courses".
+        if (empty($CFG->messagingallusers)) {
+            $defaultprefvalue = self::MESSAGE_PRIVACY_COURSEMEMBER;
+        } else {
+            $defaultprefvalue = self::MESSAGE_PRIVACY_SITE;
+        }
+        $privacypreference = get_user_preferences('message_blocknoncontacts', $defaultprefvalue, $userid);
+
+        // When the $CFG->messagingallusers privacy setting is disabled, MESSAGE_PRIVACY_SITE is
+        // also disabled, so it has to be replaced to MESSAGE_PRIVACY_COURSEMEMBER.
+        if (empty($CFG->messagingallusers) && $privacypreference == self::MESSAGE_PRIVACY_SITE) {
+            $privacypreference = self::MESSAGE_PRIVACY_COURSEMEMBER;
+        }
+
+        return $privacypreference;
+    }
+
+    /**
      * Checks if the recipient is allowing messages from users that aren't a
      * contact. If not then it checks to make sure the sender is in the
      * recipient's contacts.
@@ -937,23 +1007,31 @@ class api {
      * @return bool true if $sender is blocked, false otherwise.
      */
     public static function is_user_non_contact_blocked($recipient, $sender = null) {
-        global $USER;
+        global $USER, $CFG;
 
         if (is_null($sender)) {
             // The message is from the logged in user, unless otherwise specified.
             $sender = $USER;
         }
 
-        $blockednoncontacts = get_user_preferences('message_blocknoncontacts', '', $recipient->id);
-        if (!empty($blockednoncontacts)) {
-            // Confirm the sender is a contact of the recipient.
-            if (self::is_contact($sender->id, $recipient->id)) {
-                // All good, the recipient is a contact of the sender.
-                return false;
-            } else {
-                // Oh no, the recipient is not a contact. Looks like we can't send the message.
-                return true;
-            }
+        $privacypreference = self::get_user_privacy_messaging_preference($recipient->id);
+        switch ($privacypreference) {
+            case self::MESSAGE_PRIVACY_SITE:
+                if (!empty($CFG->messagingallusers)) {
+                    // Users can be messaged without being contacts or members of the same course.
+                    break;
+                }
+                // When the $CFG->messagingallusers privacy setting is disabled, continue with the next
+                // case, because MESSAGE_PRIVACY_SITE is replaced to MESSAGE_PRIVACY_COURSEMEMBER.
+            case self::MESSAGE_PRIVACY_COURSEMEMBER:
+                // Confirm the sender and the recipient are both members of the same course.
+                if (enrol_sharing_course($recipient, $sender)) {
+                    // All good, the recipient and the sender are members of the same course.
+                    return false;
+                }
+            case self::MESSAGE_PRIVACY_ONLYCONTACTS:
+                // True if they aren't contacts (they can't send a message because of the privacy settings), false otherwise.
+                return !self::is_contact($sender->id, $recipient->id);
         }
 
         return false;
@@ -1202,30 +1280,20 @@ class api {
     public static function can_delete_message($userid, $messageid) {
         global $DB, $USER;
 
-        $sql = "SELECT m.id, m.useridfrom, mcm.userid as useridto
-                  FROM {messages} m
-            INNER JOIN {message_conversations} mc
-                    ON m.conversationid = mc.id
-            INNER JOIN {message_conversation_members} mcm
-                    ON mcm.conversationid = mc.id
-                 WHERE mcm.userid != m.useridfrom
-                   AND m.id = ?";
-        $message = $DB->get_record_sql($sql, [$messageid], MUST_EXIST);
+        $systemcontext = \context_system::instance();
 
-        if ($message->useridfrom == $userid) {
-            $userdeleting = 'useridfrom';
-        } else if ($message->useridto == $userid) {
-            $userdeleting = 'useridto';
-        } else {
+        $conversationid = $DB->get_field('messages', 'conversationid', ['id' => $messageid], MUST_EXIST);
+
+        if (has_capability('moodle/site:deleteanymessage', $systemcontext)) {
+            return true;
+        }
+
+        if (!self::is_user_in_conversation($userid, $conversationid)) {
             return false;
         }
 
-        $systemcontext = \context_system::instance();
-
-        // Let's check if the user is allowed to delete this message.
-        if (has_capability('moodle/site:deleteanymessage', $systemcontext) ||
-            ((has_capability('moodle/site:deleteownmessage', $systemcontext) &&
-                $USER->id == $message->$userdeleting))) {
+        if (has_capability('moodle/site:deleteownmessage', $systemcontext) &&
+                $USER->id == $userid) {
             return true;
         }
 
@@ -1243,17 +1311,11 @@ class api {
      * @return bool
      */
     public static function delete_message($userid, $messageid) {
-        global $DB;
+        global $DB, $USER;
 
-        $sql = "SELECT m.id, m.useridfrom, mcm.userid as useridto
-                  FROM {messages} m
-            INNER JOIN {message_conversations} mc
-                    ON m.conversationid = mc.id
-            INNER JOIN {message_conversation_members} mcm
-                    ON mcm.conversationid = mc.id
-                 WHERE mcm.userid != m.useridfrom
-                   AND m.id = ?";
-        $message = $DB->get_record_sql($sql, [$messageid], MUST_EXIST);
+        if (!$DB->record_exists('messages', ['id' => $messageid])) {
+            return false;
+        }
 
         // Check if the user has already deleted this message.
         if (!$DB->record_exists('message_user_actions', ['userid' => $userid,
@@ -1266,8 +1328,8 @@ class api {
             $mua->id = $DB->insert_record('message_user_actions', $mua);
 
             // Trigger event for deleting a message.
-            \core\event\message_deleted::create_from_ids($message->useridfrom, $message->useridto,
-                $userid, $message->id, $mua->id)->trigger();
+            \core\event\message_deleted::create_from_ids($userid, $USER->id,
+                $messageid, $mua->id)->trigger();
 
             return true;
         }
@@ -1611,5 +1673,20 @@ class api {
                  WHERE (mcr.userid = ? AND mcr.requesteduserid = ?)
                     OR (mcr.userid = ? AND mcr.requesteduserid = ?)";
         return $DB->record_exists_sql($sql, [$userid, $requesteduserid, $requesteduserid, $userid]);
+    }
+
+    /**
+     * Checks if a user is already in a conversation.
+     *
+     * @param int $userid The id of the user we want to check if they are in a group
+     * @param int $conversationid The id of the conversation
+     * @return bool Returns true if a contact request exists, false otherwise
+     */
+    public static function is_user_in_conversation(int $userid, int $conversationid) : bool {
+        global $DB;
+
+        return $DB->record_exists('message_conversation_members', ['conversationid' => $conversationid,
+            'userid' => $userid]);
+
     }
 }

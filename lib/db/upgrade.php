@@ -2337,22 +2337,6 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2018091200.00);
     }
 
-    if ($oldversion < 2018091400.01) {
-        if (!isset($CFG->messagingallusers)) {
-            // For existing instances, $CFG->messagingallusers would be same value $CFG->messaging has.
-            if (isset($CFG->messaging)) {
-                set_config('messagingallusers', $CFG->messaging);
-            } else {
-                // When $CFG->messaging is not set, default value for $CFG->messaging should be true,
-                // so $CFG->messagingallusers value should be true as well.
-                set_config('messagingallusers', 1);
-            }
-        }
-
-        // Main savepoint reached.
-        upgrade_main_savepoint(true, 2018091400.01);
-    }
-
     if ($oldversion < 2018091700.01) {
         // Remove unused setting.
         unset_config('messaginghidereadnotifications');
@@ -2524,8 +2508,65 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2018092800.03);
     }
 
+    if ($oldversion < 2018101700.01) {
+        if (empty($CFG->keepmessagingallusersenabled)) {
+            // When it is not set, $CFG->messagingallusers should be disabled by default.
+            // When $CFG->messagingallusers = false, the default user preference is MESSAGE_PRIVACY_COURSEMEMBER
+            // (contacted by users sharing a course).
+            set_config('messagingallusers', false);
+        } else {
+            // When $CFG->keepmessagingallusersenabled is set to true, $CFG->messagingallusers is set to true.
+            set_config('messagingallusers', true);
 
-    if ($oldversion < 2018081000.01) {
+            // When $CFG->messagingallusers = true, the default user preference is MESSAGE_PRIVACY_SITE
+            // (contacted by all users site). So we need to set existing values from 0 (MESSAGE_PRIVACY_COURSEMEMBER)
+            // to 2 (MESSAGE_PRIVACY_SITE).
+            $DB->set_field(
+                'user_preferences',
+                'value',
+                \core_message\api::MESSAGE_PRIVACY_SITE,
+                array('name' => 'message_blocknoncontacts', 'value' => 0)
+            );
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2018101700.01);
+    }
+
+    if ($oldversion < 2018101800.00) {
+        // Define table 'favourite' to be created.
+        $table = new xmldb_table('favourite');
+
+        // Adding fields to table favourite.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('component', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('itemtype', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('contextid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('ordering', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table favourite.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('contextid', XMLDB_KEY_FOREIGN, ['contextid'], 'context', ['id']);
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+
+        // Adding indexes to table favourite.
+        $table->add_index('uniqueuserfavouriteitem', XMLDB_INDEX_UNIQUE, ['component', 'itemtype', 'itemid', 'contextid', 'userid']);
+
+        // Conditionally launch create table for favourite.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2018101800.00);
+    }
+
+
+    if ($oldversion < 2018101900.01) {
 
         // Define table customfield_field to be created.
         $table = new xmldb_table('customfield_field');
@@ -2618,39 +2659,7 @@ function xmldb_main_upgrade($oldversion) {
         }
 
         // Text savepoint reached.
-        upgrade_main_savepoint(true, 2018081000.01);
-    }
-
-    if ($oldversion < 2018091400.11) {
-
-        // TODO remove after everybody in dev team upgrades!
-
-        // Define index component_area_itemid_sortorder (unique) to be dropped form customfield_category.
-        $table = new xmldb_table('customfield_category');
-        $index = new xmldb_index('component_area_itemid_sortorder', XMLDB_INDEX_UNIQUE, ['component', 'area', 'itemid', 'sortorder']);
-
-        // Conditionally launch drop index component_area_itemid_sortorder.
-        if ($dbman->index_exists($table, $index)) {
-            $dbman->drop_index($table, $index);
-        }
-
-        // Changing the default of field itemid on table customfield_category to 0.
-        $table = new xmldb_table('customfield_category');
-        $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'area');
-
-        $DB->execute('UPDATE {customfield_category} SET itemid=0 WHERE itemid IS NULL');
-
-        // Launch change of default for field itemid.
-        $dbman->change_field_default($table, $field);
-
-        // Launch change of nullability for field itemid.
-        $dbman->change_field_notnull($table, $field);
-
-        // Add back index
-        $table->add_index('component_area_itemid', XMLDB_INDEX_NOTUNIQUE, ['component', 'area', 'itemid']);
-
-        // Main savepoint reached.
-        upgrade_main_savepoint(true, 2018091400.11);
+        upgrade_main_savepoint(true, 2018101900.01);
     }
 
     return true;
