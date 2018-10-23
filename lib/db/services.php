@@ -2283,9 +2283,9 @@ $functions = array(
             'type'        => 'write',
             'ajax'        => 'true'
     ),
-    'core_customfield_drag_and_drop_block' => array(
+    'core_customfield_move_category' => array(
             'classname'   => 'core_customfield_external',
-            'methodname'  => 'drag_and_drop_block',
+            'methodname'  => 'move_category',
             'classpath'   => 'customfield/externallib.php',
             'description' => 'Drag and drop categories',
             'type'        => 'write',

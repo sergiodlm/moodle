@@ -239,7 +239,7 @@ class core_customfield_external extends external_api {
     /**
      * @return external_function_parameters
      */
-    public static function drag_and_drop_block_parameters(): external_function_parameters {
+    public static function move_category_parameters(): external_function_parameters {
         return new external_function_parameters(
                 ['from' => new external_value(PARAM_INT, 'Entry ID to move from', VALUE_REQUIRED),
                  'to'   => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED)]
@@ -253,8 +253,8 @@ class core_customfield_external extends external_api {
      * @throws dml_exception
      * @throws moodle_exception
      */
-    public static function drag_and_drop_block(int $categoryid, int $beforeid) {
-        // TODO rename to "move_category", VALIDATE ACCESS!!!!!!
+    public static function move_category(int $categoryid, int $beforeid) {
+        // TODO: add validation  to the parameters
         $category = new \core_customfield\category($categoryid);
         $handler = \core_customfield\handler::get_handler_for_category($category);
         self::validate_context($handler->get_configuration_context());
@@ -263,12 +263,11 @@ class core_customfield_external extends external_api {
         }
 
         return \core_customfield\api::move_category($categoryid, $beforeid);
-        // TODO: return api::move_category($category, $to);
     }
 
     /**
      *
      */
-    public static function drag_and_drop_block_returns() {
+    public static function move_category_returns() {
     }
 }
