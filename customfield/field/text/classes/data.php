@@ -63,15 +63,15 @@ class data extends \core_customfield\data {
         if (!empty($config['link'])) {
             // If link is set show the link.
             $url = str_replace('$$', $this->get_formvalue(), $config['link']);
-            $output = \html_writer::link($url, $this->get_formvalue(), ['target' => $config['linktarget']]);
+            $output =  \html_writer::start_tag('span', ['class' => 'customfieldlink']);
+            $output .= \html_writer::link($url, $this->get_field()->get('name'), ['target' => $config['linktarget']]);
+            $output .= \html_writer::end_tag('span');
         } else {
             // Otherwise show the text.
-            $output = \html_writer::tag('span', format_string($this->get_formvalue()), ['class' => 'customfieldvalue customfieldtext']);
+            $output =  \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname']);
+            $output .= \html_writer::tag('span', ': ', ['class' => 'customfieldseparator']);
+            $output .= \html_writer::tag('span', format_string($this->get_formvalue()), ['class' => 'customfieldvalue']);
         }
-        return \html_writer::start_tag('div') .
-            \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname customfieldtext']) .
-            ' : ' .
-            $output .
-            \html_writer::end_tag('div');
+        return \html_writer::tag('div', $output, ['class' => 'customfield customfieldtext']);
     }
 }
