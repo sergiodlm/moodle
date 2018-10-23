@@ -47,7 +47,6 @@ $string['cachedef_coursecompletion'] = 'Course completion status';
 $string['cachedef_coursecontacts'] = 'List of course contacts';
 $string['cachedef_coursemodinfo'] = 'Accumulated information about modules and sections for each course';
 $string['cachedef_completion'] = 'Activity completion status';
-$string['cachedef_customfield_fields_definitions'] = 'Definitions of custom fields';
 $string['cachedef_databasemeta'] = 'Database meta information';
 $string['cachedef_eventinvalidation'] = 'Event invalidation';
 $string['cachedef_externalbadges'] = 'External badges for particular user';

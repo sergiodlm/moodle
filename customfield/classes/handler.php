@@ -63,6 +63,11 @@ abstract class handler {
     private $itemid;
 
     /**
+     * @var category[]
+     */
+    protected $fieldsdefinitions = null;
+
+    /**
      * Handler constructor.
      *
      * This constructor is protected. To initiate a class use an appropriate static method:
@@ -292,15 +297,14 @@ abstract class handler {
      * @return category[]
      */
     public function get_fields_definitions() : array {
-        $cache = \cache::make('core', 'customfield_fields_definitions');
-        $key = $this->get_component() . '+' . $this->get_area() . '+' . $this->get_itemid();
-        if ($data = $cache->get($key)) {
-            $fields = $data;
-        } else {
-            $fields = api::get_fields_definitions($this->get_component(), $this->get_area(), $this->get_itemid());
-            $cache->set($key, $fields);
+        if ($this->fieldsdefinitions === null) {
+            $this->fieldsdefinitions = api::get_fields_definitions($this->get_component(), $this->get_area(), $this->get_itemid());
         }
-        return $fields;
+        return $this->fieldsdefinitions;
+    }
+
+    public function clear_fields_definitions_cache() {
+        $this->fieldsdefinitions = null;
     }
 
     /**
@@ -461,6 +465,7 @@ abstract class handler {
     public function save_field(field $field, stdClass $data) {
         try {
             api::save_field($field, $data, $this->get_description_text_options());
+            $this->fieldsdefinitions = null;
             \core\notification::success(get_string('fieldsaved', 'core_customfield'));
         } catch (\moodle_exception $exception) {
             \core\notification::error(get_string('fieldsavefailed', 'core_customfield'));
