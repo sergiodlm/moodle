@@ -37,7 +37,7 @@ Feature: The visibility of fields control where they are displayed
        | Test field | testcontent |
      And I press "Save and display"
      And I am on site homepage
-    Then I should see "Test field : testcontent"
+    Then I should see "Test field: testcontent"
 
   Scenario: Do not display course custom fields on homepage
     When I log in as "admin"
@@ -57,7 +57,7 @@ Feature: The visibility of fields control where they are displayed
        | Test field | testcontent |
      And I press "Save and display"
      And I am on site homepage
-     And I should not see "Test field : testcontent"
+     And I should not see "Test field: testcontent"
 
   Scenario: Display course custom fields on homepage only to course editors
     When I log in as "admin"
@@ -77,8 +77,8 @@ Feature: The visibility of fields control where they are displayed
        | Test field | testcontent |
      And I press "Save and display"
     When I am on site homepage
-     And I should see "Test field : testcontent"
+     And I should see "Test field: testcontent"
      And I log out
     When I log in as "student"
     When I am on site homepage
-     And I should not see "Test field : testcontent"
+     And I should not see "Test field: testcontent"

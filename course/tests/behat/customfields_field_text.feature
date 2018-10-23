@@ -102,3 +102,34 @@ Feature: Managers can manage course custom fields
        | Test field | 1234 |
      And I press "Save and display"
     Then I should see "This field max length is 3"
+
+  Scenario: A text field with a defautl value must be shown on listing but allow empty values that will not be shown
+    Given the following "users" exist:
+      | username | firstname | lastname  | email |
+      | teacher1 | Teacher   | Example 1 | teacher1@example.com |
+    And the following "courses" exist:
+      | fullname | shortname | format |
+      | Course 1 | C1        | topics |
+    And the following "course enrolments" exist:
+      | user     | course | role |
+      | teacher1 | C1     | editingteacher |
+     And I navigate to "Courses > Course custom fields" in site administration
+     And I click on "Add a new custom field" "link"
+     And I click on "Text field" "link"
+     And I set the following fields to these values:
+       | Name       | Test field |
+       | Short name | testfield |
+       | Default value | testdefault |
+     And I press "Save changes"
+     And I log out
+    Then I log in as "teacher1"
+    When I am on site homepage
+    Then I should see "Test field: testdefault"
+    When I am on "Course 1" course homepage
+     And I navigate to "Edit settings" in current page administration
+    Then the "value" attribute of "#id_customfield_testfield" "css_element" should contain "testdefault"
+    When I set the following fields to these values:
+       | Test field | |
+     And I press "Save and display"
+     And I am on site homepage
+     And I should not see "Test field"
