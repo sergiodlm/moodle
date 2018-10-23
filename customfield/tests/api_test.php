@@ -41,62 +41,6 @@ class core_customfield_api_testcase extends advanced_testcase {
         $this->resetAfterTest();
     }
 
-    public function test_get_fields_definitions() {
-        // Create the categories.
-        $options = [
-                'component' => 'core_course',
-                'area'      => 'course',
-                'itemid'    => 0,
-                'contextid' => 1
-        ];
-
-        $categorydata            = new stdClass();
-        $categorydata->name      = 'aaaa';
-        $categorydata->component = $options['component'];
-        $categorydata->area      = $options['area'];
-        $categorydata->itemid    = $options['itemid'];
-        $categorydata->contextid = $options['contextid'];
-        $category0               = new category(0, $categorydata);
-        $category0->save();
-
-        $categorydata->name = 'bbbb';
-        $category1          = new category(0, $categorydata);
-        $category1->save();
-
-        $categorydata->name = 'cccc';
-        $category2          = new category(0, $categorydata);
-        $category2->save();
-
-        $categorydata->name = 'dddd';
-        $category3          = new category(0, $categorydata);
-        $category3->save();
-
-        $categorydata->name = 'eeee';
-        $category4          = new category(0, $categorydata);
-        $category4->save();
-
-        $categorydata->name = 'ffff';
-        $category5          = new category(0, $categorydata);
-        $category5->save();
-
-        $this->assertCount(0, api::get_fields_definitions('xxx', $options['area'], $options['itemid']));
-        $this->assertCount(0, api::get_fields_definitions($options['component'], 'xxx', $options['itemid']));
-        $this->assertCount(0, api::get_fields_definitions($options['component'], $options['area'], 42));
-        $this->assertCount(6, api::get_fields_definitions($options['component'], $options['area'], $options['itemid']));
-        $category0->delete();
-        $this->assertCount(5, api::get_fields_definitions($options['component'], $options['area'], $options['itemid']));
-        $category1->delete();
-        $this->assertCount(4, api::get_fields_definitions($options['component'], $options['area'], $options['itemid']));
-        $category2->delete();
-        $this->assertCount(3, api::get_fields_definitions($options['component'], $options['area'], $options['itemid']));
-        $category3->delete();
-        $this->assertCount(2, api::get_fields_definitions($options['component'], $options['area'], $options['itemid']));
-        $category4->delete();
-        $this->assertCount(1, api::get_fields_definitions($options['component'], $options['area'], $options['itemid']));
-        $category5->delete();
-        $this->assertCount(0, api::get_fields_definitions($options['component'], $options['area'], $options['itemid']));
-    }
-
     public function test_get_field() {
         // Create the category.
         $categorydata            = new stdClass();
