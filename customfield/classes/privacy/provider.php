@@ -178,7 +178,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         // Delete files.
         get_file_storage()->delete_area_files_select($context->id, 'core_customfield', 'customfield_data',
             "IN (SELECT cfd.id FROM {customfield_data} cfd WHERE cfd.fieldid $sql)", $params);
-        // Delete from data_content.
+        // Delete from customfield_data.
         $DB->delete_records_select('customfield_data', 'fieldid ' . $sql, $params);
     }
 

@@ -2629,7 +2629,7 @@ function xmldb_main_upgrade($oldversion) {
         // Adding fields to table customfield_data.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('fieldid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('recordid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('instanceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('intvalue', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('decvalue', XMLDB_TYPE_NUMBER, '10, 5', null, null, null, null);
         $table->add_field('shortcharvalue', XMLDB_TYPE_CHAR, '255', null, null, null, null);
@@ -2646,7 +2646,7 @@ function xmldb_main_upgrade($oldversion) {
         $table->add_key('contextid', XMLDB_KEY_FOREIGN, ['contextid'], 'context', ['id']);
 
         // Adding indexes to table customfield_data.
-        $table->add_index('recordid-fieldid', XMLDB_INDEX_UNIQUE, ['recordid', 'fieldid']);
+        $table->add_index('instanceid-fieldid', XMLDB_INDEX_UNIQUE, ['instanceid', 'fieldid']);
 
         // Conditionally launch create table for customfield_data.
         if (!$dbman->table_exists($table)) {

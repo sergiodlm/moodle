@@ -135,7 +135,10 @@ class data extends \core_customfield\data {
     }
 
     public function before_delete() {
-        // TODO delete files associated with this data record.
+        // TODO: check file delete.
+        $handler = \core_customfield\handler::get_handler_for_field($this->get_field());
+        get_file_storage()->delete_area_files($this->get('contextid'), $handler->get_component(),
+            $handler->get_area(), $handler->get_itemid());
     }
 
     /**
