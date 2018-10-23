@@ -175,10 +175,9 @@ class course_handler extends \core_customfield\handler {
     }
 
     /**
-     * Add fields for editing a text field.
+     * Allows to add custom controls to the field configuration form that will be saved in configdata
      *
      * @param \MoodleQuickForm $mform
-     * @throws \coding_exception
      */
     public function add_configdata_settings_to_form(\MoodleQuickForm $mform) {
         $mform->addElement('header', 'course_handler_header', get_string('customfieldsettings', 'core_course'));

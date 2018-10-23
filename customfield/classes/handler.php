@@ -580,4 +580,13 @@ abstract class handler {
             return $handler->can_edit($field, $instanceid);
         });
     }
+
+    /**
+     * Allows to add custom controls to the field configuration form that will be saved in configdata
+     *
+     * @param \MoodleQuickForm $mform
+     */
+    public function add_configdata_settings_to_form(\MoodleQuickForm $mform) {
+
+    }
 }
