@@ -74,4 +74,21 @@ class data extends \core_customfield\data {
         }
         return \html_writer::tag('div', $output, ['class' => 'customfield customfieldtext']);
     }
+
+    /**
+     * Validates data for this field.
+     *
+     * @param \stdClass $data
+     * @param array $files
+     * @return array
+     */
+    public function validate_data(\stdClass $data, array $files): array {
+
+        $errors = [];
+        $maxlength = $this->get_field()->get_configdata_property('maxlength');
+        if (($maxlength > 0) && ($maxlength < \core_text::strlen($data->{$this->inputname()}))) {
+            $errors[$this->inputname()] = get_string('errormaxlength', 'customfield_text', $maxlength);
+        }
+        return $errors;
+    }
 }
