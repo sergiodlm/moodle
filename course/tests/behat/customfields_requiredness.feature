@@ -43,7 +43,7 @@ Feature: The course custom fields can be mandatory or not
      And I set the following fields to these values:
        | Name | Test field |
        | Short name | testfield |
-       | Required | Yes |
+       | Required | No |
      And I press "Save changes"
      And I log out
      And I log in as "teacher1"

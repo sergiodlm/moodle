@@ -61,14 +61,17 @@ class data extends \core_customfield\data {
      */
     public function display() {
         global $OUTPUT;
-        if ($this->get_formvalue()) {
-            $displaydata = $OUTPUT->pix_icon('checked', get_string('checked', 'core_customfield'), 'customfield_date');
-        } else {
-            $displaydata = $OUTPUT->pix_icon('notchecked', get_string('notchecked', 'core_customfield'), 'customfield_date');
+        if ($this->get_formvalue() === null) {
+            return '';
         }
-        return \html_writer::start_tag('div') .
+        if ($this->get_formvalue() == 0) {
+            $displaydata = get_string('no');
+        } else {
+            $displaydata = get_string('yes');
+        }
+        return \html_writer::start_tag('div', ['class' => 'customfield customfield_date']) .
                \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname']).
-               ' : '.
+               \html_writer::tag('span', ': ', ['class' => 'customfieldseparator']).
                \html_writer::tag('span', $displaydata, ['class' => 'customfieldvalue']).
                \html_writer::end_tag('div');
     }

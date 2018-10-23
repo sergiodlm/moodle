@@ -23,4 +23,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Text field';
+$string['errormaxlength'] = 'This field max length is {$a}';
 $string['specificsettings'] = 'Settings for the text field';
