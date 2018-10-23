@@ -91,17 +91,6 @@ class category extends persistent {
     }
 
     /**
-     * Calls static_reorder()
-     *
-     * @return bool
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    protected function reorder(): bool {
-        return api::reorder_categories($this->get('component'), $this->get('area'), $this->get('itemid'));
-    }
-
-    /**
      * Hook to execute after an update.
      *
      * @param bool $result Whether or not the update was successful.
@@ -121,7 +110,7 @@ class category extends persistent {
      */
     protected function after_create() {
         handler::get_handler_for_category($this)->clear_fields_definitions_cache();
-        api::reorder_categories($this->get('component'), $this->get('area'), $this->get('itemid'));
+        api::move_category($this, 0);
     }
 
     /**
@@ -147,7 +136,6 @@ class category extends persistent {
      */
     protected function after_delete($result) {
         handler::get_handler_for_category($this)->clear_fields_definitions_cache();
-        api::reorder_categories($this->get('component'), $this->get('area'), $this->get('itemid'));
     }
 
 }

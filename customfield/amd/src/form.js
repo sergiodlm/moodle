@@ -95,8 +95,8 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                                 {
                                     methodname: 'core_customfield_move_category',
                                     args: {
-                                        from: info.element.data('category-id'),
-                                        to: info.targetNextElement.data('category-id') || 0
+                                        id: info.element.data('category-id'),
+                                        beforeid: info.targetNextElement.data('category-id')
                                     }
 
                                 },

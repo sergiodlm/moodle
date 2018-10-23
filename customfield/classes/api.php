@@ -330,100 +330,38 @@ class api {
     }
 
     /**
-     * Updates sortorder (used on drag and drop)
+     * Reorder categories, move given category before another category
      *
-     * @param $options
-     * @return bool
-     * @throws \moodle_exception
-     * @throws \dml_exception
+     * @param category $category category that needs to be moved
+     * @param int $beforeid id of the category this category needs to be moved before, 0 to move to the end
      */
-    public static function reorder_categories($component, $area, $itemid): bool {
-        $categoryneighbours = api::list_categories($component, $area, $itemid);
+    public static function move_category(category $category, int $beforeid = 0) {
+        global $DB;
+        $records = $DB->get_records(category::TABLE, [
+                'component' => $category->get('component'),
+                'area' => $category->get('area'),
+                'itemid' => $category->get('itemid')
+            ], 'sortorder, id', '*');
 
-        // First let's move the new element at the end of categories list.
-        $lastcategorysortorder = 0;
-        foreach ($categoryneighbours as $category) {
-            if ($category->get('sortorder') > $lastcategorysortorder) {
-                $lastcategorysortorder = $category->get('sortorder');
+        $id = $category->get('id');
+        $categoriesids = array_values(array_diff(array_keys($records), [$id]));
+        $idx = $beforeid ? array_search($beforeid, $categoriesids) : false;
+        if ($idx === false) {
+            // Set as the last category.
+            $categoriesids = array_merge($categoriesids, [$id]);
+        } else {
+            // Set before category with id $beforeid.
+            $categoriesids = array_merge(array_slice($categoriesids, 0, $idx), [$id], array_slice($categoriesids, $idx));
+        }
+
+        foreach (array_values($categoriesids) as $idx => $categoryid) {
+            // Use persistent class to update the sortorder for each category that needs updating.
+            if ($records[$categoryid]->sortorder != $idx) {
+                $category = new category(0, $records[$categoryid]);
+                $category->set('sortorder', $idx);
+                $category->save();
             }
         }
-        foreach ($categoryneighbours as $category) {
-            if ($category->get('sortorder') < 0) {
-                $category->set('sortorder', $lastcategorysortorder+1);
-            }
-        }
-
-        // And now let's update sortorder values in the database.
-        $sortfunction = function(category $a, category $b): int {
-            return $a->get('sortorder') <=> $b->get('sortorder');
-        };
-
-        usort($categoryneighbours, $sortfunction);
-
-        foreach ($categoryneighbours as $sortorder => $category) {
-            $category->set('sortorder', $sortorder);
-            $category->save();
-        }
-
-        return true;
-    }
-
-    /**
-     * Backend function for Drag and Drop
-     *
-     * @param $from
-     * @param $to
-     * @return bool
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    public static function move_category(int $category, int $beforeid = 0) {
-        $categoryfrom = new category($category);
-        $categoryto   = new category($beforeid);
-
-        // Move to the last position on the list.
-        if ($beforeid === 0) {
-            $categoryfrom->set('sortorder', -1);
-            $categoryfrom->save();
-            return api::reorder_categories($categoryfrom->get('component'), $categoryfrom->get('area'), $categoryfrom->get('itemid'));
-        }
-
-        if ($categoryfrom->get('sortorder') < $categoryto->get('sortorder')) {
-            for ($i = $categoryfrom->get('sortorder'); $i < $categoryto->get('sortorder')-1; $i++) {
-                self::change_category_position($categoryfrom, 1);
-            }
-        } else if ($categoryfrom->get('sortorder') > $categoryto->get('sortorder')) {
-            for ($i = $categoryfrom->get('sortorder'); $i > $categoryto->get('sortorder'); $i--) {
-                self::change_category_position($categoryfrom, -1);
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Move a category (used by drag and drop)
-     *
-     * @param int $position
-     * @return category
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    private static function change_category_position(category $category, int $position): category {
-        $nextcategory = api::list_categories(
-                $category->get('component'),
-                $category->get('area'),
-                $category->get('itemid'),
-                $category->get('sortorder'
-                ) + $position)[0];
-
-        if (!empty($nextcategory)) {
-            $nextcategory->set('sortorder', $category->get('sortorder'));
-            $nextcategory->save();
-            $category->set('sortorder', $category->get('sortorder') + $position);
-            $category->save();
-        }
-        return $category;
     }
 
     /**
@@ -453,5 +391,42 @@ class api {
         }
 
         return $categories;
+    }
+
+    /**
+     * Call the specified callback method of the field plugin
+     *
+     * If the callback returns null, then the default value is returned instead.
+     * If the class does not exist, then the default value is returned.
+     *
+     * @param   field       $field
+     * @param   string      $methodname The name of the staticically defined method on the class.
+     * @param   array       $params The arguments to pass into the method.
+     * @param   mixed       $default The default value.
+     * @return  mixed       The return value.
+     */
+    protected static function plugin_callback(field $field, string $methodname, array $params, $default = null) {
+        $classname = '\\customfield_' . $field->get('type') . '\\plugin';
+        if (!class_exists($classname)) {
+            // There could be data in the database that belongs to the type that was deleted.
+            // Do not throw exception. Show developer warning only.
+            debugging("Class {$classname} is not found", DEBUG_DEVELOPER);
+            return $default;
+        } else if (!is_subclass_of($classname, plugin_base::class)) {
+            debugging("Class {$classname} must extend " . plugin_base::class, DEBUG_DEVELOPER);
+            return $default;
+        } else {
+            return component_class_callback($classname, $methodname, $params, $default);
+        }
+    }
+
+    /**
+     * Allows to add elements to the field configuration form
+     *
+     * @param field $field
+     * @param \MoodleQuickForm $mform
+     */
+    public static function add_field_to_config_form(field $field, \MoodleQuickForm $mform) {
+        self::plugin_callback($field, 'add_field_to_config_form', [$field, $mform]);
     }
 }
