@@ -114,7 +114,6 @@ class api {
             }
             $formfields[] = self::load_data(0, $data, $field);
         }
-
         return $formfields;
     }
 
@@ -219,7 +218,6 @@ class api {
             $data = (object) ['description_editor' => $formdata->description_editor];
             $data = file_postupdate_standard_editor($data, 'description', $textoptions, $context,
                                                     'core_customfield', 'description', $field->get('id'));
-
             $field->set('description', $data->description);
             $field->set('descriptionformat', $data->descriptionformat);
             $field->save();
