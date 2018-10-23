@@ -22,23 +22,11 @@
 
 namespace core_customfield;
 
+use core\output\inplace_editable;
+
 defined('MOODLE_INTERNAL') || die;
 
 class api {
-
-    /**
-     * Returns array of categories, each of them contains a list of fields definitions.
-     *
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
-     * @return category[]
-     * @throws \dml_exception
-     * @throws \moodle_exception
-     */
-    public static function get_fields_definitions(string $component, string $area, int $itemid): array {
-        return category::list(['component' => $component, 'area' => $area, 'itemid' => $itemid]);
-    }
 
     /**
      * Fetch a field from database or create a new one if $field is given
@@ -322,4 +310,148 @@ class api {
         return true;
     }
 
+    /**
+     * Returns an object for inplace editable
+     *
+     * @param bool $editable
+     * @return inplace_editable
+     * @throws \coding_exception
+     */
+    public static function get_category_inplace_editable(category $category, bool $editable = true) : inplace_editable {
+        return new inplace_editable('core_customfield',
+                                    'category',
+                                    $category->get('id'),
+                                    $editable,
+                                    format_string($category->get('name')),
+                                    $category->get('name'),
+                                    get_string('editcategoryname', 'core_customfield'),
+                                    get_string('newvaluefor', 'core_form', format_string($category->get('name')))
+        );
+    }
+
+    /**
+     * Updates sortorder (used on drag and drop)
+     *
+     * @param $options
+     * @return bool
+     * @throws \moodle_exception
+     * @throws \dml_exception
+     */
+    public static function reorder_categories($component, $area, $itemid): bool {
+        $categoryneighbours = api::list_categories($component, $area, $itemid);
+
+        // First let's move the new element at the end of categories list.
+        $lastcategorysortorder = 0;
+        foreach ($categoryneighbours as $category) {
+            if ($category->get('sortorder') > $lastcategorysortorder) {
+                $lastcategorysortorder = $category->get('sortorder');
+            }
+        }
+        foreach ($categoryneighbours as $category) {
+            if ($category->get('sortorder') < 0) {
+                $category->set('sortorder', $lastcategorysortorder+1);
+            }
+        }
+
+        // And now let's update sortorder values in the database.
+        $sortfunction = function(category $a, category $b): int {
+            return $a->get('sortorder') <=> $b->get('sortorder');
+        };
+
+        usort($categoryneighbours, $sortfunction);
+
+        foreach ($categoryneighbours as $sortorder => $category) {
+            $category->set('sortorder', $sortorder);
+            $category->save();
+        }
+
+        return true;
+    }
+
+    /**
+     * Backend function for Drag and Drop
+     *
+     * @param $from
+     * @param $to
+     * @return bool
+     * @throws \moodle_exception
+     * @throws \dml_exception
+     */
+    public static function move_category(int $category, int $beforeid = 0) {
+        $categoryfrom = new category($category);
+        $categoryto   = new category($beforeid);
+
+        // Move to the last position on the list.
+        if ($beforeid === 0) {
+            $categoryfrom->set('sortorder', -1);
+            $categoryfrom->save();
+            return api::reorder_categories($categoryfrom->get('component'), $categoryfrom->get('area'), $categoryfrom->get('itemid'));
+        }
+
+        if ($categoryfrom->get('sortorder') < $categoryto->get('sortorder')) {
+            for ($i = $categoryfrom->get('sortorder'); $i < $categoryto->get('sortorder')-1; $i++) {
+                self::change_category_position($categoryfrom, 1);
+            }
+        } else if ($categoryfrom->get('sortorder') > $categoryto->get('sortorder')) {
+            for ($i = $categoryfrom->get('sortorder'); $i > $categoryto->get('sortorder'); $i--) {
+                self::change_category_position($categoryfrom, -1);
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Move a category (used by drag and drop)
+     *
+     * @param int $position
+     * @return category
+     * @throws \moodle_exception
+     * @throws \dml_exception
+     */
+    private static function change_category_position(category $category, int $position): category {
+        $nextcategory = api::list_categories(
+                $category->get('component'),
+                $category->get('area'),
+                $category->get('itemid'),
+                $category->get('sortorder'
+                ) + $position)[0];
+
+        if (!empty($nextcategory)) {
+            $nextcategory->set('sortorder', $category->get('sortorder'));
+            $nextcategory->save();
+            $category->set('sortorder', $category->get('sortorder') + $position);
+            $category->save();
+        }
+        return $category;
+    }
+
+    /**
+     * Returns a list of categories with their related fields.
+     *
+     * @return category[]
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function list_categories($component, $area, $itemid, $sortorder = 0): array {
+        global $DB;
+
+        $categories = array();
+
+        $options = [
+                'component' => $component,
+                'area'      => $area,
+                'itemid'    => $itemid
+        ];
+
+        if ($sortorder !== 0) {
+            $options['sortorder'] = $sortorder;
+        }
+
+        foreach ($DB->get_records(category::TABLE, $options, 'sortorder') as $categorydata) {
+            $categories[] = new category(0, $categorydata);
+        }
+
+        return $categories;
+    }
 }

@@ -263,7 +263,7 @@ class core_customfield_external extends external_api {
             throw new moodle_exception('nopermissionconfigure', 'core_customfield');
         }
 
-        return \core_customfield\category::drag_and_drop_block($from, $to);
+        return \core_customfield\api::move_category($from, $to);
         // TODO: return api::move_category($category, $to);
     }
 

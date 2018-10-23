@@ -35,7 +35,7 @@ function core_customfield_inplace_editable($itemtype, $itemid, $newvalue) {
         $newvalue = clean_param($newvalue, PARAM_NOTAGS);
         $category->set('name', $newvalue);
         $category->save();
-        return $category->get_inplace_editable(true);
+        return \core_customfield\api::get_category_inplace_editable($category, true);
     }
 }
 

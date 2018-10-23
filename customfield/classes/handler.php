@@ -298,7 +298,7 @@ abstract class handler {
      */
     public function get_fields_definitions() : array {
         if ($this->fieldsdefinitions === null) {
-            $this->fieldsdefinitions = api::get_fields_definitions($this->get_component(), $this->get_area(), $this->get_itemid());
+            $this->fieldsdefinitions = api::list_categories($this->get_component(), $this->get_area(), $this->get_itemid());
         }
         return $this->fieldsdefinitions;
     }

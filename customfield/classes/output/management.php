@@ -22,6 +22,7 @@
 
 namespace core_customfield\output;
 
+use core_customfield\api;
 use core_customfield\handler;
 use renderable;
 use templatable;
@@ -77,7 +78,7 @@ class management implements renderable, templatable {
 
             $categoryarray = array();
             $categoryarray['id'] = $category->get('id');
-            $categoryarray['nameeditable'] = $output->render($category->get_inplace_editable(true));
+            $categoryarray['nameeditable'] = $output->render(api::get_category_inplace_editable($category, true));
 
             $categoryarray['fields'] = array();
 
