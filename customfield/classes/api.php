@@ -454,4 +454,41 @@ class api {
 
         return $categories;
     }
+
+    /**
+     * Call the specified callback method of the field plugin
+     *
+     * If the callback returns null, then the default value is returned instead.
+     * If the class does not exist, then the default value is returned.
+     *
+     * @param   field       $field
+     * @param   string      $methodname The name of the staticically defined method on the class.
+     * @param   array       $params The arguments to pass into the method.
+     * @param   mixed       $default The default value.
+     * @return  mixed       The return value.
+     */
+    protected static function plugin_callback(field $field, string $methodname, array $params, $default = null) {
+        $classname = '\\customfield_' . $field->get('type') . '\\plugin';
+        if (!class_exists($classname)) {
+            // There could be data in the database that belongs to the type that was deleted.
+            // Do not throw exception. Show developer warning only.
+            debugging("Class {$classname} is not found", DEBUG_DEVELOPER);
+            return $default;
+        } else if (!is_subclass_of($classname, plugin_base::class)) {
+            debugging("Class {$classname} must extend " . plugin_base::class, DEBUG_DEVELOPER);
+            return $default;
+        } else {
+            return component_class_callback($classname, $methodname, $params, $default);
+        }
+    }
+
+    /**
+     * Allows to add elements to the field configuration form
+     *
+     * @param field $field
+     * @param \MoodleQuickForm $mform
+     */
+    public static function add_field_to_config_form(field $field, \MoodleQuickForm $mform) {
+        self::plugin_callback($field, 'add_field_to_config_form', [$field, $mform]);
+    }
 }

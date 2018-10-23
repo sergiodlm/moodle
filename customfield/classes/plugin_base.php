@@ -15,28 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   customfield_text
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @package   core_customfield
+ * @copyright 2018 Toni Barbera <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace customfield_text;
+namespace core_customfield;
 
 defined('MOODLE_INTERNAL') || die;
 
 /**
- * Class field
+ * Base class for all plugins of type customfield
  *
- * @package customfield_text
+ * Plugins need to create a class 'plugin' in their namespace that extends this class and override
+ * callbacks that they require.
+ *
+ * @package core_customfield
  */
-class field extends \core_customfield\field {
+abstract class plugin_base {
 
     /**
      * Add fields for editing a text field.
      *
+     * @param field $field
      * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
-    public function add_field_to_config_form(\MoodleQuickForm $mform) {
+    public static function add_field_to_config_form(field $field, \MoodleQuickForm $mform) {
+
     }
 }
