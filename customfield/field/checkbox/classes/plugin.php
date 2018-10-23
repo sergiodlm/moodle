@@ -16,7 +16,7 @@
 
 /**
  * @package   customfield_checkbox
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Toni Barbera <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -24,23 +24,29 @@ namespace customfield_checkbox;
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_customfield\plugin_base;
+
 /**
- * Class field
+ * Class data
  *
  * @package customfield_checkbox
  */
-class field extends \core_customfield\field {
-
-    const TYPE = 'checkbox';
-    const SIZE = 40;
+class plugin extends plugin_base {
 
     /**
-     * Add fields for editing a text field.
+     * Add fields for editing a checkbox field.
      *
+     * @param field $field
      * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
-    public function add_field_to_config_form( \MoodleQuickForm $mform) {
+    public static function add_field_to_config_form(\core_customfield\field $field, \MoodleQuickForm $mform) {
+        $mform->addElement('header', 'header_specificsettings', get_string('specificsettings', 'customfield_checkbox'));
+        $mform->setExpanded('header_specificsettings', true);
 
+        // TODO: this string shold be moved to this plugin
+        $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));
+        $mform->setType('configdata[checkbydefault]', PARAM_BOOL);
     }
+
 }
