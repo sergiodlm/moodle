@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   core_customfield
+ * @package   core_course
  * @copyright 2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -117,7 +117,13 @@ class course_handler extends \core_customfield\handler {
      * @return \context
      */
     protected function get_parent_context() : \context {
-        return $this->parentcontext ?: \context_system::instance();
+        global $PAGE;
+        if ($this->parentcontext) {
+            return $this->parentcontext;
+        } else if ($PAGE->context && $PAGE->context instanceof \context_coursecat) {
+            return $PAGE->context;
+        }
+        return \context_system::instance();
     }
 
     /**
@@ -175,16 +181,18 @@ class course_handler extends \core_customfield\handler {
      * @throws \coding_exception
      */
     public function add_to_field_config_form(\MoodleQuickForm $mform) {
-        // TODO: should we use a separate category on form for "handler" fields? - Yes (Marina).
+        $mform->addElement('header', 'course_handler_header', get_string('customfieldsettings', 'core_course'));
+        $mform->setExpanded('course_handler_header', true);
+
         // If field is locked.
-        $mform->addElement('selectyesno', 'configdata[locked]', get_string('isfieldlocked', 'core_customfield'));
+        $mform->addElement('selectyesno', 'configdata[locked]', get_string('customfield_islocked', 'core_course'));
         $mform->setType('configdata[locked]', PARAM_BOOL);
 
         // Field data visibility.
-        $visibilityoptions = [self::VISIBLETOALL => get_string('everyone', 'core_customfield'),
-            self::VISIBLETOTEACHERS => get_string('courseeditors', 'core_customfield'),
-            self::NOTVISIBLE => get_string('notvisible', 'core_customfield')];
-        $mform->addElement('select', 'configdata[visibility]', get_string('visibility', 'core_customfield'), $visibilityoptions);
+        $visibilityoptions = [self::VISIBLETOALL => get_string('customfield_visibletoall', 'core_course'),
+            self::VISIBLETOTEACHERS => get_string('customfield_visibletoteachers', 'core_course'),
+            self::NOTVISIBLE => get_string('customfield_notvisible', 'core_course')];
+        $mform->addElement('select', 'configdata[visibility]', get_string('customfield_visibility', 'core_course'), $visibilityoptions);
         $mform->setType('configdata[visibility]', PARAM_INT);
     }
 }

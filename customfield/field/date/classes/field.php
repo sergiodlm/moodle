@@ -53,6 +53,9 @@ class field extends \core_customfield\field {
         $config = $this->get('configdata');
 
         // Add elements.
+        $mform->addElement('header', 'header_specificsettings', get_string('specificsettings', 'customfield_date'));
+        $mform->setExpanded('header_specificsettings', true);
+
         $mform->addElement('select', 'configdata[startyear]', get_string('startyear', 'core_customfield'), $arryears);
         $mform->setType('configdata[startyear]', PARAM_INT);
 

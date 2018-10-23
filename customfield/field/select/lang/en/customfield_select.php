@@ -24,3 +24,4 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Dropdown menu';
 $string['invalidoption'] = 'Invalid option selected';
+$string['specificsettings'] = 'Settings for the dropdown field';
