@@ -241,28 +241,29 @@ class core_customfield_external extends external_api {
      */
     public static function move_category_parameters(): external_function_parameters {
         return new external_function_parameters(
-                ['from' => new external_value(PARAM_INT, 'Entry ID to move from', VALUE_REQUIRED),
-                 'to'   => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED)]
+                ['id' => new external_value(PARAM_INT, 'Category ID to move', VALUE_REQUIRED),
+                 'beforeid'   => new external_value(PARAM_INT, 'Id of the category before which it needs to be moved',
+                     VALUE_DEFAULT, 0)]
         );
     }
 
     /**
-     * @param int $categoryid
+     * Reorder categories. Move category to the new position
+     *
+     * @param int $id category id
      * @param int $beforeid
-     * @return bool
-     * @throws dml_exception
-     * @throws moodle_exception
      */
-    public static function move_category(int $categoryid, int $beforeid) {
-        // TODO: add validation  to the parameters
-        $category = new \core_customfield\category($categoryid);
+    public static function move_category(int $id, int $beforeid) {
+        $params = self::validate_parameters(self::move_category_parameters(),
+            ['id' => $id, 'beforeid' => $beforeid]);
+        $category = new \core_customfield\category($params['id']);
         $handler = \core_customfield\handler::get_handler_for_category($category);
         self::validate_context($handler->get_configuration_context());
         if (!$handler->can_configure()) {
             throw new moodle_exception('nopermissionconfigure', 'core_customfield');
         }
 
-        return \core_customfield\api::move_category($categoryid, $beforeid);
+        \core_customfield\api::move_category($category, $params['beforeid']);
     }
 
     /**
