@@ -285,7 +285,7 @@ abstract class data extends persistent {
             return $this->raw_get('valueformat');
         }
 
-        return FORMAT_PLAIN;
+        return FORMAT_HTML;
     }
 
     /**

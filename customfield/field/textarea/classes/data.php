@@ -37,18 +37,40 @@ class data extends \core_customfield\data {
      * @throws \coding_exception
      */
     public function edit_field_add(\MoodleQuickForm $mform) {
-        $mform->addElement('editor', $this->inputname(), format_string($this->get_field()->get('name')));
+        global $PAGE;
+        $desceditoroptions = array(
+            'trusttext'             => true,
+            'subdirs'               => true,
+            'maxfiles'              => -1,
+            'maxbytes'              => 0,
+            'context'               => $PAGE->context,
+            'noclean'               => 0,
+            'enable_filemanagement' => true);
+        $mform->addElement('editor', $this->inputname(), format_string($this->get_field()->get('name')), null, $desceditoroptions);
         $mform->setType($this->inputname(), PARAM_RAW);
     }
 
     /**
      * @return string
      * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public function display() {
+        $content = $this->get_formvalue();
+        $context = $this->get_context();
+        if ($fieldid = $this->get('id')) {
+            $filearea = $this->get_filearea();
+            $processed = file_rewrite_pluginfile_urls($content, 'pluginfile.php',
+                $context->id, 'core_customfield', $filearea, $this->field->get('id'));
+        } else {
+            $processed = file_rewrite_pluginfile_urls($content, 'pluginfile.php',
+                $context->id, 'core_customfield', 'defaultvalue_editor', $this->field->get('id'));
+        }
+
         return \html_writer::start_tag('div') .
                \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname']) .
-               \html_writer::tag('span', format_text($this->get_formvalue()), ['class' => 'customfieldvalue']) .
+               \html_writer::tag('span', format_text($processed), ['class' => 'customfieldvalue']) .
                \html_writer::end_tag('div');
     }
 
@@ -62,33 +84,89 @@ class data extends \core_customfield\data {
     /**
      * Process incoming data for the field.
      *
-     * @param string|array $data
-     * @param \stdClass $datarecord
-     * @return mixed
+     * @param array|string $data
+     * @param \stdClass    $datarecord
+     *
+     * @return array|mixed|\stdClass|string
+     * @throws \coding_exception
      */
-    public function edit_save_data_preprocess($data, \stdClass $datarecord) {
-        if (is_array($data)) {
-            $datarecord->dataformat = $data['format'];
-            $data                   = $data['text'];
+    public function edit_save_data_preprocess($fromform, \stdClass $datarecord) {
+        if ($fromform['text']) {
+            $filearea = $this->get_field()->get('type');
+            $context                = \context_course::instance($datarecord->id);
+            $textoptions['context'] = $context;
+            $textoptions['maxfiles'] = -1;
+            $data = (object) ['defaultvalue_editor' => $fromform];
+            $data = file_postupdate_standard_editor($data, 'defaultvalue', $textoptions, $context,
+                'core_customfield', $filearea, $this->get_field()->get('id'));
+            $fromform['text'] = $data->defaultvalue;
         }
-        return $data;
+
+        if (is_array($fromform)) {
+            $datarecord->dataformat = $fromform['format'];
+            $fromform                   = $fromform['text'];
+        }
+        return $fromform;
     }
 
     /**
      * Load data for this custom field, ready for editing.
      *
-     * @param $data
+     * @param \stdClass $data
+     *
      * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public function edit_load_data(\stdClass $data) {
-        if ($this->get($this->datafield()) !== null) {
-            $this->set('valueformat', FORMAT_MOODLE);
+        if (($content = $this->get($this->datafield())) !== null) {
+            $context = $this->get_context();
+            $data->defaultvalue = $content;
+            $data->defaultvalueformat = FORMAT_HTML;
+            $fieldid = $this->field->get('id');
+            $textoptions = ['context' => $context, 'maxfiles' => -1];
+            file_prepare_standard_editor($data, 'defaultvalue', $textoptions, $context, 'core_customfield',
+                $this->get_filearea(), $fieldid);
+            $content = $data->defaultvalue_editor['text'];
+            $this->set('valueformat', FORMAT_HTML);
             $this->set($this->datafield(), clean_text($this->get($this->datafield()), $this->get('valueformat')));
-            $data->{$this->inputname()} = array('text' => $this->get($this->datafield()), 'format' => $this->get('valueformat'));
+            $data->{$this->inputname()} = array('text' => $content, 'format' => $this->get('valueformat'));
         }
     }
 
     public function before_delete() {
         // TODO delete files associated with this data record.
+    }
+
+    /**
+     * Get the filearea for the content.
+     *
+     * @return string
+     * @throws \coding_exception
+     */
+    protected function get_filearea() {
+        if ($fieldid = $this->get('id')) {
+            $filearea = $this->get_field()->get('type');
+        } else {
+            $filearea = 'defaultvalue_editor';
+        }
+
+        return $filearea;
+    }
+
+    /**
+     * Return the context of the field
+     *
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    protected function get_context() {
+        if ($fieldid = $this->get('id')) {
+            $context = \context::instance_by_id($this->get('contextid'));
+        } else {
+            $context = \context_system::instance();
+        }
+
+        return $context;
     }
 }

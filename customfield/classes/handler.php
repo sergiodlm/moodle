@@ -482,6 +482,13 @@ abstract class handler {
         if ($data->id) {
             file_prepare_standard_editor($data, 'description', $textoptions, $context, 'core_customfield',
                 'description', $data->id);
+            if ($field->get('type') == 'textarea' && $data->configdata['defaultvalue']['text']) {
+                $data->defaultvalue = $data->configdata['defaultvalue']['text'];
+                $data->defaultvalueformat = $data->configdata['defaultvalue']['format'];
+                file_prepare_standard_editor($data, 'defaultvalue', $textoptions, $context, 'core_customfield',
+                    'defaultvalue_editor', $data->id);
+                $data->configdata['defaultvalue']['text'] = $data->defaultvalue_editor['text'];
+            }
         }
 
         return $data;

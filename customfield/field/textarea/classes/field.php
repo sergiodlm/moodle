@@ -40,13 +40,13 @@ class field extends \core_customfield\field {
     public function add_field_to_config_form(\MoodleQuickForm $mform) {
         global $PAGE;
         $desceditoroptions = array(
-                'trusttext'             => true,
-                'subdirs'               => true,
-                'maxfiles'              => 5,
-                'maxbytes'              => 0,
-                'context'               => $PAGE->context,
-                'noclean'               => 0,
-                'enable_filemanagement' => true);
+            'trusttext'             => true,
+            'subdirs'               => true,
+            'maxfiles'              => -1,
+            'maxbytes'              => 0,
+            'context'               => $PAGE->context,
+            'noclean'               => 0,
+            'enable_filemanagement' => true);
 
         $mform->addElement('editor', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), null, $desceditoroptions);
         $mform->setType('configdata[defaultvalue]', PARAM_RAW);

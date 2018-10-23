@@ -38,3 +38,48 @@ function core_customfield_inplace_editable($itemtype, $itemid, $newvalue) {
         return $category->get_inplace_editable(true);
     }
 }
+
+/**
+ * Serve the files from the core_customfield file areas
+ *
+ * @param stdClass $course the course object
+ * @param stdClass $cm the course module object
+ * @param context $context the context
+ * @param string $filearea the name of the file area
+ * @param array $args extra arguments (itemid, path)
+ * @param bool $forcedownload whether or not force download
+ * @param array $options additional options affecting the file serving
+ * @return bool false if the file not found, just send the file otherwise and do not return
+ * @throws coding_exception
+ * @throws moodle_exception
+ * @throws require_login_exception
+ */
+function core_customfield_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+    if ($context->contextlevel != CONTEXT_SYSTEM && $context->contextlevel != CONTEXT_COURSE) {
+        return false;
+    }
+
+    if ($filearea !== 'defaultvalue_editor' && $filearea !== 'textarea') {
+        return false;
+    }
+
+    $itemid = array_shift($args);
+
+    $filename = array_pop($args); // The last item in the $args array.
+    if (!$args) {
+        $filepath = '/'; // $args is empty => the path is '/'
+    } else {
+        $filepath = '/'.implode('/', $args).'/'; // $args contains elements of the filepath
+    }
+
+    // Retrieve the file from the Files API.
+    $fs = get_file_storage();
+    $file = $fs->get_file($context->id, 'core_customfield', $filearea, $itemid, $filepath, $filename);
+    if (!$file) {
+        return false; // The file does not exist.
+    }
+
+    // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering.
+    // From Moodle 2.3, use send_stored_file instead.
+    send_file($file, 86400, 0, $forcedownload, $options);
+}
