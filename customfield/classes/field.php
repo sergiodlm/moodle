@@ -145,11 +145,8 @@ abstract class field extends persistent {
      */
     protected function before_delete() {
         global $DB;
-        $data = $DB->get_records(data::TABLE, ['fieldid' => $this->get('id')]);
-        foreach ($data as $d) {
-            $dataobj = new data($d->id, $d);
-            $dataobj->delete();
-        }
+        // TODO execute callback from all plugins so they can delete data associated with this field.
+        $DB->execute('DELETE from {' . data::TABLE . '} WHERE fieldid = ?', [$this->get('id')]);
         // TODO delete all files that are associated with field description that is about to be deleted.
     }
 

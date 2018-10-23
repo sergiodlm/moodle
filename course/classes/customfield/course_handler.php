@@ -181,6 +181,9 @@ class course_handler extends \core_customfield\handler {
      * @throws \coding_exception
      */
     public function add_configdata_settings_to_form(\MoodleQuickForm $mform) {
+        $mform->addElement('header', 'course_handler_header', get_string('customfieldsettings', 'core_course'));
+        $mform->setExpanded('course_handler_header', true);
+
         // If field is locked.
         $mform->addElement('selectyesno', 'configdata[locked]', get_string('customfield_islocked', 'core_course'));
         $mform->setType('configdata[locked]', PARAM_BOOL);
