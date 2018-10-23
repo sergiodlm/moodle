@@ -38,13 +38,6 @@ abstract class field extends persistent {
     const TABLE = 'customfield_field';
 
     /**
-     * Data for field.
-     *
-     * @var string
-     */
-    protected $data;
-
-    /**
      * @var category
      */
     protected $category;
@@ -152,7 +145,12 @@ abstract class field extends persistent {
      */
     protected function before_delete() {
         global $DB;
-        $DB->delete_records(data::TABLE, ['fieldid' => $this->get('id')]);
+        $data = $DB->get_records(data::TABLE, ['fieldid' => $this->get('id')]);
+        foreach ($data as $d) {
+            $dataobj = new data($d->id, $d);
+            $dataobj->delete();
+        }
+        // TODO delete all files that are associated with field description that is about to be deleted.
     }
 
     /**
@@ -336,7 +334,20 @@ abstract class field extends persistent {
         global $DB;
 
         $fields  = array();
-        $records = $DB->get_records('customfield_field', ['categoryid' => $categoryid], 'sortorder DESC');
+
+        $plugins = \core\plugininfo\customfield::get_enabled_plugins();
+        // No plugins enabled.
+        if (empty($plugins)) {
+            return $plugins;
+        }
+
+        list($sqlfields, $params) = $DB->get_in_or_equal(array_keys($plugins), SQL_PARAMS_NAMED);
+        $sql = "SELECT *
+                  FROM {customfield_field}
+                 WHERE categoryid = :categoryid
+                   AND type {$sqlfields}
+              ORDER BY sortorder DESC";
+        $records = $DB->get_records_sql($sql, $params + ['categoryid' => $categoryid]);
         foreach ($records as $fielddata) {
             $fields[] = self::load_field($fielddata->id);
         }

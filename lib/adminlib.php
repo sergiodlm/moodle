@@ -7269,15 +7269,18 @@ class admin_setting_managecustomfields extends admin_setting {
 
         $fields = core_plugin_manager::instance()->get_plugins_of_type('customfield');
 
-        $txt = get_strings(array('settings', 'name', 'enable', 'disable'));
+        $txt = get_strings(array('settings', 'name', 'enable', 'disable', 'up', 'down'));
         $txt->uninstall = get_string('uninstallplugin', 'core_admin');
+        $txt->updown = "$txt->up/$txt->down";
 
         $table = new html_table();
-        $table->head  = array($txt->name, $txt->enable, $txt->uninstall, $txt->settings);
-        $table->align = array('left', 'center', 'center', 'center');
+        $table->head  = array($txt->name, $txt->enable, $txt->updown, $txt->uninstall, $txt->settings);
+        $table->align = array('left', 'center', 'center', 'center', 'center');
         $table->attributes['class'] = 'managecustomfieldtable generaltable admintable';
         $table->data  = array();
 
+        $cnt = 0;
+        $spacer = $OUTPUT->pix_icon('spacer', '', 'moodle', array('class' => 'iconsmall'));
         foreach ($fields as $field) {
             $url = new moodle_url('/admin/customfields.php',
                     array('sesskey' => sesskey(), 'field' => $field->name));
@@ -7292,6 +7295,20 @@ class admin_setting_managecustomfields extends admin_setting {
                 $hideshow = html_writer::link($url->out(false, array('action' => 'enable')),
                     $OUTPUT->pix_icon('t/show', $txt->enable, 'moodle', array('class' => 'iconsmall')));
             }
+            $updown = '';
+            if ($cnt) {
+                $updown .= html_writer::link($url->out(false, array('action' => 'up')),
+                    $OUTPUT->pix_icon('t/up', $txt->up, 'moodle', array('class' => 'iconsmall'))). '';
+            } else {
+                $updown .= $spacer;
+            }
+            if ($cnt < count($fields) - 1) {
+                $updown .= '&nbsp;'.html_writer::link($url->out(false, array('action' => 'down')),
+                    $OUTPUT->pix_icon('t/down', $txt->down, 'moodle', array('class' => 'iconsmall')));
+            } else {
+                $updown .= $spacer;
+            }
+            $cnt++;
             $settings = '';
             if ($field->get_settings_url()) {
                 $settings = html_writer::link($field->get_settings_url(), $txt->settings);
@@ -7300,7 +7317,7 @@ class admin_setting_managecustomfields extends admin_setting {
             if ($uninstallurl = core_plugin_manager::instance()->get_uninstall_url('customfield_'.$field->name, 'manage')) {
                 $uninstall = html_writer::link($uninstallurl, $txt->uninstall);
             }
-            $row = new html_table_row(array($strfieldname, $hideshow, $uninstall, $settings));
+            $row = new html_table_row(array($strfieldname, $hideshow, $updown, $uninstall, $settings));
             $table->data[] = $row;
         }
         $return .= html_writer::table($table);

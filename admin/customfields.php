@@ -58,5 +58,23 @@ switch ($action) {
             core_plugin_manager::reset_caches();
         }
         break;
+    case 'up':
+        if ($sortorder[$customfieldname]) {
+            $currentindex = $sortorder[$customfieldname];
+            $seq = array_keys($customfieldplugins);
+            $seq[$currentindex] = $seq[$currentindex-1];
+            $seq[$currentindex-1] = $customfieldname;
+            set_config('customfield_plugins_sortorder', implode(',', $seq));
+        }
+        break;
+    case 'down':
+        if ($sortorder[$customfieldname] < count($sortorder)-1) {
+            $currentindex = $sortorder[$customfieldname];
+            $seq = array_keys($customfieldplugins);
+            $seq[$currentindex] = $seq[$currentindex+1];
+            $seq[$currentindex+1] = $customfieldname;
+            set_config('customfield_plugins_sortorder', implode(',', $seq));
+        }
+        break;
 }
 redirect($return);

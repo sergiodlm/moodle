@@ -1741,7 +1741,7 @@ class core_plugin_manager {
             ),
 
             'customfield' => array(
-                'text'
+                'checkbox', 'date', 'select', 'text', 'textarea'
             ),
 
             'coursereport' => array(
