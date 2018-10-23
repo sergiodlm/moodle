@@ -209,37 +209,44 @@ class core_customfield_external extends external_api {
     /**
      * @return external_function_parameters
      */
-    public static function drag_and_drop_parameters(): external_function_parameters {
+    public static function move_field_parameters() {
         return new external_function_parameters(
-                ['from' => new external_value(PARAM_INT, 'Entry ID to move from', VALUE_REQUIRED),
-                 'to'   => new external_value(PARAM_INT, 'Entry ID to move to', VALUE_REQUIRED),
-                 'category' => new external_value(PARAM_INT, 'Entry new CategoryId', VALUE_REQUIRED)]
+                ['id' => new external_value(PARAM_INT, 'Id of the field to move', VALUE_REQUIRED),
+                 'categoryid' => new external_value(PARAM_INT, 'New parent category id', VALUE_REQUIRED),
+                 'beforeid'   => new external_value(PARAM_INT, 'Id of the field before which it needs to be moved',
+                     VALUE_DEFAULT, 0)]
         );
     }
 
     /**
-     * @param int $from
-     * @param int $to
-     * @param int $category
-     * @return bool
-     * @throws coding_exception
-     * @throws dml_exception
-     * @throws moodle_exception
+     * Move/reorder field. Move a field to another category and/or change sortorder of fields
+     *
+     * @param int $id field id
+     * @param int $categoryid
+     * @param int $beforeid
      */
-    public static function drag_and_drop(int $from, int $to, int $category) {
-        return \core_customfield\field::drag_and_drop($from, $to, $category);
+    public static function move_field($id, $categoryid, $beforeid) {
+        $params = self::validate_parameters(self::move_field_parameters(),
+            ['id' => $id, 'categoryid' => $categoryid, 'beforeid' => $beforeid]);
+        $field = \core_customfield\api::get_field($params['id']);
+        $handler = \core_customfield\handler::get_handler_for_field($field);
+        self::validate_context($handler->get_configuration_context());
+        if (!$handler->can_configure()) {
+            throw new moodle_exception('nopermissionconfigure', 'core_customfield');
+        }
+        \core_customfield\api::move_field($field, $params['categoryid'], $params['beforeid']);
     }
 
     /**
      *
      */
-    public static function drag_and_drop_returns() {
+    public static function move_field_returns() {
     }
 
     /**
      * @return external_function_parameters
      */
-    public static function move_category_parameters(): external_function_parameters {
+    public static function move_category_parameters() {
         return new external_function_parameters(
                 ['id' => new external_value(PARAM_INT, 'Category ID to move', VALUE_REQUIRED),
                  'beforeid'   => new external_value(PARAM_INT, 'Id of the category before which it needs to be moved',

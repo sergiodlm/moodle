@@ -136,11 +136,11 @@ define(['jquery', 'core/str', 'core/notification', 'core/ajax', 'core/templates'
                         if (evt.type === 'sortablelist-drop' && info.positionChanged) {
                             var promises = ajax.call([
                                 {
-                                    methodname: 'core_customfield_drag_and_drop',
+                                    methodname: 'core_customfield_move_field',
                                     args: {
-                                        from: info.element.data('field-id'),
-                                        to: info.targetNextElement.data('field-id') || 0,
-                                        category: Number(info.targetList.closest('[data-category-id]').attr('data-category-id'))
+                                        id: info.element.data('field-id'),
+                                        beforeid: info.targetNextElement.data('field-id'),
+                                        categoryid: Number(info.targetList.closest('[data-category-id]').attr('data-category-id'))
                                     },
                                 },
                             ]);

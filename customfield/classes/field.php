@@ -88,7 +88,6 @@ abstract class field extends persistent {
                         'default'  => FORMAT_MOODLE,
                         'optional' => true
                 ],
-                // TODO: Invert sortorder according Moodle standards.
                 'sortorder'         => [
                         'type'    => PARAM_INT,
                         'default' => 0,
@@ -152,88 +151,9 @@ abstract class field extends persistent {
 
     /**
      * Update sort order after create
-     *
-     * @return bool
-     * @throws \moodle_exception
-     * @throws \dml_exception
      */
-    protected function after_create(): bool {
-        return $this::reorder();
-    }
-
-    /**
-     * Update sort order after delete
-     *
-     * @param bool $result
-     * @return bool
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    protected function after_delete($result): bool {
-        return $this->reorder();
-    }
-
-    /**
-     * Call category::reorder_fields
-     *
-     * @return bool
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    private function reorder(): bool {
-        return api::reorder_fields($this->get_category());
-    }
-
-    /**
-     * Update sort order (used on drag and drop)
-     *
-     * @param int $position
-     * @return field
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    private function move(int $position): self {
-        global $DB;
-
-        $nextfielddata = $DB->get_record(
-                $this::TABLE,
-                [
-                        'sortorder'  => $this->get('sortorder') + $position,
-                        'categoryid' => $this->get('categoryid')
-                ]
-        );
-
-        if (!empty($nextfielddata)) {
-            $previusfield = field::load_field($nextfielddata->id);
-            $previusfield->set('sortorder', $this->get('sortorder'));
-            $previusfield->save();
-            $this->set('sortorder', $this->get('sortorder') + $position);
-            $this->save();
-        }
-
-        return $this;
-    }
-
-    /**
-     * Update sort order (used on drag and drop)
-     *
-     * @return self
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    public function up(): self {
-        return $this->move(1);
-    }
-
-    /**
-     * Update sort order (used on drag and drop)
-     *
-     * @return self
-     * @throws \moodle_exception
-     * @throws \dml_exception
-     */
-    public function down(): self {
-        return $this->move(-1);
+    protected function after_create() {
+        api::move_field($this, $this->get('categoryid'));
     }
 
     /**
@@ -343,55 +263,11 @@ abstract class field extends persistent {
                   FROM {customfield_field}
                  WHERE categoryid = :categoryid
                    AND type {$sqlfields}
-              ORDER BY sortorder DESC";
+              ORDER BY sortorder";
         $records = $DB->get_records_sql($sql, $params + ['categoryid' => $categoryid]);
         foreach ($records as $fielddata) {
             $fields[] = self::load_field($fielddata->id);
         }
         return $fields;
-    }
-
-    /**
-     * @param int $from
-     * @param int $to
-     * @param int $category
-     * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \moodle_exception
-     */
-    public static function drag_and_drop(int $from, int $to, int $category): bool {
-        $fieldfrom = self::load_field($from);
-
-        if ($fieldfrom->get('categoryid') != $category) {
-            $oldcategory     = new category($fieldfrom->get('categoryid'));
-            $currentcategory = new category($category);
-
-            $fieldfrom->set('categoryid', $category);
-            $fieldfrom->set('sortorder', -1);
-            $fieldfrom->save();
-
-            api::reorder_fields($oldcategory);
-            api::reorder_fields($currentcategory);
-        }
-
-        if ($to > 0) {
-            $fieldto = self::load_field($to);
-            if ($fieldfrom->get('sortorder') < $fieldto->get('sortorder')) {
-                for ($i = $fieldfrom->get('sortorder'); $i < $fieldto->get('sortorder'); $i++) {
-                    $fieldfrom->up();
-                }
-            } else if ($fieldfrom->get('sortorder') > $fieldto->get('sortorder')) {
-                for ($i = $fieldfrom->get('sortorder'); $i > $fieldto->get('sortorder') + 1; $i--) {
-                    $fieldfrom->down();
-                }
-            }
-        } else {
-            for ($i = $fieldfrom->get('sortorder'); $i > 0; $i--) {
-                $fieldfrom->down();
-            }
-        }
-
-        return true;
     }
 }

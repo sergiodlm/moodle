@@ -126,8 +126,7 @@ abstract class handler {
      * @throws \moodle_exception
      */
     public static function get_handler_for_field(field $field) : handler {
-        $category = new category($field->get('categoryid'));
-        return self::get_handler_for_category($category);
+        return self::get_handler_for_category($field->get_category());
     }
 
     /**
