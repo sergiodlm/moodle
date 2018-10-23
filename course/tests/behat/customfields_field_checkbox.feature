@@ -71,8 +71,8 @@ Feature: Managers can manage course custom fields
     Then I should see "Test field: Yes"
     When I am on "Course 1" course homepage
      And I navigate to "Edit settings" in current page administration
-    Then the field "Test field" matches value "1"
-     And I click on "Test field" "checkbox"
+     And I expand all fieldsets
+     And I set the field "Test field" to ""
      And I press "Save and display"
      And I am on site homepage
     Then I should see "Test field: No"
