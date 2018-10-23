@@ -36,6 +36,9 @@ class field extends \core_customfield\field {
      * @param \MoodleQuickForm $mform
      */
     public function add_field_to_config_form(\MoodleQuickForm $mform) {
+        $mform->addElement('header', 'header_specificsettings', get_string('specificsettings', 'customfield_select'));
+        $mform->setExpanded('header_specificsettings', true);
+
         $mform->addElement('textarea', 'configdata[options]', 'Menu options (one per line)');
 
         $mform->addElement('text', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), 'size="50"');

@@ -39,6 +39,9 @@ class field extends \core_customfield\field {
      */
     public function add_field_to_config_form(\MoodleQuickForm $mform) {
         global $PAGE;
+        $mform->addElement('header', 'header_specificsettings', get_string('specificsettings', 'customfield_textarea'));
+        $mform->setExpanded('header_specificsettings', true);
+
         $desceditoroptions = array(
                 'trusttext'             => true,
                 'subdirs'               => true,

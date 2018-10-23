@@ -72,14 +72,11 @@ class field_config_form extends \moodleform {
         $mform->addElement('selectyesno', 'configdata[uniquevalues]', get_string('isdataunique', 'core_customfield'));
         $mform->setType('configdata[uniquevalues]', PARAM_BOOL);
 
-        // We add specific settings here.
-        $mform->addElement('header', '_specificsettings', get_string('specificsettings', 'core_customfield'));
+        // We load specific settings for the field type.
+        $field->add_field_to_config_form($mform);
 
         // Specific configuration for the customfields area.
         $handler->add_to_field_config_form($mform);
-
-        // We load specific fields from type.
-        $field->add_field_to_config_form($mform);
 
         // We add hidden fields.
         $mform->addElement('hidden', 'categoryid');

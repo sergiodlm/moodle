@@ -23,3 +23,4 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Text field';
+$string['specificsettings'] = 'Settings for the text field';

@@ -22,6 +22,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['customfield_islocked'] = 'Locked';
+$string['customfield_notvisible'] = 'Not visible';
+$string['customfield_visibility'] = ' Visible to';
+$string['customfield_visibletoall'] = 'Everyone';
+$string['customfield_visibletoteachers'] = 'Course editors';
+$string['customfieldsettings'] = 'Settings for course custom fields';
 $string['privacy:perpage'] = 'The number of courses to show per page.';
 $string['privacy:completionpath'] = 'Course completion';
 $string['privacy:metadata:completionsummary'] = 'The course contains completion information about the user.';

@@ -40,6 +40,8 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function add_field_to_config_form(\MoodleQuickForm $mform) {
+        $mform->addElement('header', 'header_specificsettings', get_string('specificsettings', 'customfield_text'));
+        $mform->setExpanded('header_specificsettings', true);
 
         $mform->addElement('text', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), ['size' => self::SIZE]);
         $mform->setType('configdata[defaultvalue]', PARAM_TEXT);

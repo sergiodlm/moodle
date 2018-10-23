@@ -41,6 +41,9 @@ class field extends \core_customfield\field {
      * @throws \coding_exception
      */
     public function add_field_to_config_form( \MoodleQuickForm $mform) {
+        $mform->addElement('header', 'header_specificsettings', get_string('specificsettings', 'customfield_checkbox'));
+        $mform->setExpanded('header_specificsettings', true);
+
         $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));
         $mform->setType('defaultdata', PARAM_BOOL);
     }

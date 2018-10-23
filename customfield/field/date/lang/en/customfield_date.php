@@ -23,3 +23,4 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Date and time';
+$string['specificsettings'] = 'Settings for the date field';
