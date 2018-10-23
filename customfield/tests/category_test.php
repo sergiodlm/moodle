@@ -288,7 +288,7 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame((int) $category5->get('sortorder'), 5);
 
         // Move up 1 position.
-        $this->assertTrue(category::drag_and_drop_block($id3, $id2));
+        $this->assertTrue(api::move_category($id3, $id2));
         $category0 = new category($id0);
         $category1 = new category($id1);
         $category2 = new category($id2);
@@ -303,7 +303,7 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame((int) $category5->get('sortorder'), 5);
 
         // Move down 1 position.
-        $this->assertTrue(category::drag_and_drop_block($id2, $id3));
+        $this->assertTrue(api::move_category($id2, $id3));
         $category0 = new category($id0);
         $category1 = new category($id1);
         $category2 = new category($id2);
@@ -318,7 +318,7 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame((int) $category5->get('sortorder'), 5);
 
         // Move up 2 positions.
-        $this->assertTrue(category::drag_and_drop_block($id4, $id2));
+        $this->assertTrue(api::move_category($id4, $id2));
         $category0 = new category($id0);
         $category1 = new category($id1);
         $category2 = new category($id2);
@@ -333,7 +333,7 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame((int) $category5->get('sortorder'), 5);
 
         // Move down 2 positions.
-        $this->assertTrue(category::drag_and_drop_block($id4, $id5));
+        $this->assertTrue(api::move_category($id4, $id5));
         $category0 = new category($id0);
         $category1 = new category($id1);
         $category2 = new category($id2);
@@ -348,7 +348,7 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame((int) $category5->get('sortorder'), 5);
 
         // Move up 3 positions.
-        $this->assertTrue(category::drag_and_drop_block($id4, $id1));
+        $this->assertTrue(api::move_category($id4, $id1));
         $category0 = new category($id0);
         $category1 = new category($id1);
         $category2 = new category($id2);
@@ -363,7 +363,7 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame((int) $category5->get('sortorder'), 5);
 
         // Move down 3 positions.
-        $this->assertTrue(category::drag_and_drop_block($id4, $id5));
+        $this->assertTrue(api::move_category($id4, $id5));
         $category0 = new category($id0);
         $category1 = new category($id1);
         $category2 = new category($id2);
@@ -378,7 +378,7 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame((int) $category5->get('sortorder'), 5);
 
         //Move to the end of the list.
-        $this->assertTrue(category::drag_and_drop_block($id2, 0));
+        $this->assertTrue(api::move_category($id2, 0));
         $category0 = new category($id0);
         $category1 = new category($id1);
         $category2 = new category($id2);
@@ -480,7 +480,7 @@ class core_customfield_category_testcase extends advanced_testcase {
         $this->assertSame((int) $category5->get('sortorder'), 92);
 
         // Force reorder, reload and check status.
-        $category0->reorder();
+        api::reorder_categories($categorydata->component, $categorydata->area, $categorydata->itemid);
 
         $category0 = new category($id0);
         $category1 = new category($id1);
@@ -603,6 +603,7 @@ class core_customfield_category_testcase extends advanced_testcase {
         $options = [
                 'component' => 'core_course',
                 'area'      => 'course',
+                'itemid'    => 0,
                 'contextid' => 1
         ];
 
@@ -610,7 +611,7 @@ class core_customfield_category_testcase extends advanced_testcase {
         $categorydata->name      = 'aaaa';
         $categorydata->component = $options['component'];
         $categorydata->area      = $options['area'];
-        $categorydata->itemid    = 0;
+        $categorydata->itemid    = $options['itemid'];
         $categorydata->contextid = $options['contextid'];
         $category0               = new category(0, $categorydata);
         $category0->save();
@@ -636,25 +637,18 @@ class core_customfield_category_testcase extends advanced_testcase {
         $category5->save();
 
         // Let's test counts.
-        $this->assertCount(6, category::list($options));
+        $this->assertCount(6, api::list_categories($options['component'], $options['area'], $options['itemid']));
         $category5->delete();
-        $this->assertCount(5, category::list($options));
+        $this->assertCount(5, api::list_categories($options['component'], $options['area'], $options['itemid']));
         $category4->delete();
-        $this->assertCount(4, category::list($options));
+        $this->assertCount(4, api::list_categories($options['component'], $options['area'], $options['itemid']));
         $category3->delete();
-        $this->assertCount(3, category::list($options));
+        $this->assertCount(3, api::list_categories($options['component'], $options['area'], $options['itemid']));
         $category2->delete();
-        $this->assertCount(2, category::list($options));
+        $this->assertCount(2, api::list_categories($options['component'], $options['area'], $options['itemid']));
         $category1->delete();
-        $this->assertCount(1, category::list($options));
+        $this->assertCount(1, api::list_categories($options['component'], $options['area'], $options['itemid']));
         $category0->delete();
-        $this->assertCount(0, category::list($options));
+        $this->assertCount(0, api::list_categories($options['component'], $options['area'], $options['itemid']));
     }
-
-
-
-
-    // TODO: Exceptions tests
-    // TODO: Visibility tests
-
 }
