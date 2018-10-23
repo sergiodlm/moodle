@@ -2275,9 +2275,9 @@ $functions = array(
             'type'        => 'write',
             'ajax'        => 'true'
     ),
-    'core_customfield_drag_and_drop'   => array(
+    'core_customfield_move_field'   => array(
             'classname'   => 'core_customfield_external',
-            'methodname'  => 'drag_and_drop',
+            'methodname'  => 'move_field',
             'classpath'   => 'customfield/externallib.php',
             'description' => 'Drag and drop',
             'type'        => 'write',

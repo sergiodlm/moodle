@@ -82,7 +82,7 @@ class api {
              LEFT JOIN {customfield_data} d
                     ON (f.id = d.fieldid AND d.instanceid = :instanceid)
                  WHERE f.id {$sqlfields}
-              ORDER BY c.sortorder, f.sortorder DESC";
+              ORDER BY c.sortorder, f.sortorder";
         $params['instanceid'] = $instanceid;
         $fieldsdata = $DB->get_records_sql($sql, $params);
 
@@ -261,7 +261,7 @@ class api {
                     ON (c.id = f.categoryid)
              LEFT JOIN {customfield_data} d
                     ON (f.id = d.fieldid AND d.contextid = :contextid)
-              ORDER BY c.sortorder, f.sortorder DESC";
+              ORDER BY c.sortorder, f.sortorder";
 
         $params['contextid'] = $contextid;
         $fieldsdata = $DB->get_records_sql($sql, $params);
@@ -285,29 +285,49 @@ class api {
     }
 
     /**
-     * Update sort order of the fields
+     * Reorder categories, move given category before another category
      *
-     * @param void
-     * @return bool
-     * @throws \moodle_exception
-     * @throws \dml_exception
+     * @param field $field field that needs to be moved
+     * @param int $categoryid category that needs to be moved
+     * @param int $beforeid id of the category this category needs to be moved before, 0 to move to the end
      */
-    public static function reorder_fields(category $category): bool {
+    public static function move_field(field $field, int $categoryid, int $beforeid = 0) {
         global $DB;
 
-        $fieldneighbours = $DB->get_records(field::TABLE, ['categoryid' => $category->get('id')], 'sortorder DESC');
+        if ($field->get('categoryid') != $categoryid) {
+            // Move field to another category. Validate that this category exists and belongs to the same component/area/itemid.
+            $category = $field->get_category();
+            $DB->get_record(category::TABLE, [
+                'component' => $category->get('component'),
+                'area' => $category->get('area'),
+                'itemid' => $category->get('itemid'),
+                'id' => $categoryid], 'id', MUST_EXIST);
+            $field->set('categoryid', $categoryid);
+            $field->save();
+        }
 
-        $neworder = count($fieldneighbours);
+        // Reorder fields in the target category.
+        $records = $DB->get_records(field::TABLE, ['categoryid' => $categoryid], 'sortorder, id', '*');
 
-        foreach ($fieldneighbours as $field) {
-            $dataobject            = new \stdClass();
-            $dataobject->id        = $field->id;
-            $dataobject->sortorder = --$neworder;
-            if (!$DB->update_record(field::TABLE, $dataobject)) {
-                return false;
+        $id = $field->get('id');
+        $fieldsids = array_values(array_diff(array_keys($records), [$id]));
+        $idx = $beforeid ? array_search($beforeid, $fieldsids) : false;
+        if ($idx === false) {
+            // Set as the last field.
+            $fieldsids = array_merge($fieldsids, [$id]);
+        } else {
+            // Set before field with id $beforeid.
+            $fieldsids = array_merge(array_slice($fieldsids, 0, $idx), [$id], array_slice($fieldsids, $idx));
+        }
+
+        foreach (array_values($fieldsids) as $idx => $fieldid) {
+            // Use persistent class to update the sortorder for each field that needs updating.
+            if ($records[$fieldid]->sortorder != $idx) {
+                $field = field::load_field(0, $records[$fieldid]); // TODO should be "new field()".
+                $field->set('sortorder', $idx);
+                $field->save();
             }
         }
-        return true;
     }
 
     /**
