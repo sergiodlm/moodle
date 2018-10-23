@@ -254,7 +254,17 @@ class core_customfield_external extends external_api {
      * @throws moodle_exception
      */
     public static function drag_and_drop_block(int $from, int $to) {
+        // TODO rename arguments to "categoryid" and "beforeid"
+        // TODO rename to "move_category", VALIDATE ACCESS!!!!!!
+        $category = new \core_customfield\category($from);
+        $handler = \core_customfield\handler::get_handler_for_category($category);
+        self::validate_context($handler->get_configuration_context());
+        if (!$handler->can_configure()) {
+            throw new moodle_exception('nopermissionconfigure', 'core_customfield');
+        }
+
         return \core_customfield\category::drag_and_drop_block($from, $to);
+        // TODO: return api::move_category($category, $to);
     }
 
     /**

@@ -100,6 +100,7 @@ class category extends persistent {
      * @throws \dml_exception
      */
     protected static function static_reorder($options): bool {
+        // TODO move to api and rename to reorder_categories($component, $area, $itemid)
         $categoryneighbours = self::list($options);
 
         // First let's move the new element at the end of categories list.
@@ -138,6 +139,7 @@ class category extends persistent {
      * @throws \dml_exception
      */
     public function reorder(): bool {
+        // TODO should be protected. Unit test should use api::reorder_categories
         $this::static_reorder(
                 [
                         'component' => $this->get('component'),
@@ -208,6 +210,7 @@ class category extends persistent {
      * @throws \moodle_exception
      */
     public function get_count_categories(): int {
+        // TODO move to api::count_categories($component, $area, $itemid)
         global $DB;
         return $DB->count_records('customfield_category',
                 [
@@ -275,6 +278,7 @@ class category extends persistent {
      * @throws \dml_exception
      */
     public static function drag_and_drop_block(int $from, int $to) : bool {
+        // TODO move to api::move_category(category $category, int $beforeid = 0)
         $categoryfrom = new self($from);
         $categoryto   = new self($to);
 
@@ -308,6 +312,7 @@ class category extends persistent {
      * @throws \dml_exception
      */
     public function reorder_fields(): bool {
+        // TODO move to api::reorder_fields(category $category)
         global $DB;
 
         $fieldneighbours = $DB->get_records(field::TABLE, ['categoryid' => $this->get('id')], 'sortorder DESC');
@@ -325,14 +330,15 @@ class category extends persistent {
         return true;
     }
 
-
     /**
      * Returns an object for inplace editable
      *
      * @param bool $editable
      * @return inplace_editable
+     * @throws \coding_exception
      */
     public function get_inplace_editable(bool $editable = true) : inplace_editable {
+        // TODO move to api::get_category_inplace_editable(category $category, bool $editable = true)
         return new inplace_editable('core_customfield',
             'category',
             $this->get('id'),
