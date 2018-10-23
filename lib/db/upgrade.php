@@ -2566,9 +2566,13 @@ function xmldb_main_upgrade($oldversion) {
     }
 
 
-    if ($oldversion < 2018101900.02) {
+    if ($oldversion < 2018101900.03) {
         // Define table customfield_field to be created.
         $table = new xmldb_table('customfield_field');
+
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table); // TODO remove this later!
+        }
 
         // Adding fields to table customfield_field.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -2598,6 +2602,10 @@ function xmldb_main_upgrade($oldversion) {
         // Define table customfield_category to be created.
         $table = new xmldb_table('customfield_category');
 
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table); // TODO remove this later!
+        }
+
         // Adding fields to table customfield_category.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('name', XMLDB_TYPE_CHAR, '400', null, XMLDB_NOTNULL, null, null);
@@ -2625,6 +2633,10 @@ function xmldb_main_upgrade($oldversion) {
 
         // Define table customfield_data to be created.
         $table = new xmldb_table('customfield_data');
+
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table); // TODO remove this later!
+        }
 
         // Adding fields to table customfield_data.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -2654,7 +2666,7 @@ function xmldb_main_upgrade($oldversion) {
         }
 
         // Text savepoint reached.
-        upgrade_main_savepoint(true, 2018101900.02);
+        upgrade_main_savepoint(true, 2018101900.03);
     }
 
     return true;
