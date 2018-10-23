@@ -182,7 +182,6 @@ class category extends persistent {
         foreach ($this->fields() as $field) {
             $field->delete();
         }
-        $this->clear_cache();
     }
 
     /**
