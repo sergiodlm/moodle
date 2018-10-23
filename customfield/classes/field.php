@@ -104,7 +104,7 @@ abstract class field extends persistent {
                         'type' => PARAM_INT
                 ],
                 'configdata'        => [
-                        'type'     => PARAM_TEXT,
+                        'type'     => PARAM_RAW,
                         'optional' => true,
                         'default'  => null,
                         'null'     => NULL_ALLOWED
