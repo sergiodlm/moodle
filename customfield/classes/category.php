@@ -203,25 +203,6 @@ class category extends persistent {
     }
 
     /**
-     * Total number of categories
-     *
-     * @return int
-     * @throws \dml_exception
-     * @throws \moodle_exception
-     */
-    public function get_count_categories(): int {
-        // TODO move to api::count_categories($component, $area, $itemid)
-        global $DB;
-        return $DB->count_records('customfield_category',
-                [
-                        'component' => $this->get('component'),
-                        'area' => $this->get('area'),
-                        'itemid' => $this->get('itemid')
-                ]
-        );
-    }
-
-    /**
      * Move a category (used by drag and drop)
      *
      * @param int $position

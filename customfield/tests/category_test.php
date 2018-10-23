@@ -598,45 +598,6 @@ class core_customfield_category_testcase extends advanced_testcase {
         }
     }
 
-    public function test_categories_get_count_categories() {
-        // Create the categories.
-        $categorydata            = new stdClass();
-        $categorydata->name      = 'aaaa';
-        $categorydata->component = 'core_course';
-        $categorydata->area      = 'course';
-        $categorydata->itemid    = 0;
-        $categorydata->contextid = 1;
-        $category0               = new category(0, $categorydata);
-        $category0->save();
-
-        $categorydata->name = 'bbbb';
-        $category1          = new category(0, $categorydata);
-        $category1->save();
-
-        $categorydata->name = 'cccc';
-        $category2          = new category(0, $categorydata);
-        $category2->save();
-
-        $categorydata->name = 'dddd';
-        $category3          = new category(0, $categorydata);
-        $category3->save();
-
-        $categorydata->name = 'eeee';
-        $category4          = new category(0, $categorydata);
-        $category4->save();
-
-        $categorydata->name = 'ffff';
-        $category5          = new category(0, $categorydata);
-        $category5->save();
-
-        $this->assertSame($category0->get_count_categories(), 6);
-        $this->assertSame($category1->get_count_categories(), 6);
-        $this->assertSame($category2->get_count_categories(), 6);
-        $this->assertSame($category3->get_count_categories(), 6);
-        $this->assertSame($category4->get_count_categories(), 6);
-        $this->assertSame($category5->get_count_categories(), 6);
-    }
-
     public function test_categories_list() {
         // Create the categories.
         $options = [
