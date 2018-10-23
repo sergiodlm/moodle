@@ -150,47 +150,25 @@ class category extends persistent {
     }
 
     /**
-     * Clear the customfield fields_definitions cache
-     */
-    protected function clear_cache() {
-        $cache = \cache::make('core', 'customfield_fields_definitions');
-        $key = $this->get('component') . '+' . $this->get('area') . '+' . $this->get('itemid');
-        $cache->delete($key);
-    }
-
-    /**
-     * Clear cache before create
+     * Hook to execute after an update.
      *
-     * @return bool
-     * @throws \dml_exception
-     * @throws \moodle_exception
+     * @param bool $result Whether or not the update was successful.
+     * @return void
      */
-    protected function before_create() : bool {
-        $this->clear_cache();
-        return true;
-    }
-
-    /**
-     * Clear cache before update
-     *
-     * @param bool $result
-     *
-     * @return bool
-     */
-    protected function after_update($result) : bool {
-        $this->clear_cache();
-        return true;
+    protected function after_update($result) {
+        handler::get_handler_for_category($this)->clear_fields_definitions_cache();
     }
 
     /**
      * Updates sort order after create
      *
-     * @return bool
+     * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    protected function after_create() : bool {
-        return $this->reorder();
+    protected function after_create() {
+        handler::get_handler_for_category($this)->clear_fields_definitions_cache();
+        $this->reorder();
     }
 
     /**
@@ -201,7 +179,6 @@ class category extends persistent {
      * @throws \dml_exception
      */
     protected function before_delete() : bool {
-        $this->clear_cache();
         foreach ($this->fields() as $field) {
             if (!$field->delete()) {
                 return false;
@@ -214,12 +191,13 @@ class category extends persistent {
      * Update sort order after delete
      *
      * @param bool $result
-     * @return bool
+     * @return void
      * @throws \moodle_exception
      * @throws \dml_exception
      */
-    protected function after_delete($result) :bool {
-        return $this->reorder();
+    protected function after_delete($result) {
+        handler::get_handler_for_category($this)->clear_fields_definitions_cache();
+        $this->reorder();
     }
 
     /**
@@ -264,7 +242,6 @@ class category extends persistent {
             $this->set('sortorder', $this->get('sortorder') + $position);
             $this->save();
         }
-        $this->clear_cache();
         return $this;
     }
 
@@ -306,7 +283,6 @@ class category extends persistent {
             $categoryfrom->set('sortorder', -1);
             $categoryfrom->save();
             $output = $categoryfrom->reorder();
-            $categoryfrom->clear_cache();
             return $output;
         }
 
