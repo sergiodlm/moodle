@@ -296,4 +296,30 @@ class api {
         return $formfields;
     }
 
+    /**
+     * Update sort order of the fields
+     *
+     * @param void
+     * @return bool
+     * @throws \moodle_exception
+     * @throws \dml_exception
+     */
+    public static function reorder_fields(category $category): bool {
+        global $DB;
+
+        $fieldneighbours = $DB->get_records(field::TABLE, ['categoryid' => $category->get('id')], 'sortorder DESC');
+
+        $neworder = count($fieldneighbours);
+
+        foreach ($fieldneighbours as $field) {
+            $dataobject            = new \stdClass();
+            $dataobject->id        = $field->id;
+            $dataobject->sortorder = --$neworder;
+            if (!$DB->update_record(field::TABLE, $dataobject)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

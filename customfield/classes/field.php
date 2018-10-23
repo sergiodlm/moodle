@@ -186,7 +186,7 @@ abstract class field extends persistent {
      * @throws \dml_exception
      */
     private function reorder(): bool {
-        return $this->get_category()->reorder_fields();
+        return api::reorder_fields($this->get_category());
     }
 
     /**
@@ -363,8 +363,8 @@ abstract class field extends persistent {
             $fieldfrom->set('sortorder', -1);
             $fieldfrom->save();
 
-            $oldcategory->reorder_fields();
-            $currentcategory->reorder_fields();
+            api::reorder_fields($oldcategory);
+            api::reorder_fields($currentcategory);
         }
 
         if ($to > 0) {
