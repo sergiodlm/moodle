@@ -87,7 +87,7 @@ class data extends \core_customfield\data {
      */
     public function validate_data(\stdClass $data, array $files): array {
 
-        $errors = [];
+        $errors = parent::validate_data($data, $files);
         $maxlength = $this->get_field()->get_configdata_property('maxlength');
         if (($maxlength > 0) && ($maxlength < \core_text::strlen($data->{$this->inputname()}))) {
             $errors[$this->inputname()] = get_string('errormaxlength', 'customfield_text', $maxlength);

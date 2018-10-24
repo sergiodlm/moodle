@@ -322,7 +322,7 @@ abstract class data extends persistent {
         global $DB;
 
         $errors = [];
-        if ($this->get_field_configdata()['uniquevalues'] == 1) {
+        if ($this->get_field()->get_configdata_property('uniquevalues') == 1) {
 
             $datafield = $this->datafield();
             $where = "fieldid = ? AND {$datafield} = ?";
