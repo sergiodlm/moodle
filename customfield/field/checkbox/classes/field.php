@@ -34,12 +34,6 @@ class field extends \core_customfield\field {
     const TYPE = 'checkbox';
     const SIZE = 40;
 
-    /**
-     * Add fields for editing a text field.
-     *
-     * @param \MoodleQuickForm $mform
-     * @throws \coding_exception
-     */
     public function add_field_to_config_form( \MoodleQuickForm $mform) {
 
     }

@@ -15,34 +15,39 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   customfield_text
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @package   customfield_select
+ * @copyright 2018 Toni Barbera <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace customfield_textarea;
+namespace customfield_select;
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_customfield\plugin_base;
+
 /**
- * Class field
+ * Class data
  *
- * @package customfield_textarea
+ * @package customfield_select
  */
-class field extends \core_customfield\field {
+class plugin extends plugin_base {
 
     /**
-     * Add fields for editing a text field.
+     * Add fields for editing a select field.
      *
+     * @param field $field
      * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
-    public function add_field_to_config_form(\MoodleQuickForm $mform) {
+    public static function add_field_to_config_form(\core_customfield\field $field, \MoodleQuickForm $mform) {
+        $mform->addElement('header', 'header_specificsettings', get_string('specificsettings', 'customfield_select'));
+        $mform->setExpanded('header_specificsettings', true);
 
+        $mform->addElement('textarea', 'configdata[options]', 'Menu options (one per line)');
+
+        $mform->addElement('text', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), 'size="50"');
+        $mform->setType('configdata[defaultvalue]', PARAM_TEXT);
     }
 
-    public function before_delete() {
-        parent::before_delete();
-        // TODO delete all files associated with configdata[defaultvalue]
-    }
 }

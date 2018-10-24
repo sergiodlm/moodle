@@ -38,7 +38,7 @@ class plugin extends plugin_base {
     /**
      * Add fields for editing a text field.
      *
-     * @param field $field
+     * @param \core_customfield\field $field
      * @param \MoodleQuickForm $mform
      * @throws \coding_exception
      */
@@ -48,7 +48,7 @@ class plugin extends plugin_base {
         $mform->setExpanded('header_specificsettings', true);
 
         $mform->addElement('text', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'),
-            ['size' => self::SIZE]);
+                           ['size' => self::SIZE]);
         $mform->setType('configdata[defaultvalue]', PARAM_TEXT);
 
         $mform->addElement('text', 'configdata[displaysize]', get_string('displaysize', 'core_customfield'), ['size' => 6]);
@@ -65,13 +65,13 @@ class plugin extends plugin_base {
         $mform->addHelpButton('configdata[link]', 'profilefieldlink', 'admin');
 
         $linkstargetoptions = array(
-            ''       => get_string('none', 'core_customfield'),
-            '_blank' => get_string('newwindow', 'core_customfield'),
-            '_self'  => get_string('sameframe', 'core_customfield'),
-            '_top'   => get_string('samewindow', 'core_customfield')
+                ''       => get_string('none', 'core_customfield'),
+                '_blank' => get_string('newwindow', 'core_customfield'),
+                '_self'  => get_string('sameframe', 'core_customfield'),
+                '_top'   => get_string('samewindow', 'core_customfield')
         );
         $mform->addElement('select', 'configdata[linktarget]', get_string('linktarget', 'core_customfield'),
-            $linkstargetoptions);
+                           $linkstargetoptions);
     }
 
 }
