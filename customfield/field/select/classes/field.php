@@ -30,9 +30,5 @@ defined('MOODLE_INTERNAL') || die;
  * @package customfield_select
  */
 class field extends \core_customfield\field {
-
-
-    public function add_field_to_config_form(\MoodleQuickForm $mform) {
-
-    }
+    const TYPE = 'select';
 }

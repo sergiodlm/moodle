@@ -137,5 +137,4 @@ class category extends persistent {
     protected function after_delete($result) {
         handler::get_handler_for_category($this)->clear_fields_definitions_cache();
     }
-
 }

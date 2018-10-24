@@ -43,13 +43,6 @@ abstract class field extends persistent {
     protected $category;
 
     /**
-     * Add field parameters to the field configuration form
-     *
-     * @param \MoodleQuickForm $mform
-     */
-    abstract public function add_field_to_config_form(\MoodleQuickForm $mform);
-
-    /**
      * Validate the data from the config form.
      * Sub classes must reimplement it.
      *
