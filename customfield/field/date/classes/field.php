@@ -50,7 +50,7 @@ class field extends \core_customfield\field {
 
         // Make sure the start year is not greater than the end year.
         if ($data['configdata']['startyear'] > $data['configdata']['endyear']) {
-            $errors['configdata[startyear]'] = get_string('startyearafterend', 'core_customfield');
+            $errors['configdata[startyear]'] = get_string('startyearafterend', 'customfield_date');
         }
 
         return $errors;

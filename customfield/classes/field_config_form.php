@@ -74,7 +74,6 @@ class field_config_form extends \moodleform {
 
         // Field specific settings from field type.
         api::add_field_to_config_form($field, $mform);
-        $field->add_field_to_config_form($mform); // TODO remove.
 
         // Handler/component settings.
         $handler->add_configdata_settings_to_form($mform);
