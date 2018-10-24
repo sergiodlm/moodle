@@ -15,15 +15,10 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
   }}
 {{!
-  @template customfield_text/display
+  @template customfield_select/display
 }}
-{{#formvalue}}
-    <div class="customfield customfieldtext">
-        {{#islink}}
-            <span class="customfieldlink"><a href="{{{url}}}" target="{{{linktarget}}}">{{{fieldname}}}</a></span>
-        {{/islink}}
-        {{^islink}}
-            <span class="customfieldname">{{{fieldname}}}<span class="customfieldseparator">: </span><span class="customfieldvalue">{{{formvalue}}}</span>
-        {{/islink}}
-    </div>
-{{/formvalue}}
+<div class="customfield customfield_select">
+    <span class="customfieldname">{{{fieldname}}}</span>
+    <span class="customfieldseparator">: </span>
+    <span class="customfieldvalue">{{{formvalue}}}</span>
+<div>
