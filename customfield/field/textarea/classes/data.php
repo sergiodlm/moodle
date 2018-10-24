@@ -46,7 +46,7 @@ class data extends \core_customfield\data {
             'context'               => $PAGE->context,
             'noclean'               => 0,
             'enable_filemanagement' => true);
-        $mform->addElement('editor', $this->inputname(), format_string($this->get_field()->get('name')), null, $desceditoroptions);
+        $mform->addElement('editor', $this->inputname(), format_string($this->field->get('name')), null, $desceditoroptions);
         $mform->setType($this->inputname(), PARAM_RAW);
     }
 
@@ -59,13 +59,15 @@ class data extends \core_customfield\data {
     public function display() {
         $content = $this->get_formvalue();
         $context = $this->get_context();
-        if ($fieldid = $this->get('id')) {
+        $fieldid = $this->field->get('id');
+
+        if ($dataid = $this->get('id')) {
             $filearea = $this->get_filearea();
             $processed = file_rewrite_pluginfile_urls($content, 'pluginfile.php',
-                $context->id, 'core_customfield', $filearea, $this->field->get('id'));
+                $context->id, 'core_customfield', $filearea, $fieldid);
         } else {
             $processed = file_rewrite_pluginfile_urls($content, 'pluginfile.php',
-                $context->id, 'core_customfield', 'defaultvalue_editor', $this->field->get('id'));
+                $context->id, 'core_customfield', 'defaultvalue_editor', $fieldid);
         }
 
         return \html_writer::start_tag('div') .
@@ -135,10 +137,8 @@ class data extends \core_customfield\data {
     }
 
     public function before_delete() {
-        // TODO: check file delete.
-        $handler = \core_customfield\handler::get_handler_for_field($this->get_field());
-        get_file_storage()->delete_area_files($this->get('contextid'), $handler->get_component(),
-            $handler->get_area(), $handler->get_itemid());
+        get_file_storage()->delete_area_files($this->get('contextid'), 'core_customfield',
+            $this->get_filearea(), $this->field->get('id'));
     }
 
     /**
@@ -149,7 +149,7 @@ class data extends \core_customfield\data {
      */
     protected function get_filearea() {
         if ($fieldid = $this->get('id')) {
-            $filearea = $this->get_field()->get('type');
+            $filearea = $this->field->get('type');
         } else {
             $filearea = 'defaultvalue_editor';
         }
