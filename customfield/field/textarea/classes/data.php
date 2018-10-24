@@ -52,32 +52,6 @@ class data extends \core_customfield\data {
 
     /**
      * @return string
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \moodle_exception
-     */
-    public function display() {
-        $content = $this->get_formvalue();
-        $context = $this->get_context();
-        $fieldid = $this->field->get('id');
-
-        if ($dataid = $this->get('id')) {
-            $filearea = $this->get_filearea();
-            $processed = file_rewrite_pluginfile_urls($content, 'pluginfile.php',
-                $context->id, 'core_customfield', $filearea, $fieldid);
-        } else {
-            $processed = file_rewrite_pluginfile_urls($content, 'pluginfile.php',
-                $context->id, 'core_customfield', 'defaultvalue_editor', $fieldid);
-        }
-
-        return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname']) .
-               \html_writer::tag('span', format_text($processed), ['class' => 'customfieldvalue']) .
-               \html_writer::end_tag('div');
-    }
-
-    /**
-     * @return string
      */
     public function datafield() :string {
         return 'value';
@@ -147,7 +121,7 @@ class data extends \core_customfield\data {
      * @return string
      * @throws \coding_exception
      */
-    protected function get_filearea() {
+    public function get_filearea() {
         if ($fieldid = $this->get('id')) {
             $filearea = $this->field->get('type');
         } else {
@@ -155,21 +129,5 @@ class data extends \core_customfield\data {
         }
 
         return $filearea;
-    }
-
-    /**
-     * Return the context of the field
-     *
-     * @throws \coding_exception
-     * @throws \dml_exception
-     */
-    protected function get_context() {
-        if ($fieldid = $this->get('id')) {
-            $context = \context::instance_by_id($this->get('contextid'));
-        } else {
-            $context = \context_system::instance();
-        }
-
-        return $context;
     }
 }

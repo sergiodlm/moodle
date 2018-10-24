@@ -55,30 +55,6 @@ class data extends \core_customfield\data {
     }
 
     /**
-     * @return string
-     * @throws \coding_exception
-     */
-    public function display() {
-        if (empty($this->get_formvalue())) {
-            return '';
-        }
-        $config = $this->get_field_configdata();
-        if (!empty($config['link'])) {
-            // If link is set show the link.
-            $url = str_replace('$$', $this->get_formvalue(), $config['link']);
-            $output  = \html_writer::start_tag('span', ['class' => 'customfieldlink']);
-            $output .= \html_writer::link($url, $this->get_field()->get('name'), ['target' => $config['linktarget']]);
-            $output .= \html_writer::end_tag('span');
-        } else {
-            // Otherwise show the text.
-            $output  = \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname']);
-            $output .= \html_writer::tag('span', ': ', ['class' => 'customfieldseparator']);
-            $output .= \html_writer::tag('span', format_string($this->get_formvalue()), ['class' => 'customfieldvalue']);
-        }
-        return \html_writer::tag('div', $output, ['class' => 'customfield customfieldtext']);
-    }
-
-    /**
      * Validates data for this field.
      *
      * @param \stdClass $data
