@@ -56,13 +56,13 @@ class field_config_form extends \moodleform {
         $mform->setType('name', PARAM_NOTAGS);
         $mform->addRule('name', get_string('name'), 'required');
 
+        // Accepted values for 'shortname' would follow [a-zA-Z0-9_] pattern,
+        // but we are accepting any PARAM_TEXT value here,
+        // and checking [a-zA-Z0-9_] pattern in validation() function to throw an error when needed.
         $mform->addElement('text', 'shortname', get_string('fieldshortname', 'core_customfield'));
         $mform->addRule('shortname', get_string('shortname'), 'required', null, 'client');
         $mform->setType('shortname', PARAM_TEXT);
 
-        // Accepted values for 'shortname' would follow [a-zA-Z0-9_] pattern,
-        // but we are accepting any PARAM_TEXT value here,
-        // and checking [a-zA-Z0-9_] pattern in validation() function to throw an error when needed.
         $desceditoroptions = ['context' => $handler->get_configuration_context()] + $handler->get_description_text_options() ;
         $mform->addElement('editor', 'description_editor', get_string('description', 'core_customfield'), null, $desceditoroptions);
         $mform->setType('description_editor', PARAM_RAW);
