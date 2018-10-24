@@ -30,11 +30,5 @@ defined('MOODLE_INTERNAL') || die;
  * @package customfield_checkbox
  */
 class field extends \core_customfield\field {
-
     const TYPE = 'checkbox';
-    const SIZE = 40;
-
-    public function add_field_to_config_form( \MoodleQuickForm $mform) {
-
-    }
 }

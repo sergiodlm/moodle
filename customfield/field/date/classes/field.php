@@ -31,11 +31,6 @@ defined('MOODLE_INTERNAL') || die;
  */
 class field extends \core_customfield\field {
     const TYPE = 'date';
-    const SIZE = 40;
-
-    public function add_field_to_config_form( \MoodleQuickForm $mform) {
-
-    }
 
     /**
      * Validate the data from the config form.

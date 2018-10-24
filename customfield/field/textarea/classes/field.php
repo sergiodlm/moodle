@@ -30,16 +30,7 @@ defined('MOODLE_INTERNAL') || die;
  * @package customfield_textarea
  */
 class field extends \core_customfield\field {
-
-    /**
-     * Add fields for editing a text field.
-     *
-     * @param \MoodleQuickForm $mform
-     * @throws \coding_exception
-     */
-    public function add_field_to_config_form(\MoodleQuickForm $mform) {
-
-    }
+    const TYPE = 'textarea';
 
     public function before_delete() {
         parent::before_delete();
