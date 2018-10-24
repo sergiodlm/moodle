@@ -763,11 +763,13 @@ function get_courses_search($searchterms, $sort, $page, $recordsperpage, &$total
         $cfconcat = "(cfd.value || ' ' || cfd.intvalue || cfd.decvalue || cfd.shortcharvalue || ' ' || cfd.charvalue)";
     } else {
         $concat = $DB->sql_concat("COALESCE(c.summary, '')", "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname');
-        $cfconcat = $DB->sql_concat('COALESCE(cfd.value, "")', "' '",
-                                    'COALESCE(cfd.intvalue, "")', "' '",
-                                    'COALESCE(cfd.decvalue, "")', "' '",
-                                    'COALESCE(cfd.shortcharvalue, "")', "' '",
-                                    'COALESCE(cfd.charvalue, "")');
+        $intvaluetochar = $DB->sql_concat('cfd.intvalue');
+        $decvaluetochar = $DB->sql_concat('cfd.decvalue');
+        $cfconcat = $DB->sql_concat('COALESCE(cfd.value, \'\')', "' '",
+                                    "COALESCE($intvaluetochar, '')", "' '",
+                                    "COALESCE($decvaluetochar, '')", "' '",
+                                    'COALESCE(cfd.shortcharvalue, \'\')', "' '",
+                                    'COALESCE(cfd.charvalue, \'\')');
     }
 
     // Custom fields condition.
@@ -826,8 +828,8 @@ function get_courses_search($searchterms, $sort, $page, $recordsperpage, &$total
                           ON (cff.id = cfd.fieldid)
                    LEFT JOIN {customfield_category} cfc
                           ON (cfc.id = cff.categoryid AND
-                              cfc.component = "core_course" AND
-                              area = "course")';
+                              cfc.component = \'core_course\' AND
+                              area = \'course\')';
     }
 
     $searchcond = implode(" OR ", $searchcond);
