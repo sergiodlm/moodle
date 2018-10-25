@@ -46,32 +46,8 @@ class data extends \core_customfield\data {
             'context'               => $PAGE->context,
             'noclean'               => 0,
             'enable_filemanagement' => true);
-        $mform->addElement('editor', $this->inputname(), format_string($this->get_field()->get('name')), null, $desceditoroptions);
+        $mform->addElement('editor', $this->inputname(), format_string($this->field->get('name')), null, $desceditoroptions);
         $mform->setType($this->inputname(), PARAM_RAW);
-    }
-
-    /**
-     * @return string
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \moodle_exception
-     */
-    public function display() {
-        $content = $this->get_formvalue();
-        $context = $this->get_context();
-        if ($fieldid = $this->get('id')) {
-            $filearea = $this->get_filearea();
-            $processed = file_rewrite_pluginfile_urls($content, 'pluginfile.php',
-                $context->id, 'core_customfield', $filearea, $this->field->get('id'));
-        } else {
-            $processed = file_rewrite_pluginfile_urls($content, 'pluginfile.php',
-                $context->id, 'core_customfield', 'defaultvalue_editor', $this->field->get('id'));
-        }
-
-        return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname']) .
-               \html_writer::tag('span', format_text($processed), ['class' => 'customfieldvalue']) .
-               \html_writer::end_tag('div');
     }
 
     /**
@@ -135,10 +111,8 @@ class data extends \core_customfield\data {
     }
 
     public function before_delete() {
-        // TODO: check file delete.
-        $handler = \core_customfield\handler::get_handler_for_field($this->get_field());
-        get_file_storage()->delete_area_files($this->get('contextid'), $handler->get_component(),
-            $handler->get_area(), $handler->get_itemid());
+        get_file_storage()->delete_area_files($this->get('contextid'), 'core_customfield',
+            $this->get_filearea(), $this->field->get('id'));
     }
 
     /**
@@ -147,29 +121,13 @@ class data extends \core_customfield\data {
      * @return string
      * @throws \coding_exception
      */
-    protected function get_filearea() {
+    public function get_filearea() {
         if ($fieldid = $this->get('id')) {
-            $filearea = $this->get_field()->get('type');
+            $filearea = $this->field->get('type');
         } else {
             $filearea = 'defaultvalue_editor';
         }
 
         return $filearea;
-    }
-
-    /**
-     * Return the context of the field
-     *
-     * @throws \coding_exception
-     * @throws \dml_exception
-     */
-    protected function get_context() {
-        if ($fieldid = $this->get('id')) {
-            $context = \context::instance_by_id($this->get('contextid'));
-        } else {
-            $context = \context_system::instance();
-        }
-
-        return $context;
     }
 }

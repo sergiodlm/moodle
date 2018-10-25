@@ -322,7 +322,7 @@ abstract class data extends persistent {
         global $DB;
 
         $errors = [];
-        if ($this->get_field_configdata()['uniquevalues'] == 1) {
+        if ($this->get_field()->get_configdata_property('uniquevalues') == 1) {
 
             $datafield = $this->datafield();
             $where = "fieldid = ? AND {$datafield} = ?";
@@ -360,10 +360,13 @@ abstract class data extends persistent {
     }
 
     /**
-     * Displays the data as html. Used by handler to display data on various places.
+     * Returns field as a renderable object. Used by handlers to display data on various places.
      * @return string
      */
-    abstract public function display();
+    public function display() {
+        $classpath = "\\customfield_{$this->field->get('type')}\\output\\display";
+        return new $classpath($this);
+    }
 
     /**
      * Creates an instance of class
@@ -386,5 +389,21 @@ abstract class data extends persistent {
         $dataobject->set_field($field);
 
         return $dataobject;
+    }
+
+    /**
+     * Return the context of the field
+     *
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function get_context() {
+        if ($fieldid = $this->get('id')) {
+            $context = \context::instance_by_id($this->get('contextid'));
+        } else {
+            $context = \context_system::instance();
+        }
+
+        return $context;
     }
 }

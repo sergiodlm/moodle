@@ -56,9 +56,12 @@ class field_config_form extends \moodleform {
         $mform->setType('name', PARAM_NOTAGS);
         $mform->addRule('name', get_string('name'), 'required');
 
+        // Accepted values for 'shortname' would follow [a-zA-Z0-9_] pattern,
+        // but we are accepting any PARAM_TEXT value here,
+        // and checking [a-zA-Z0-9_] pattern in validation() function to throw an error when needed.
         $mform->addElement('text', 'shortname', get_string('fieldshortname', 'core_customfield'));
-        $mform->setType('shortname', PARAM_NOTAGS);
-        $mform->addRule('shortname', get_string('shortname'), 'required');
+        $mform->addRule('shortname', get_string('shortname'), 'required', null, 'client');
+        $mform->setType('shortname', PARAM_TEXT);
 
         $desceditoroptions = ['context' => $handler->get_configuration_context()] + $handler->get_description_text_options() ;
         $mform->addElement('editor', 'description_editor', get_string('description', 'core_customfield'), null, $desceditoroptions);
@@ -74,7 +77,6 @@ class field_config_form extends \moodleform {
 
         // Field specific settings from field type.
         api::add_field_to_config_form($field, $mform);
-        $field->add_field_to_config_form($mform); // TODO remove.
 
         // Handler/component settings.
         $handler->add_configdata_settings_to_form($mform);
@@ -107,6 +109,16 @@ class field_config_form extends \moodleform {
 
         if (!isset($data['categoryid']) || !$DB->record_exists('customfield_category', array('id' => $data['categoryid']))) {
             $errors['categoryid'] = get_string('formfieldcheckcategoryid', 'core_customfield');
+        }
+
+        // Check the shortname was not truncated by cleaning.
+        if (empty($data['shortname'])) {
+            $errors['shortname'] = get_string('required');
+        } else {
+            // Check allowed pattern (numbers, letters and underscore).
+            if (!preg_match('/^[a-zA-Z0-9_]+$/', $data['shortname'])) {
+                $errors['shortname'] = get_string('profileshortnameinvalid', 'admin');
+            }
         }
 
         if (empty($data['id'])) {

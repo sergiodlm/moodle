@@ -92,32 +92,12 @@ class data extends \core_customfield\data {
      *
      * @return array
      */
-    private function get_options_array(): array {
+    public function get_options_array(): array {
         if (isset($this->get_field_configdata()['options'])) {
             $options = explode("\r\n", $this->get_field_configdata()['options']);
         } else {
             $options = array();
         }
         return $options;
-    }
-
-    /**
-     * The HTML representation of the field and selected value.
-     * @return string
-     * @throws \coding_exception
-     */
-    public function display(): string {
-        $options = $this->get_options_array();
-
-        if (is_null($this->get_formvalue())) {
-            $displaydata = get_string('notset', 'core_customfield');
-        } else {
-            $displaydata = format_string($options[$this->get_formvalue()]);
-        }
-        return \html_writer::start_tag('div') .
-               \html_writer::tag('span', format_string($this->get_field()->get('name')), ['class' => 'customfieldname']) .
-               ' : ' .
-               \html_writer::tag('span', $displaydata, ['class' => 'customfieldvalue']) .
-               \html_writer::end_tag('div');
     }
 }

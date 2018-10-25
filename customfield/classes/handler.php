@@ -280,6 +280,13 @@ abstract class handler {
     abstract public function can_view(field $field, $instanceid = null): bool;
 
     /**
+     * Display field on course listing, search, etc.
+     *
+     * @param int $courseid
+     */
+    abstract public function display_fields(int $instanceid);
+
+    /**
      * The given field is supported on by this handler
      *
      * @param field $field

@@ -22,5 +22,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['checkedbydefault'] = 'Checked by default';
 $string['pluginname'] = 'Checkbox';
 $string['specificsettings'] = 'Settings for the checkbox field';

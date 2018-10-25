@@ -127,16 +127,18 @@ class course_handler extends \core_customfield\handler {
     }
 
     /**
-     * Adds custom fields to edit forms.
+     * Display field on course listing, search, etc.
      *
      * @param int $courseid
      */
-    public function display_fields($courseid) {
+    public function display_fields(int $courseid) {
+        global $PAGE;
+        $output = $PAGE->get_renderer('core_customfield');
         $visiblefields = $this->get_visible_fields($courseid);
         $fields = $this->get_fields_with_data($visiblefields, $courseid);
         $content = \html_writer::start_tag('div', ['class' => 'customfields-container', 'style' => 'clear: both;']);
         foreach ($fields as $data) {
-            $content .= $data->display();
+            $content .= $output->render($data->display());
         }
         $content .= \html_writer::end_tag('div');
         return $content;

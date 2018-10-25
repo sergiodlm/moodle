@@ -22,6 +22,17 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Text field';
+$string['displaysize'] = 'Display size';
 $string['errormaxlength'] = 'This field max length is {$a}';
+$string['islink'] = 'Link field';
+$string['islink_help'] = 'To transform the text into a link, enter a URL containing $$, where $$ will be replaced with the text. For example, to transform a Twitter ID to a link, enter http://twitter.com/$$.';
+$string['ispassword'] = 'Password field';
+$string['linktarget'] = 'Link target';
+$string['maxlength'] = 'Max length';
+$string['newwindow'] = 'New window';
+$string['none'] = 'None';
+$string['pluginname'] = 'Text field';
+$string['profilefieldlinktarget'] = 'Link target';
+$string['sameframe'] = 'Same frame';
+$string['samewindow'] = 'Same window';
 $string['specificsettings'] = 'Settings for the text field';
