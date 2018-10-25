@@ -24,6 +24,7 @@ namespace customfield_textarea;
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_customfield\api;
 use core_customfield\plugin_base;
 
 /**
@@ -67,6 +68,26 @@ class plugin extends plugin_base {
      */
     public static function datafield() :string {
         return self::DATATYPE;
+    }
+
+    /**
+     * Add fields for editing a textarea field.
+     *
+     * @param \moodleform $mform
+     * @throws \coding_exception
+     */
+    public function edit_field_add(\core_customfield\field $field, \MoodleQuickForm $mform) {
+        global $PAGE;
+        $desceditoroptions = array(
+                'trusttext'             => true,
+                'subdirs'               => true,
+                'maxfiles'              => -1,
+                'maxbytes'              => 0,
+                'context'               => $PAGE->context,
+                'noclean'               => 0,
+                'enable_filemanagement' => true);
+        $mform->addElement('editor', api::field_inputname($field), format_string($field->field->get('name')), null, $desceditoroptions);
+        $mform->setType( api::field_inputname($field), PARAM_RAW);
     }
 
 }

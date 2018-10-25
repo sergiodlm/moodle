@@ -462,4 +462,25 @@ class api {
     public static function datafield(field $field): string {
         return self::plugin_callback($field, 'datafield', array());
     }
+
+    /**
+     * Add fields for editing a textarea field.
+     *
+     * @param field $field
+     * @param \MoodleQuickForm $mform
+     * @throws \coding_exception
+     */
+    public static function edit_field_add(field $field, \MoodleQuickForm $mform) {
+        self::plugin_callback($field, 'edit_field_add', [$field, $mform]);
+    }
+
+    /**
+     * Returns the name of the field to be used on HTML forms.
+     *
+     * @return string
+     * @throws \moodle_exception
+     */
+    public static function field_inputname($field): string {
+        return 'customfield_' . $field->get('shortname');
+    }
 }

@@ -37,17 +37,7 @@ class data extends \core_customfield\data {
      * @throws \coding_exception
      */
     public function edit_field_add(\MoodleQuickForm $mform) {
-        global $PAGE;
-        $desceditoroptions = array(
-            'trusttext'             => true,
-            'subdirs'               => true,
-            'maxfiles'              => -1,
-            'maxbytes'              => 0,
-            'context'               => $PAGE->context,
-            'noclean'               => 0,
-            'enable_filemanagement' => true);
-        $mform->addElement('editor', $this->inputname(), format_string($this->field->get('name')), null, $desceditoroptions);
-        $mform->setType($this->inputname(), PARAM_RAW);
+
     }
 
     /**

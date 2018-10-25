@@ -38,27 +38,7 @@ class data extends \core_customfield\data {
      * @throws \coding_exception
      */
     public function edit_field_add(\MoodleQuickForm $mform) {
-        // Get the current calendar in use - see MDL-18375.
-        $calendartype = \core_calendar\type_factory::get_calendar_instance();
 
-        $config = $this->get_field_configdata();
-
-        // Convert the year stored in the DB as gregorian to that used by the calendar type.
-        $startdate = $calendartype->convert_from_gregorian($config['startyear'], 1, 1);
-        $stopdate = $calendartype->convert_from_gregorian($config['endyear'], 1, 1);
-
-        $attributes = ['startyear' => $startdate['year'],
-                       'stopyear'  => $stopdate['year'],
-                       'optional'  => $this->get_field_configdata()['required'] != 1];
-
-        if (empty($config['includetime'])) {
-            $element = 'date_selector';
-        } else {
-            $element = 'date_time_selector';
-        }
-        $mform->addElement($element, $this->inputname(), format_string($this->get_field()->get('name')), $attributes);
-        $mform->setType($this->inputname(), PARAM_INT);
-        $mform->setDefault($this->inputname(), time());
     }
 
     /**

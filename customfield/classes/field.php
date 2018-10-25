@@ -134,6 +134,8 @@ abstract class field extends persistent {
      * Delete associated data before delete field
      *
      * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
     protected function before_delete() {
         global $DB;

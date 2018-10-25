@@ -24,6 +24,7 @@ namespace customfield_text;
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_customfield\api;
 use core_customfield\plugin_base;
 
 /**
@@ -83,6 +84,22 @@ class plugin extends plugin_base {
      */
     public static function datafield(): string {
         return self::DATATYPE;
+    }
+
+    /**
+     * Add fields for editing a text profile field.
+     *
+     * @param \MoodleQuickForm $mform
+     * @throws \coding_exception
+     */
+    public static function edit_field_add(\core_customfield\field $field, \MoodleQuickForm $mform) {
+        $config = $field->get('configdata');
+        $type = ($config['ispassword'] == 1) ? 'password' : 'text';
+        $mform->addElement($type, api::field_inputname($field), format_string($field->get('name')));
+        $mform->setType(api::field_inputname($field), PARAM_TEXT);
+        if (empty($field->get_formvalue()) && !empty($config['defaultvalue'])) {
+            $mform->setDefault(api::field_inputname($field), $config['defaultvalue']);
+        }
     }
 
 }

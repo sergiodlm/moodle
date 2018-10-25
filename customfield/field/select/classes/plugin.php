@@ -24,6 +24,7 @@ namespace customfield_select;
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_customfield\api;
 use core_customfield\plugin_base;
 
 /**
@@ -60,6 +61,31 @@ class plugin extends plugin_base {
      */
     public static function datafield() : string {
         return self::DATATYPE;
+    }
+
+    /**
+     * Add fields for editing a textarea field.
+     *
+     * @param \MoodleQuickForm $mform
+     * @throws \coding_exception
+     */
+    public static function edit_field_add(\core_customfield\field $field, \MoodleQuickForm $mform) {
+        $config = $field->get('configdata');
+        $options = $field->get_options_array();
+        $formattedoptions = array();
+        foreach ($options as $key => $option) {
+            // Multilang formatting with filters.
+            $formattedoptions[$key] = format_string($option);
+        }
+
+        $mform->addElement('select', api::field_inputname($field), format_string($field->get_field()->get('name')), $formattedoptions);
+
+        if (is_null($field->get_formvalue())) {
+            $defaultkey = array_search($config['defaultvalue'], $options);
+        } else {
+            $defaultkey = $field->get_formvalue();
+        }
+        $mform->setDefault(api::field_inputname($field), $defaultkey);
     }
 
 }

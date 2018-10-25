@@ -166,16 +166,6 @@ abstract class data extends persistent {
     }
 
     /**
-     * Returns the name of the field to be used on HTML forms.
-     *
-     * @return string
-     * @throws \moodle_exception
-     */
-    public function inputname(): string {
-        return 'customfield_' . $this->get_field()->get('shortname');
-    }
-
-    /**
      * Return the default value if the field has not been set.
      *
      * @return mixed
@@ -336,16 +326,6 @@ abstract class data extends persistent {
             }
         }
         return $errors;
-    }
-
-    /**
-     * The configurations of the field as object
-     *
-     * @return \stdClass
-     * @throws \moodle_exception
-     */
-    public function get_field_configdata() {
-        return $this->get_field()->get('configdata');
     }
 
     /**

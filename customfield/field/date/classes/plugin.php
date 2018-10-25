@@ -94,4 +94,34 @@ class plugin extends plugin_base {
     public static function datafield() : string {
         return self::DATATYPE;
     }
+
+    /**
+     * Add fields for editing data of a textarea field on a context.
+     *
+     * @param \moodleform $mform
+     * @throws \coding_exception
+     */
+    public static function edit_field_add(\core_customfield\field $field, \MoodleQuickForm $mform) {
+        // Get the current calendar in use - see MDL-18375.
+        $calendartype = \core_calendar\type_factory::get_calendar_instance();
+
+        $config = $field->get('configdata');
+
+        // Convert the year stored in the DB as gregorian to that used by the calendar type.
+        $startdate = $calendartype->convert_from_gregorian($config['startyear'], 1, 1);
+        $stopdate = $calendartype->convert_from_gregorian($config['endyear'], 1, 1);
+
+        $attributes = ['startyear' => $startdate['year'],
+                       'stopyear'  => $stopdate['year'],
+                       'optional'  => $field->get_field_configdata()['required'] != 1];
+
+        if (empty($config['includetime'])) {
+            $element = 'date_selector';
+        } else {
+            $element = 'date_time_selector';
+        }
+        $mform->addElement($element, api::field_inputname($field), format_string($field->get_field()->get('name')), $attributes);
+        $mform->setType(api::field_inputname($field), PARAM_INT);
+        $mform->setDefault(api::field_inputname($field), time());
+    }
 }
