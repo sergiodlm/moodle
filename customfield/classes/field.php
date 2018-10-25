@@ -62,10 +62,10 @@ abstract class field extends persistent {
     protected static function define_properties(): array {
         return array(
                 'shortname'         => [
-                        'type' => PARAM_NOTAGS,
+                        'type' => PARAM_TEXT,
                 ],
                 'name'              => [
-                        'type' => PARAM_NOTAGS,
+                        'type' => PARAM_TEXT,
                 ],
                 'type'              => [
                         'type' => PARAM_PLUGIN,
