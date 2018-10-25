@@ -23,7 +23,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['endyear'] = 'End year';
-$string['includetime'] = 'Include time?';
+$string['includetime'] = 'Include time';
 $string['pluginname'] = 'Date and time';
 $string['specificsettings'] = 'Settings for the date field';
 $string['startyear'] = 'Start year';

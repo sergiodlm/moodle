@@ -46,3 +46,57 @@ Feature: Managers can manage course custom fields
      And I wait until the page is ready
      And I wait until "Test field" "text" does not exist
     Then I should not see "Test field" in the "#customfield_catlist" "css_element"
+
+  @javascript
+  Scenario: A date field makerd to include time must show those fields on course form
+    Given the following "users" exist:
+      | username | firstname | lastname  | email |
+      | teacher1 | Teacher   | Example 1 | teacher1@example.com |
+    And the following "courses" exist:
+      | fullname | shortname | format |
+      | Course 1 | C1        | topics |
+    And the following "course enrolments" exist:
+      | user     | course | role |
+      | teacher1 | C1     | editingteacher |
+    When I click on "Add a new custom field" "link"
+     And I click on "Date and time" "link"
+     And I set the following fields to these values:
+       | Name | Test field |
+       | Short name | testfield |
+       | Include time | 1 |
+     And I press "Save changes"
+     And I log out
+    Then I log in as "teacher1"
+    When I am on site homepage
+    When I am on "Course 1" course homepage
+     And I navigate to "Edit settings" in current page administration
+     And I expand all fieldsets
+    Then "#id_customfield_testfield_hour" "css_element" should be visible
+    Then "#id_customfield_testfield_minute" "css_element" should be visible
+
+  @javascript
+  Scenario: A date field makerd to not include time must not show those fields on course form
+    Given the following "users" exist:
+      | username | firstname | lastname  | email |
+      | teacher1 | Teacher   | Example 1 | teacher1@example.com |
+    And the following "courses" exist:
+      | fullname | shortname | format |
+      | Course 1 | C1        | topics |
+    And the following "course enrolments" exist:
+      | user     | course | role |
+      | teacher1 | C1     | editingteacher |
+    When I click on "Add a new custom field" "link"
+     And I click on "Date and time" "link"
+     And I set the following fields to these values:
+       | Name | Test field |
+       | Short name | testfield |
+       | Include time | 1 |
+     And I press "Save changes"
+     And I log out
+    Then I log in as "teacher1"
+    When I am on site homepage
+    When I am on "Course 1" course homepage
+     And I navigate to "Edit settings" in current page administration
+     And I expand all fieldsets
+    Then "#id_customfield_testfield_hour" "css_element" should not be visible
+    Then "#id_customfield_testfield_minute" "css_element" should not be visible

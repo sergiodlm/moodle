@@ -80,7 +80,7 @@ class data extends \core_customfield\data {
 
         if (is_array($fromform)) {
             $datarecord->dataformat = $fromform['format'];
-            $fromform                   = $fromform['text'];
+            $fromform               = $fromform['text'];
         }
         return $fromform;
     }
