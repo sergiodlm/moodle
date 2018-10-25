@@ -52,14 +52,14 @@ class field_config_form extends \moodleform {
 
         $mform->addElement('header', '_commonsettings', get_string('commonsettings', 'core_customfield'));
 
-        $mform->addElement('text', 'name', get_string('fieldname', 'core_customfield'));
-        $mform->setType('name', PARAM_NOTAGS);
-        $mform->addRule('name', get_string('name'), 'required');
+        $mform->addElement('text', 'name', get_string('fieldname', 'core_customfield'), 'size="50"');
+        $mform->addRule('name', get_string('name'), 'required', null, 'client');
+        $mform->setType('name', PARAM_TEXT);
 
         // Accepted values for 'shortname' would follow [a-zA-Z0-9_] pattern,
         // but we are accepting any PARAM_TEXT value here,
         // and checking [a-zA-Z0-9_] pattern in validation() function to throw an error when needed.
-        $mform->addElement('text', 'shortname', get_string('fieldshortname', 'core_customfield'));
+        $mform->addElement('text', 'shortname', get_string('fieldshortname', 'core_customfield'), 'size=20');
         $mform->addRule('shortname', get_string('shortname'), 'required', null, 'client');
         $mform->setType('shortname', PARAM_TEXT);
 
