@@ -149,7 +149,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
             $fieldobj = self::extract_object_from_record($row, 'field', ['field' => $row->fieldid]);
             $dataobj = self::extract_object_from_record($row, 'data', ['fieldid' => $fieldobj->id]);
 
-            // Allow datafield plugin to implement their own deletion.
+            // Allow customfield plugin to implement their own deletion.
             $classname = manager::get_provider_classname_for_component('customfield_' . $fieldobj->type);
             if (class_exists($classname) && is_subclass_of($classname, customfield_provider::class)) {
                 component_class_callback($classname, 'delete_customfield_data', [$context, $fieldobj, $dataobj]);
