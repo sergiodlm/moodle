@@ -142,7 +142,7 @@ abstract class data extends persistent {
      * @throws \moodle_exception
      */
     public function set_formvalue($value) {
-        $this->set($this->datafield(), $value->{$this->datafield()});
+        $this->set(api::datafield($this->get_field()), $value->{api::datafield($this->get_field())});
     }
 
     /**
@@ -152,17 +152,7 @@ abstract class data extends persistent {
      * @throws \moodle_exception
      */
     public function set_rawvalue($value) {
-        $this->set($this->datafield(), $value);
-    }
-
-    /**
-     * Return the value to be used/submitted on form
-     *
-     * @return mixed
-     * @throws \moodle_exception
-     */
-    public function get_formvalue() {
-        return $this->get(api::datafield($this->field));
+        $this->set(api::datafield($this->get_field()), $value);
     }
 
     /**
@@ -218,20 +208,6 @@ abstract class data extends persistent {
     }
 
     /**
-     * Must return the name of the field on customfield_data table that is used to store data.
-     *
-     * @return string field name of customfield_data table used to store data.
-     */
-    abstract public function datafield(): string;
-
-    /**
-     * Add fields on the context edit form.
-     *
-     * @param \MoodleQuickForm $mform
-     */
-    abstract public function edit_field_add(\MoodleQuickForm $mform);
-
-    /**
      * Saves the data coming from form
      *
      * @param \stdClass $datanew data coming from the form
@@ -243,7 +219,7 @@ abstract class data extends persistent {
         // TODO: Full refactor of this function.
         global $DB;
 
-        if (!isset($datanew->{$this->inputname()})) {
+        if (!isset($datanew->{api::field_inputname($this->get_field())})) {
             // Field not present in form, probably locked and invisible - skip it.
             return false;
         }
@@ -261,11 +237,11 @@ abstract class data extends persistent {
             $this->set('timecreated', $now);
             $this->set('timemodified', $now);
         }
-        $datapreprocessed = $this->edit_save_data_preprocess($datanew->{$this->inputname()}, $datanew);
-        $this->set($this->datafield(), $datapreprocessed);
+        $datapreprocessed = $this->edit_save_data_preprocess($datanew->{api::field_inputname($this->get_field())}, $datanew);
+        $this->set(api::datafield($this->get_field()), $datapreprocessed);
 
         $this->set('value', $datapreprocessed);
-        $this->set('valueformat', $this->get_valueformat($this->datafield()));
+        $this->set('valueformat', $this->get_valueformat(api::datafield($this->get_field())));
         $this->save();
         return $this;
     }
@@ -296,8 +272,8 @@ abstract class data extends persistent {
      * @throws \moodle_exception
      */
     public function edit_load_data(\stdClass $data) {
-        if ($this->get_formvalue() !== null) {
-            $data->{$this->inputname()} = $this->get_formvalue();
+        if (api::datafield($this->get_field()) !== null) {
+            $data->{api::field_inputname($this->get_field())} = api::datafield($this->get_field());
         }
     }
 
@@ -314,15 +290,15 @@ abstract class data extends persistent {
         $errors = [];
         if ($this->get_field()->get_configdata_property('uniquevalues') == 1) {
 
-            $datafield = $this->datafield();
+            $datafield = api::datafield($this->get_field());
             $where = "fieldid = ? AND {$datafield} = ?";
-            $params = [$this->get_field()->get('id'), $data->{$this->inputname()}];
+            $params = [$this->get_field()->get('id'), $data->{api::field_inputname($this->get_field())}];
             if (isset($data->id) && $data->id > 1) {
                 $where .= ' AND instanceid != ?';
                 $params[] = $data->id;
             }
             if ($DB->record_exists_select('customfield_data', $where, $params)) {
-                $errors[$this->inputname()] = get_string('erroruniquevalues', 'core_customfield');
+                $errors[api::field_inputname($this->get_field())] = get_string('erroruniquevalues', 'core_customfield');
             }
         }
         return $errors;

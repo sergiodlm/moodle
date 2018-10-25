@@ -58,12 +58,12 @@ class display implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
         $data = new \stdClass();
-        if ($this->data->get_formvalue() === null) {
+        if (api::datafield($this->data) === null) {
             $data->fieldname = '';
             $data->fieldvalue = '';
         } else {
             $data->fieldname = format_string($this->data->get_field()->get('name'));
-            if ($this->data->get_formvalue() == 0) {
+            if (api::datafield($this->data) == 0) {
                 $data->fieldvalue = get_string('no');
             } else {
                 $data->fieldvalue = get_string('yes');

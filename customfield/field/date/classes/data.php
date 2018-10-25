@@ -42,13 +42,6 @@ class data extends \core_customfield\data {
     }
 
     /**
-     * @return string
-     */
-    public function datafield() : string {
-
-    }
-
-    /**
      * If timestamp is in YYYY-MM-DD or YYYY-MM-DD-HH-MM-SS format, then convert it to timestamp.
      *
      * @param string|array $data

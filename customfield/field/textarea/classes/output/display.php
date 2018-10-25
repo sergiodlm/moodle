@@ -58,7 +58,7 @@ class display implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
 
-        $content = $this->data->get_formvalue();
+        $content = api::datafield($this->data);
         $context = $this->data->get_context();
         $fieldid = $this->data->get_field()->get('id');
 

@@ -80,10 +80,10 @@ class plugin extends plugin_base {
 
         $mform->addElement('select', api::field_inputname($field), format_string($field->get_field()->get('name')), $formattedoptions);
 
-        if (is_null($field->get_formvalue())) {
+        if (is_null(api::datafield($field))) {
             $defaultkey = array_search($config['defaultvalue'], $options);
         } else {
-            $defaultkey = $field->get_formvalue();
+            $defaultkey = api::datafield($field);
         }
         $mform->setDefault(api::field_inputname($field), $defaultkey);
     }

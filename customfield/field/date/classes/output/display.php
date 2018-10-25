@@ -70,12 +70,12 @@ class display implements renderable, templatable {
         }
 
         // Check if a date has been specified.
-        if (empty($this->data->get_formvalue())) {
+        if (empty(api::datafield($this->data))) {
             $data->fieldname = '';
         } else {
             $data->fieldname = format_string($this->data->get_field()->get('name'));
         }
-        $data->formvalue = userdate($this->data->get_formvalue(), $format);
+        $data->formvalue = userdate(api::datafield($this->data), $format);
 
         return $data;
     }

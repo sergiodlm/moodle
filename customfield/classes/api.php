@@ -148,7 +148,7 @@ class api {
             }
             $f             = self::load_data($data->id, $data, $field);
             $finalfields[] = ['id'   => $f->get('id'), 'shortname' => $f->get_field()->get('shortname'),
-                              'type' => $f->get_field()->get('type'), 'value' => $f->get_formvalue()];
+                              'type' => $f->get_field()->get('type'), 'value' => api::datafield($f)];
         }
         return $finalfields;
     }

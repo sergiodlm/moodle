@@ -62,9 +62,9 @@ class display implements renderable, templatable {
         $data = new \stdClass();
         $data->islink = !empty($config['link']);
         $data->linktarget = $config['linktarget'];
-        $data->url = str_replace('$$', $this->data->get_formvalue(), $config['link']);
+        $data->url = str_replace('$$', api::datafield($this->data), $config['link']);
         $data->fieldname = $this->data->get_field()->get('name');
-        $data->formvalue = $this->data->get_formvalue();
+        $data->formvalue = api::datafield($this->data);
 
         return $data;
     }

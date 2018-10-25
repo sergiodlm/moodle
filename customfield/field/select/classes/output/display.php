@@ -62,10 +62,10 @@ class display implements renderable, templatable {
         $options = $this->data->get_options_array();
 
         $data->fieldname = format_string($this->data->get_field()->get('name'));
-        if (is_null($this->data->get_formvalue())) {
+        if (is_null(api::datafield($$this->data))) {
             $data->formvalue = get_string('notset', 'core_customfield');
         } else {
-            $data->formvalue = format_string($options[$this->data->get_formvalue()]);
+            $data->formvalue = format_string($options[api::datafield($this->data)]);
         }
         return $data;
     }

@@ -44,15 +44,6 @@ class data extends \core_customfield\data {
     }
 
     /**
-     * Return which column from mdl_customfield_data is used to store and retrieve data
-     *
-     * @return string
-     */
-    public function datafield() : string {
-
-    }
-
-    /**
      * Validates data for this field.
      *
      * @param \stdClass $data
@@ -62,12 +53,12 @@ class data extends \core_customfield\data {
     public function validate_data(\stdClass $data, array $files): array {
         $options = $this->get_options_array();
         $errors = parent::validate_data($data, $files);
-        if (isset($data->{$this->inputname()})) {
-            if (!isset($options[$data->{$this->inputname()}])) {
-                $errors[$this->inputname()] = get_string('invalidoption', 'customfield_select');
+        if (isset($data->{api::field_inputname($this->get_field())})) {
+            if (!isset($options[$data->{api::field_inputname($this->get_field())}])) {
+                $errors[api::field_inputname($this->get_field())] = get_string('invalidoption', 'customfield_select');
             }
         } else {
-            $errors[$this->inputname()] = get_string('invalidoption', 'customfield_select');
+            $errors[api::field_inputname($this->get_field())] = get_string('invalidoption', 'customfield_select');
         }
         return $errors;
     }

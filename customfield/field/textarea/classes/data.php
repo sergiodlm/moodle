@@ -41,13 +41,6 @@ class data extends \core_customfield\data {
     }
 
     /**
-     * @return string
-     */
-    public function datafield() :string {
-
-    }
-
-    /**
      * Process incoming data for the field.
      *
      * @param array|string $data
@@ -96,7 +89,7 @@ class data extends \core_customfield\data {
             $content = $data->defaultvalue_editor['text'];
             $this->set('valueformat', FORMAT_HTML);
             $this->set($this->datafield(), clean_text($this->get($this->datafield()), $this->get('valueformat')));
-            $data->{$this->inputname()} = array('text' => $content, 'format' => $this->get('valueformat'));
+            $data->{api::field_inputname($this->get_field())} = array('text' => $content, 'format' => $this->get('valueformat'));
         }
     }
 

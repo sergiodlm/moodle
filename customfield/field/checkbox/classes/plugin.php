@@ -69,7 +69,7 @@ class plugin extends plugin_base {
     public static function edit_field_add(\core_customfield\field $field, \MoodleQuickForm $mform) {
         $config = $field->get('configdata');
         $checkbox = $mform->addElement('advcheckbox', api::field_inputname($field), format_string($field->get('name')));
-        if (($field->get_formvalue() == '1') || $config['checkbydefault'] == 1) {
+        if ((api::datafield($field) == '1') || $config['checkbydefault'] == 1) {
             $checkbox->setChecked(true);
         }
         $mform->setType(api::field_inputname($field), PARAM_BOOL);
