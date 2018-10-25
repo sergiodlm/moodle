@@ -419,11 +419,12 @@ class api {
      * If the callback returns null, then the default value is returned instead.
      * If the class does not exist, then the default value is returned.
      *
-     * @param   field       $field
-     * @param   string      $methodname The name of the staticically defined method on the class.
-     * @param   array       $params The arguments to pass into the method.
-     * @param   mixed       $default The default value.
+     * @param   field $field
+     * @param   string $methodname The name of the staticically defined method on the class.
+     * @param   array $params The arguments to pass into the method.
+     * @param   mixed $default The default value.
      * @return  mixed       The return value.
+     * @throws \coding_exception
      */
     protected static function plugin_callback(field $field, string $methodname, array $params, $default = null) {
         $classname = '\\customfield_' . $field->get('type') . '\\plugin';
@@ -445,8 +446,20 @@ class api {
      *
      * @param field $field
      * @param \MoodleQuickForm $mform
+     * @throws \coding_exception
      */
     public static function add_field_to_config_form(field $field, \MoodleQuickForm $mform) {
         self::plugin_callback($field, 'add_field_to_config_form', [$field, $mform]);
+    }
+
+    /**
+     * Return plugin data type.
+     *
+     * @param field $field
+     * @return string
+     * @throws \coding_exception
+     */
+    public static function datafield(field $field): string {
+        return self::plugin_callback($field, 'datafield', array());
     }
 }

@@ -65,7 +65,7 @@ class data extends \core_customfield\data {
      * @return string
      */
     public function datafield() : string {
-        return 'intvalue';
+
     }
 
     /**

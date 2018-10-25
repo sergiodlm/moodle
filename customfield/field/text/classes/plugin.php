@@ -34,6 +34,7 @@ use core_customfield\plugin_base;
 class plugin extends plugin_base {
 
     const SIZE = 20;
+    const DATATYPE = 'charvalue';
 
     /**
      * Add fields for editing a text field.
@@ -72,6 +73,16 @@ class plugin extends plugin_base {
         );
         $mform->addElement('select', 'configdata[linktarget]', get_string('linktarget', 'core_customfield'),
                            $linkstargetoptions);
+    }
+
+    // TODO: move to a trait.
+    /**
+     * Return plugin data type.
+     *
+     * @return string
+     */
+    public static function datafield(): string {
+        return self::DATATYPE;
     }
 
 }

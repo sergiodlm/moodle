@@ -33,6 +33,8 @@ use core_customfield\plugin_base;
  */
 class plugin extends plugin_base {
 
+    const DATATYPE = 'intvalue';
+
     /**
      * Add fields for editing a date field.
      *
@@ -83,5 +85,13 @@ class plugin extends plugin_base {
         $mform->setType('endmonth', PARAM_INT);
         $mform->addElement('hidden', 'endyear', '1');
         $mform->setType('endyear', PARAM_INT);
+    }
+
+    // TODO: move to a trait.
+    /**
+     * @return string
+     */
+    public static function datafield() : string {
+        return self::DATATYPE;
     }
 }

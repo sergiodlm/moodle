@@ -162,7 +162,7 @@ abstract class data extends persistent {
      * @throws \moodle_exception
      */
     public function get_formvalue() {
-        return $this->get($this->datafield());
+        return $this->get(api::datafield($this->field));
     }
 
     /**

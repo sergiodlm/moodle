@@ -44,4 +44,13 @@ abstract class plugin_base {
     public static function add_field_to_config_form(field $field, \MoodleQuickForm $mform) {
 
     }
+
+    /**
+     * Return plugin data type.
+     *
+     * @return string
+     */
+    public static function datafield() : string {
+
+    }
 }

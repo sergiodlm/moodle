@@ -33,6 +33,8 @@ use core_customfield\plugin_base;
  */
 class plugin extends plugin_base {
 
+    const DATATYPE = 'intvalue';
+
     /**
      * Add fields for editing a checkbox field.
      *
@@ -47,6 +49,14 @@ class plugin extends plugin_base {
         // TODO: this string shold be moved to this plugin
         $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));
         $mform->setType('configdata[checkbydefault]', PARAM_BOOL);
+    }
+
+    // TODO: move to a trait.
+    /**
+     * @return string
+     */
+    public static function datafield() : string {
+        return self::DATATYPE;
     }
 
 }

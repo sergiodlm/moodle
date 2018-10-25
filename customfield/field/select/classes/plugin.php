@@ -33,6 +33,8 @@ use core_customfield\plugin_base;
  */
 class plugin extends plugin_base {
 
+    const DATATYPE = 'intvalue';
+
     /**
      * Add fields for editing a select field.
      *
@@ -48,6 +50,16 @@ class plugin extends plugin_base {
 
         $mform->addElement('text', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), 'size="50"');
         $mform->setType('configdata[defaultvalue]', PARAM_TEXT);
+    }
+
+    // TODO: move to a trait.
+    /**
+     * Return which column from mdl_customfield_data is used to store and retrieve data
+     *
+     * @return string
+     */
+    public static function datafield() : string {
+        return self::DATATYPE;
     }
 
 }

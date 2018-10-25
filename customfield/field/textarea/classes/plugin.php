@@ -34,6 +34,7 @@ use core_customfield\plugin_base;
 class plugin extends plugin_base {
 
     const SIZE = 20;
+    const DATATYPE = 'value';
 
     /**
      * Add fields for editing a textarea field.
@@ -58,6 +59,14 @@ class plugin extends plugin_base {
 
         $mform->addElement('editor', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), null, $desceditoroptions);
         $mform->setType('configdata[defaultvalue]', PARAM_RAW);
+    }
+
+    // TODO: move to a trait.
+    /**
+     * @return string
+     */
+    public static function datafield() :string {
+        return self::DATATYPE;
     }
 
 }
