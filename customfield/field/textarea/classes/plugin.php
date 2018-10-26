@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die;
 
 use core_customfield\api;
 use core_customfield\data;
+use core_customfield\handler;
 use core_customfield\plugin_base;
 
 /**
@@ -50,17 +51,10 @@ class plugin extends plugin_base {
         $mform->addElement('header', 'header_specificsettings', get_string('specificsettings', 'customfield_textarea'));
         $mform->setExpanded('header_specificsettings', true);
 
-        $desceditoroptions = array(
-                'trusttext'             => true,
-                'subdirs'               => true,
-                'maxfiles'              => -1,
-                'maxbytes'              => 0,
-                'context'               => $PAGE->context,
-                'noclean'               => 0,
-                'enable_filemanagement' => true);
+        $desceditoroptions = self::value_editor_options($field);
 
-        $mform->addElement('editor', 'configdata[defaultvalue]', get_string('defaultvalue', 'core_customfield'), null, $desceditoroptions);
-        $mform->setType('configdata[defaultvalue]', PARAM_RAW);
+        $mform->addElement('editor', 'configdata[defaultvalue_editor]', get_string('defaultvalue', 'core_customfield'),
+            null, $desceditoroptions);
     }
 
     // TODO: move to a trait.
@@ -78,17 +72,46 @@ class plugin extends plugin_base {
      * @throws \coding_exception
      */
     public static function edit_field_add(\core_customfield\field $field, \MoodleQuickForm $mform) {
-        global $PAGE;
-        $desceditoroptions = array(
-                'trusttext'             => true,
-                'subdirs'               => true,
-                'maxfiles'              => -1,
-                'maxbytes'              => 0,
-                'context'               => $PAGE->context,
-                'noclean'               => 0,
-                'enable_filemanagement' => true);
-        $mform->addElement('editor', api::field_inputname($field), format_string($field->get('name')), null, $desceditoroptions);
+        $desceditoroptions = self::value_editor_options($field);
+        $mform->addElement('editor', api::field_inputname($field).'_editor', format_string($field->get('name')), null, $desceditoroptions);
         $mform->setType( api::field_inputname($field), PARAM_RAW);
     }
 
+    public static function value_editor_options(\core_customfield\field $field, data $data = null) {
+        global $CFG;
+        require_once($CFG->libdir.'/formslib.php');
+        $handler = handler::get_handler_for_field($field);
+        if ($data) {
+            $context = $handler->get_data_context($data->get('instanceid'));
+        } else {
+            $context = $handler->get_configuration_context();
+        }
+        $context = \context_system::instance();
+        // TODO wrong context.
+        return ['maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes' => $CFG->maxbytes, 'context' => $context]; // TODO.
+    }
+
+    /**
+     * Prepare the field data to set in the configuration form
+     *
+     * @param field $field
+     * @return \stdClass
+     */
+    public static function prepare_field_for_form(\core_customfield\field $field) : \stdClass {
+        $fieldrecord = parent::prepare_field_for_form($field);
+
+        if (!empty($fieldrecord->configdata['defaultvalue'])) {
+            $textoptions = self::value_editor_options($field);
+            $context = $textoptions['context'];
+
+            $record = new \stdClass();
+            $record->defaultvalue = $fieldrecord->configdata['defaultvalue'];
+            $record->defaultvalueformat = $fieldrecord->configdata['defaultvalueformat'];
+            file_prepare_standard_editor($record, 'defaultvalue', $textoptions, $context,
+                'customfield_textarea', 'defaultvalue', $fieldrecord->id);
+            $fieldrecord->configdata['defaultvalue_editor'] = $record->defaultvalue_editor;
+        }
+
+        return $fieldrecord;
+    }
 }

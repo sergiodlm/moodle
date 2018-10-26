@@ -22,6 +22,8 @@
 
 namespace customfield_date;
 
+use core_customfield\api;
+
 defined('MOODLE_INTERNAL') || die;
 
 /**
@@ -45,21 +47,22 @@ class data extends \core_customfield\data {
      * If timestamp is in YYYY-MM-DD or YYYY-MM-DD-HH-MM-SS format, then convert it to timestamp.
      *
      * @param string|array $data
-     * @param \stdClass $datarecord The object that will be used to save the record
      * @return mixed
      * @throws \coding_exception
      */
-    public function edit_save_data_preprocess($data, \stdClass $datarecord) {
+    protected function preprocess($data) {
         if (!$data) {
             return 0;
         }
+
+        // TODO why???
 
         if (is_numeric($data)) {
             $gregoriancalendar = \core_calendar\type_factory::get_calendar_instance('gregorian');
             $datetime = $gregoriancalendar->timestamp_to_date_string($data, '%Y-%m-%d-%H-%M-%S', 99, true, true);
         }
 
-        $config = $this->get_field_configdata();
+        $config = $this->get_field()->get('configdata');
 
         $datetime = explode('-', $datetime);
         $datetime[0] = min(max($datetime[0], $config['startyear']), $config['endyear']);
@@ -69,5 +72,21 @@ class data extends \core_customfield\data {
         } else {
             return make_timestamp($datetime[0], $datetime[1], $datetime[2]);
         }
+    }
+
+    /**
+     * Saves the data coming from form
+     *
+     * @param \stdClass $datanew data coming from the form
+     * @return mixed returns data id if success of db insert/update, false on fail, 0 if not permitted
+     * @throws \moodle_exception
+     * @throws \dml_exception
+     */
+    public function edit_save_data(\stdClass $datanew) {
+        $value = $this->preprocess($datanew->{api::field_inputname($this->get_field())});
+        $this->set(api::datafield($this->get_field()), $value);
+        $this->set('value', $value);
+        $this->save();
+        return $this;
     }
 }

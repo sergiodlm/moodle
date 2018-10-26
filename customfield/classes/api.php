@@ -23,6 +23,7 @@
 namespace core_customfield;
 
 use core\output\inplace_editable;
+use customfield_textarea\plugin;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -75,7 +76,7 @@ class api {
 
         list($sqlfields, $params) = $DB->get_in_or_equal(array_keys($fields), SQL_PARAMS_NAMED);
         $sql = "SELECT f.id as field_id, f.shortname, f.categoryid, f.type, f.configdata,
-                       c.name as categoryname, d.*
+                       c.name as categoryname, c.component, c.area, c.itemid, d.*
                   FROM {customfield_category} c
                   JOIN {customfield_field} f
                     ON (c.id = f.categoryid)
@@ -91,14 +92,20 @@ class api {
             $fieldobj    = (object) ['id'         => $data->field_id, 'shortname' => $data->shortname, 'type' => $data->type,
                                      'configdata' => $data->configdata, 'categoryid' => $data->categoryid];
             $field       = self::get_field(0, $fieldobj);
-            $categoryobj = (object) ['id' => $data->categoryid, 'name' => $data->categoryname];
+            $categoryobj = (object) ['id' => $data->categoryid, 'name' => $data->categoryname, 'component' => $data->component,
+                'area' => $data->area, 'itemid' => $data->itemid];
             $field->set_category(new category(0, $categoryobj));
-            unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata, $data->categoryname);
+            unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata, $data->categoryname,
+                $data->component, $data->area, $data->itemid);
             if (empty($data->id)) {
+                // TODO use new data() properly here.
                 $data->id        = 0;
                 $data->fieldid   = $field->get('id');
                 $data->contextid = $datacontext->id;
                 $data->instanceid  = $instanceid;
+                $data->timecreated = $data->timemodified = time();
+                $data->value = '';
+                $data->valueformat = FORMAT_MOODLE;
             }
             $formfields[] = self::load_data(0, $data, $field);
         }
@@ -198,9 +205,9 @@ class api {
         $field->save();
 
         if (isset($formdata->description_editor)) {
-            // Find context.
-            $context                = \context_system::instance();
-            $textoptions['context'] = $context;
+            $handler = handler::get_handler_for_field($field);
+            $textoptions = $handler->get_description_text_options();
+            $context = $textoptions['context'];
 
             // Store files.
             $data = (object) ['description_editor' => $formdata->description_editor];
@@ -211,24 +218,22 @@ class api {
             $field->save();
         }
 
-        if (($field->get('type') == 'textarea') && isset($formdata->configdata['defaultvalue']['text'])) {
+        if (($field->get('type') == 'textarea') && isset($formdata->configdata['defaultvalue_editor']['text'])) {
+            // TODO move to the plugin.
 
-            // Find context.
-            $context                = \context_system::instance();
-            $textoptions['context'] = $context;
+            $textoptions = plugin::value_editor_options($field);
 
             // Store files.
-            $data = (object) ['defaultvalue_editor' => $formdata->configdata['defaultvalue']];
-
-            $data = file_postupdate_standard_editor($data, 'defaultvalue', $textoptions, $context,
-                'core_customfield', 'defaultvalue_editor', $field->get('id'));
+            $tempvalue = (object) ['defaultvalue_editor' => $formdata->configdata['defaultvalue_editor']];
+            $tempvalue = file_postupdate_standard_editor($tempvalue, 'defaultvalue', $textoptions, $textoptions['context'],
+                'customfield_textarea', 'defaultvalue', $field->get('id'));
 
             $configdata = $field->get('configdata');
-            if ($configdata) {
-                $configdata['defaultvalue']['text'] = $data->defaultvalue;
-                $field->set('configdata', json_encode($configdata));
-                $field->save();
-            }
+            $configdata['defaultvalue'] = $tempvalue->defaultvalue;
+            $configdata['defaultvalueformat'] = $tempvalue->defaultvalueformat;
+            unset($configdata['defaultvalue_editor']);
+            $field->set('configdata', json_encode($configdata));
+            $field->save();
         }
 
         $eventparams = ['objectid' => $field->get('id'), 'context' => \context_system::instance(),
@@ -486,12 +491,22 @@ class api {
     }
 
     /**
+     * Prepare the field data to set in the configuration form
+     *
+     * @param field $field
+     * @throws \coding_exception
+     */
+    public static function prepare_field_for_form(field $field) : \stdClass {
+        return self::plugin_callback($field, 'prepare_field_for_form', [$field]);
+    }
+
+    /**
      * Returns the name of the field to be used on HTML forms.
      *
      * @return string
      * @throws \moodle_exception
      */
-    public static function field_inputname($field): string {
+    public static function field_inputname(field $field): string {
         return 'customfield_' . $field->get('shortname');
     }
 }

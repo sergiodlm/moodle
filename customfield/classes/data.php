@@ -23,6 +23,7 @@
 namespace core_customfield;
 
 use core\persistent;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -202,7 +203,7 @@ abstract class data extends persistent {
         $type = $this->field->get('type');
         if ($this->get('id') == 0 && $type == 'textarea') {
             $defaultvalue = $this->get_field()->get_configdata_property('defaultvalue');
-            return $defaultvalue['text'];
+            return $defaultvalue;
         }
         return $this->raw_get('value');
     }
@@ -216,53 +217,11 @@ abstract class data extends persistent {
      * @throws \dml_exception
      */
     public function edit_save_data(\stdClass $datanew) {
-        // TODO: Full refactor of this function.
-        global $DB;
-
-        if (!isset($datanew->{api::field_inputname($this->get_field())})) {
-            // Field not present in form, probably locked and invisible - skip it.
-            return false;
-        }
-
-        $datarecord = $DB->get_record('customfield_data', ['instanceid' => $datanew->id, 'fieldid' => $this->get_field()->get('id')]);
-
-        if ($datarecord) {
-            $this->set('id', $datarecord->id);
-        } else {
-            $this->set('id', 0);
-            $this->set('fieldid', $this->get_field()->get('id'));
-            $this->set('instanceid', $datanew->id);
-            $this->set('contextid', $datanew->contextid);
-            $now = time();
-            $this->set('timecreated', $now);
-            $this->set('timemodified', $now);
-        }
-        $datapreprocessed = $this->edit_save_data_preprocess($datanew->{api::field_inputname($this->get_field())}, $datanew);
-        $this->set(api::datafield($this->get_field()), $datapreprocessed);
-
-        $this->set('value', $datapreprocessed);
-        $this->set('valueformat', $this->get_valueformat(api::datafield($this->get_field())));
+        $value = $datanew->{api::field_inputname($this->get_field())};
+        $this->set(api::datafield($this->get_field()), $value);
+        $this->set('value', $value);
         $this->save();
         return $this;
-    }
-
-    protected function get_valueformat() {
-        if (is_int($this->raw_get('valueformat'))) {
-            return $this->raw_get('valueformat');
-        }
-
-        return FORMAT_HTML;
-    }
-
-    /**
-     * Hook for child classess to process the data before it gets saved in database
-     *
-     * @param string|array $data
-     * @param \stdClass $datarecord The object that will be used to save the record
-     * @return  mixed
-     */
-    public function edit_save_data_preprocess($data, \stdClass $datarecord) {
-        return $data;
     }
 
     /**
@@ -272,9 +231,7 @@ abstract class data extends persistent {
      * @throws \moodle_exception
      */
     public function edit_load_data(\stdClass $data) {
-        if (api::datafield($this->get_field()) !== null) {
-            $data->{api::field_inputname($this->get_field())} = api::datafield($this->get_field());
-        }
+        $data->{api::field_inputname($this->get_field())} = $this->get(api::datafield($this->get_field()));
     }
 
     /**
@@ -320,7 +277,8 @@ abstract class data extends persistent {
      * @return string
      */
     public function display() {
-        $classpath = "\\customfield_{$this->field->get('type')}\\output\\display";
+        $type = $this->get_field()->get('type');
+        $classpath = "\\customfield_{$type}\\output\\display";
         return new $classpath($this);
     }
 
@@ -353,13 +311,7 @@ abstract class data extends persistent {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public function get_context() {
-        if ($fieldid = $this->get('id')) {
-            $context = \context::instance_by_id($this->get('contextid'));
-        } else {
-            $context = \context_system::instance();
-        }
-
-        return $context;
+    public function get_context() : \context {
+        return handler::get_handler_for_field($this->get_field())->get_data_context($this->get('instanceid'));
     }
 }
