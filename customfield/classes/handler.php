@@ -206,7 +206,7 @@ abstract class handler {
      */
     public function get_field_config_form(field $field): field_config_form {
          $form = new field_config_form(null, ['handler' => $this, 'field' => $field]);
-         $form->set_data($this->prepare_field_for_form($field));
+         $form->set_data(api::prepare_field_for_form($field));
          return $form;
     }
 
@@ -458,6 +458,7 @@ abstract class handler {
     public function get_description_text_options() : array {
         return [
             'maxfiles' => EDITOR_UNLIMITED_FILES,
+            'context' => $this->get_configuration_context()
         ];
     }
 
@@ -476,33 +477,6 @@ abstract class handler {
         } catch (\moodle_exception $exception) {
             \core\notification::error(get_string('fieldsavefailed', 'core_customfield'));
         }
-    }
-
-    /**
-     * Prepare the field data to set in the configuration form
-     *
-     * @param field $field
-     * @return stdClass
-     * @throws \moodle_exception
-     */
-    protected function prepare_field_for_form(field $field) : stdClass {
-        $data = $field->to_record();
-        $context = $this->get_configuration_context();
-        $textoptions = ['context' => $context] + $this->get_description_text_options();
-        $data->configdata = $field->get('configdata');
-        if ($data->id) {
-            file_prepare_standard_editor($data, 'description', $textoptions, $context, 'core_customfield',
-                'description', $data->id);
-            if ($field->get('type') == 'textarea' && $data->configdata['defaultvalue']['text']) {
-                $data->defaultvalue = $data->configdata['defaultvalue']['text'];
-                $data->defaultvalueformat = $data->configdata['defaultvalue']['format'];
-                file_prepare_standard_editor($data, 'defaultvalue', $textoptions, $context, 'core_customfield',
-                    'defaultvalue_editor', $data->id);
-                $data->configdata['defaultvalue']['text'] = $data->defaultvalue_editor['text'];
-            }
-        }
-
-        return $data;
     }
 
     /**

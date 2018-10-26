@@ -67,4 +67,24 @@ abstract class plugin_base {
         $obj = new $classpath($data);
         return $OUTPUT->render_from_template("customfield_{$type}/display", $obj);
     }
+
+    /**
+     * Prepare the field data to set in the configuration form
+     *
+     * @param field $field
+     * @return \stdClass
+     */
+    public static function prepare_field_for_form(field $field) : \stdClass {
+        $fieldrecord = $field->to_record();
+        $fieldrecord->configdata = $field->get('configdata');
+
+        $handler = handler::get_handler_for_field($field);
+        $context = $handler->get_configuration_context();
+        $textoptions = ['context' => $context] + $handler->get_description_text_options();
+        file_prepare_standard_editor($fieldrecord, 'description', $textoptions, $context, 'core_customfield',
+            'description', $fieldrecord->id);
+
+        return $fieldrecord;
+    }
 }
+

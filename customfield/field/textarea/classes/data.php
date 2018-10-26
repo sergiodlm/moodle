@@ -23,6 +23,7 @@
 namespace customfield_textarea;
 
 use core_customfield\api;
+use core_customfield\handler;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -43,31 +44,31 @@ class data extends \core_customfield\data {
     }
 
     /**
-     * Process incoming data for the field.
+     * Saves the data coming from form
      *
-     * @param array|string $data
-     * @param \stdClass    $datarecord
-     *
-     * @return array|mixed|\stdClass|string
-     * @throws \coding_exception
+     * @param \stdClass $datanew data coming from the form
+     * @return mixed returns data id if success of db insert/update, false on fail, 0 if not permitted
+     * @throws \moodle_exception
+     * @throws \dml_exception
      */
-    public function edit_save_data_preprocess($fromform, \stdClass $datarecord) {
-        if ($fromform['text']) {
-            $filearea = $this->get_field()->get('type');
-            $context                = \context_course::instance($datarecord->id);
-            $textoptions['context'] = $context;
-            $textoptions['maxfiles'] = -1;
-            $data = (object) ['defaultvalue_editor' => $fromform];
-            $data = file_postupdate_standard_editor($data, 'defaultvalue', $textoptions, $context,
-                'core_customfield', $filearea, $this->get_field()->get('id'));
-            $fromform['text'] = $data->defaultvalue;
+    public function edit_save_data(\stdClass $datanew) {
+        $fromform = $datanew->{api::field_inputname($this->get_field()).'_editor'};
+
+        if (!$this->get('id')) {
+            $this->set('value', '');
+            $this->set('valueformat', FORMAT_MOODLE);
+            $this->save();
         }
 
-        if (is_array($fromform)) {
-            $datarecord->dataformat = $fromform['format'];
-            $fromform               = $fromform['text'];
+        if ($fromform['text']) {
+            $textoptions = plugin::value_editor_options($this->get_field(), $this);
+            $data = (object) ['field_editor' => $fromform];
+            $data = file_postupdate_standard_editor($data, 'field', $textoptions, $textoptions['context'],
+                'customfield_textarea', 'value', $this->get('id'));
+            $this->set('value', $data->field);
+            $this->set('valueformat', $data->fieldformat);
+            $this->save();
         }
-        return $fromform;
     }
 
     /**
@@ -80,19 +81,24 @@ class data extends \core_customfield\data {
      * @throws \moodle_exception
      */
     public function edit_load_data(\stdClass $data) {
-        if (($content = $this->get('value')) !== null) {
-            $context = $this->get_context();
-            $data->defaultvalue = $content;
-            $data->defaultvalueformat = FORMAT_HTML;
-            $fieldid = $this->field->get('id');
-            $textoptions = ['context' => $context, 'maxfiles' => -1];
-            file_prepare_standard_editor($data, 'defaultvalue', $textoptions, $context, 'core_customfield',
-                $this->get_filearea(), $fieldid);
-            $content = $data->defaultvalue_editor['text'];
-            $this->set('valueformat', FORMAT_HTML);
-            $this->set('value', clean_text($this->get('value'), $this->get('valueformat')));
-            $data->{api::field_inputname($this->get_field())} = array('text' => $content, 'format' => $this->get('valueformat'));
+        if ($this->get('id')) {
+            $text = $this->get('value');
+            $format = $this->get('valueformat');
+            $temp = (object)['field' => $text, 'fieldformat' => $format];
+            $textoptions = plugin::value_editor_options($this->get_field(), $this);
+            file_prepare_standard_editor($temp, 'field', $textoptions, $textoptions['context'], 'customfield_textarea',
+                'value', $this->get('id'));
+            $value = $temp->field_editor;
+        } else {
+            $text = $this->get_field()->get_configdata_property('defaultvalue');
+            $format = $this->get_field()->get_configdata_property('defaultvalueformat');
+            $temp = (object)['field' => $text, 'fieldformat' => $format];
+            $textoptions = plugin::value_editor_options($this->get_field());
+            file_prepare_standard_editor($temp, 'field', $textoptions, $textoptions['context'], 'customfield_textarea',
+                'defaultvalue', $this->get_field()->get('id'));
+            $value = $temp->field_editor;
         }
+        $data->{api::field_inputname($this->get_field()).'_editor'} = $value;
     }
 
     public function before_delete() {
