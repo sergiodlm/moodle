@@ -35,6 +35,7 @@ $string['categoryname'] = 'Category name';
 $string['categorysaved'] = 'Category successfully added.';
 $string['categorysavefailed'] = 'An error occured and the category was not saved.';
 $string['checked'] = 'Checked';
+$string['cleanuptask'] = 'Custom field data clean up task';
 $string['commonsettings'] = 'Common settings';
 $string['componentsettings'] = 'Component settings';
 $string['confirmdelete'] = 'Are you sure?';

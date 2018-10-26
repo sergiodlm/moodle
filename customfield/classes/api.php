@@ -510,4 +510,19 @@ class api {
     public static function field_inputname(field $field): string {
         return 'customfield_' . $field->get('shortname');
     }
+
+    /**
+     * Delete data that depends on contexts that do not exist anymore.
+     *
+     */
+    public static function cleanup() {
+        $sql = "SELECT DISTINCT cd.contextid
+                  FROM {customfield_data} cd
+             LEFT JOIN {context} ctx
+                    ON cf.contextid = ctx.id
+                 WHERE ctx.id IS NULL";
+        $data = $DB->get_records_sql($sql);
+        list($sql, $params) = $DB->get_in_or_equal(array_keys($contexts));
+        $DB->delete_records_select('customfield_data', "contextid $sql", $params);
+    }
 }
