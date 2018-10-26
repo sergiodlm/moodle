@@ -22,6 +22,8 @@
 
 namespace customfield_textarea;
 
+use core_customfield\api;
+
 defined('MOODLE_INTERNAL') || die;
 
 /**
@@ -78,7 +80,7 @@ class data extends \core_customfield\data {
      * @throws \moodle_exception
      */
     public function edit_load_data(\stdClass $data) {
-        if (($content = $this->get($this->datafield())) !== null) {
+        if (($content = $this->get('value')) !== null) {
             $context = $this->get_context();
             $data->defaultvalue = $content;
             $data->defaultvalueformat = FORMAT_HTML;
@@ -88,7 +90,7 @@ class data extends \core_customfield\data {
                 $this->get_filearea(), $fieldid);
             $content = $data->defaultvalue_editor['text'];
             $this->set('valueformat', FORMAT_HTML);
-            $this->set($this->datafield(), clean_text($this->get($this->datafield()), $this->get('valueformat')));
+            $this->set('value', clean_text($this->get('value'), $this->get('valueformat')));
             $data->{api::field_inputname($this->get_field())} = array('text' => $content, 'format' => $this->get('valueformat'));
         }
     }

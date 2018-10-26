@@ -71,14 +71,14 @@ class plugin extends plugin_base {
      */
     public static function edit_field_add(\core_customfield\field $field, \MoodleQuickForm $mform) {
         $config = $field->get('configdata');
-        $options = $field->get_options_array();
+        $options = self::get_options_array($field);
         $formattedoptions = array();
         foreach ($options as $key => $option) {
             // Multilang formatting with filters.
             $formattedoptions[$key] = format_string($option);
         }
 
-        $mform->addElement('select', api::field_inputname($field), format_string($field->get_field()->get('name')), $formattedoptions);
+        $mform->addElement('select', api::field_inputname($field), format_string($field->get('name')), $formattedoptions);
 
         if (is_null(api::datafield($field))) {
             $defaultkey = array_search($config['defaultvalue'], $options);
@@ -88,4 +88,18 @@ class plugin extends plugin_base {
         $mform->setDefault(api::field_inputname($field), $defaultkey);
     }
 
+
+    /**
+     * Returns the options available as an array.
+     *
+     * @return array
+     */
+    public static function get_options_array(\core_customfield\field $field): array {
+        if ($field->get_configdata_property('options')) {
+            $options = explode("\r\n", $field->get_configdata_property('options'));
+        } else {
+            $options = array();
+        }
+        return $options;
+    }
 }

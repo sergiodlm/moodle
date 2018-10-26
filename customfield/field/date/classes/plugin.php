@@ -24,6 +24,7 @@ namespace customfield_date;
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_customfield\api;
 use core_customfield\plugin_base;
 
 /**
@@ -113,14 +114,14 @@ class plugin extends plugin_base {
 
         $attributes = ['startyear' => $startdate['year'],
                        'stopyear'  => $stopdate['year'],
-                       'optional'  => $field->get_field_configdata()['required'] != 1];
+                       'optional'  => $field->get_configdata_property('required') != 1];
 
         if (empty($config['includetime'])) {
             $element = 'date_selector';
         } else {
             $element = 'date_time_selector';
         }
-        $mform->addElement($element, api::field_inputname($field), format_string($field->get_field()->get('name')), $attributes);
+        $mform->addElement($element, api::field_inputname($field), format_string($field->get('name')), $attributes);
         $mform->setType(api::field_inputname($field), PARAM_INT);
         $mform->setDefault(api::field_inputname($field), time());
     }

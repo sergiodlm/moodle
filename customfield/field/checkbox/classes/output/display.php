@@ -22,6 +22,7 @@
 
 namespace customfield_checkbox\output;
 
+use core_customfield\api;
 use renderable;
 use templatable;
 use renderer_base;
@@ -58,12 +59,12 @@ class display implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
         $data = new \stdClass();
-        if (api::datafield($this->data) === null) {
+        if (api::datafield($this->data->get_field()) === null) {
             $data->fieldname = '';
             $data->fieldvalue = '';
         } else {
             $data->fieldname = format_string($this->data->get_field()->get('name'));
-            if (api::datafield($this->data) == 0) {
+            if (api::datafield($this->data->get_field()) == 0) {
                 $data->fieldvalue = get_string('no');
             } else {
                 $data->fieldvalue = get_string('yes');

@@ -475,6 +475,17 @@ class api {
     }
 
     /**
+     * Add fields for editing a textarea field.
+     *
+     * @param field $field
+     * @param \MoodleQuickForm $mform
+     * @throws \coding_exception
+     */
+    public static function display(data $data) {
+        self::plugin_callback($data->get_field(), 'display', [$data]);
+    }
+
+    /**
      * Returns the name of the field to be used on HTML forms.
      *
      * @return string

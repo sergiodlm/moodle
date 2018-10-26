@@ -22,6 +22,7 @@
 
 namespace customfield_text\output;
 
+use core_customfield\api;
 use renderable;
 use templatable;
 use renderer_base;
@@ -58,13 +59,14 @@ class display implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
 
-        $config = $this->data->get_field_configdata();
+        $link = $this->data->get_field()->get_configdata_property('link');
+        $linktarget = $this->data->get_field()->get_configdata_property('linktarget');
         $data = new \stdClass();
-        $data->islink = !empty($config['link']);
-        $data->linktarget = $config['linktarget'];
-        $data->url = str_replace('$$', api::datafield($this->data), $config['link']);
+        $data->islink = !empty($link);
+        $data->linktarget = $linktarget;
+        $data->url = str_replace('$$', api::datafield($this->data->get_field()), $link);
         $data->fieldname = $this->data->get_field()->get('name');
-        $data->formvalue = api::datafield($this->data);
+        $data->formvalue = api::datafield($this->data->get_field());
 
         return $data;
     }

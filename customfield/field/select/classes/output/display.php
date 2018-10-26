@@ -22,6 +22,8 @@
 
 namespace customfield_select\output;
 
+use core_customfield\api;
+use customfield_select\plugin;
 use renderable;
 use templatable;
 use renderer_base;
@@ -59,13 +61,13 @@ class display implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
         $data = new \stdClass();
 
-        $options = $this->data->get_options_array();
+        $options = plugin::get_options_array($this->data->get_field());
 
         $data->fieldname = format_string($this->data->get_field()->get('name'));
-        if (is_null(api::datafield($$this->data))) {
+        if (is_null(api::datafield($this->data->get_field()))) {
             $data->formvalue = get_string('notset', 'core_customfield');
         } else {
-            $data->formvalue = format_string($options[api::datafield($this->data)]);
+            $data->formvalue = format_string($options[api::datafield($this->data->get_field())]);
         }
         return $data;
     }
