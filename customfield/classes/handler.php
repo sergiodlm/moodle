@@ -582,4 +582,17 @@ abstract class handler {
     public function add_configdata_settings_to_form(\MoodleQuickForm $mform) {
 
     }
+
+    /**
+     * Deletes all data related to all fields of an instance.
+     *
+     * @param int $instanceid
+     */
+    public function delete_data_on_instance(int $instanceid) {
+        $fields = $this->get_editable_fields($instanceid);
+        $fielddata = $this->get_fields_with_data($fields, $instanceid);
+        foreach ($fieldata as $data) {
+            $data->delete();
+        }
+    }
 }
