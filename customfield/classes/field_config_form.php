@@ -63,9 +63,8 @@ class field_config_form extends \moodleform {
         $mform->addRule('shortname', get_string('shortname'), 'required', null, 'client');
         $mform->setType('shortname', PARAM_TEXT);
 
-        $desceditoroptions = ['context' => $handler->get_configuration_context()] + $handler->get_description_text_options() ;
+        $desceditoroptions = $handler->get_description_text_options() ;
         $mform->addElement('editor', 'description_editor', get_string('description', 'core_customfield'), null, $desceditoroptions);
-        $mform->setType('description_editor', PARAM_RAW);
 
         // If field is required.
         $mform->addElement('selectyesno', 'configdata[required]', get_string('isfieldrequired', 'core_customfield'));

@@ -183,11 +183,10 @@ class api {
      *
      * @param field $field
      * @param \stdClass $formdata
-     * @param array $textoptions editor options (trusttext, subdirs, maxfiles, maxbytes etc.)
      * @throws \moodle_exception
      * @throws \dml_exception
      */
-    public static function save_field(field $field, \stdClass $formdata, array $textoptions) {
+    public static function save_field(field $field, \stdClass $formdata) {
         foreach ($formdata as $key => $value) {
             if ($key === 'configdata' && is_array($formdata->configdata)) {
                 $field->set($key, json_encode($value));
@@ -202,21 +201,23 @@ class api {
         }
 
         $created = !$field->get('id');
-        $field->save();
 
-        if (isset($formdata->description_editor)) {
-            $handler = handler::get_handler_for_field($field);
-            $textoptions = $handler->get_description_text_options();
-            $context = $textoptions['context'];
-
-            // Store files.
-            $data = (object) ['description_editor' => $formdata->description_editor];
-            $data = file_postupdate_standard_editor($data, 'description', $textoptions, $context,
-                                                    'core_customfield', 'description', $field->get('id'));
-            $field->set('description', $data->description);
-            $field->set('descriptionformat', $data->descriptionformat);
+        if (!$field->get('id')) {
+            // We need 'id' field to store files used in description.
+            $field->set('descriptionformat', FORMAT_MOODLE);
             $field->save();
         }
+
+        // Process files in description.
+        $data = (object) ['description_editor' => $formdata->description_editor];
+        $textoptions = handler::get_handler_for_field($field)->get_description_text_options();
+        $data = file_postupdate_standard_editor($data, 'description', $textoptions, $textoptions['context'],
+                                                'core_customfield', 'description', $field->get('id'));
+        $field->set('description', $data->description);
+        $field->set('descriptionformat', $data->descriptionformat);
+
+        // Save the field.
+        $field->save();
 
         if (($field->get('type') == 'textarea') && isset($formdata->configdata['defaultvalue_editor']['text'])) {
             // TODO move to the customfield_textarea plugin, use a callback here.
