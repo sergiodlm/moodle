@@ -329,9 +329,9 @@ class api {
         foreach (array_values($fieldsids) as $idx => $fieldid) {
             // Use persistent class to update the sortorder for each field that needs updating.
             if ($records[$fieldid]->sortorder != $idx) {
-                $field = field::load_field(0, $records[$fieldid]); // TODO should be "new field()".
-                $field->set('sortorder', $idx);
-                $field->save();
+                $f = ($fieldid == $id) ? $field : field::load_field(0, $records[$fieldid]); // TODO should be "new field()".
+                $f->set('sortorder', $idx);
+                $f->save();
             }
         }
     }
@@ -383,9 +383,9 @@ class api {
         foreach (array_values($categoriesids) as $idx => $categoryid) {
             // Use persistent class to update the sortorder for each category that needs updating.
             if ($records[$categoryid]->sortorder != $idx) {
-                $category = new category(0, $records[$categoryid]);
-                $category->set('sortorder', $idx);
-                $category->save();
+                $c = ($categoryid == $id) ? $category : new category(0, $records[$categoryid]);
+                $c->set('sortorder', $idx);
+                $c->save();
             }
         }
     }
