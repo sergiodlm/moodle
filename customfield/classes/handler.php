@@ -434,7 +434,17 @@ abstract class handler {
             foreach ($fields as $formfield) {
                 api::edit_field_add($formfield->get_field(), $mform);
                 if ($formfield->get_field()->get_configdata_property('required')) {
+                    // TODO move into the api::edit_field_add - not all fields support "required" rule so easily (f.e. textarea does not).
                     $mform->addRule(api::field_inputname($formfield->get_field()), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
+                }
+                $record = $formfield->get_field()->to_record();
+                if (strlen($record->description)) {
+                    // Add field description.
+                    $context = $this->get_configuration_context();
+                    $value = file_rewrite_pluginfile_urls($record->description, 'pluginfile.php',
+                        $context->id, 'core_customfield', 'description', $record->id);
+                    $value = format_text($value, $record->descriptionformat, ['context' => $context]);
+                    $mform->addElement('static', api::field_inputname($formfield->get_field()).'_static', '', $value);
                 }
             }
         }
@@ -456,8 +466,11 @@ abstract class handler {
      * @return array
      */
     public function get_description_text_options() : array {
+        global $CFG;
+        require_once($CFG->libdir.'/formslib.php');
         return [
             'maxfiles' => EDITOR_UNLIMITED_FILES,
+            'maxbytes' => $CFG->maxbytes,
             'context' => $this->get_configuration_context()
         ];
     }
@@ -471,7 +484,7 @@ abstract class handler {
      */
     public function save_field(field $field, stdClass $data) {
         try {
-            api::save_field($field, $data, $this->get_description_text_options());
+            api::save_field($field, $data);
             $this->fieldsdefinitions = null;
             \core\notification::success(get_string('fieldsaved', 'core_customfield'));
         } catch (\moodle_exception $exception) {

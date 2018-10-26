@@ -78,8 +78,6 @@ abstract class field extends persistent {
                 ],
                 'descriptionformat' => [
                         'type'     => PARAM_INT,
-                        'default'  => FORMAT_MOODLE,
-                        'optional' => true
                 ],
                 'sortorder'         => [
                         'type'    => PARAM_INT,

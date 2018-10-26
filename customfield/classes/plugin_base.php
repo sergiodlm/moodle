@@ -79,9 +79,8 @@ abstract class plugin_base {
         $fieldrecord->configdata = $field->get('configdata');
 
         $handler = handler::get_handler_for_field($field);
-        $context = $handler->get_configuration_context();
-        $textoptions = ['context' => $context] + $handler->get_description_text_options();
-        file_prepare_standard_editor($fieldrecord, 'description', $textoptions, $context, 'core_customfield',
+        $textoptions = $handler->get_description_text_options();
+        file_prepare_standard_editor($fieldrecord, 'description', $textoptions, $textoptions['context'], 'core_customfield',
             'description', $fieldrecord->id);
 
         return $fieldrecord;

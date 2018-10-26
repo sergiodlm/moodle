@@ -55,26 +55,22 @@ function core_customfield_inplace_editable($itemtype, $itemid, $newvalue) {
  * @throws require_login_exception
  */
 function core_customfield_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
-    if ($context->contextlevel != CONTEXT_SYSTEM && $context->contextlevel != CONTEXT_COURSE) {
-        return false;
-    }
-
-    if ($filearea !== 'defaultvalue_editor' && $filearea !== 'textarea') {
+    if ($filearea !== 'description') {
         return false;
     }
 
     $itemid = array_shift($args);
-
     $filename = array_pop($args); // The last item in the $args array.
-    if (!$args) {
-        $filepath = '/'; // $args is empty => the path is '/'
-    } else {
-        $filepath = '/'.implode('/', $args).'/'; // $args contains elements of the filepath
+
+    $field = \core_customfield\api::get_field($itemid);
+    $handler = \core_customfield\handler::get_handler_for_field($field);
+    if ($handler->get_configuration_context()->id != $context->id) {
+        return false;
     }
 
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
-    $file = $fs->get_file($context->id, 'core_customfield', $filearea, $itemid, $filepath, $filename);
+    $file = $fs->get_file($context->id, 'core_customfield', $filearea, $itemid, '/', $filename);
     if (!$file) {
         return false; // The file does not exist.
     }
