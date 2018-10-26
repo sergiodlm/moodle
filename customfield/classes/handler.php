@@ -434,7 +434,7 @@ abstract class handler {
             foreach ($fields as $formfield) {
                 api::edit_field_add($formfield->get_field(), $mform);
                 if ($formfield->get_field()->get_configdata_property('required')) {
-                    $mform->addRule(api::field_inputname($formfield), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
+                    $mform->addRule(api::field_inputname($formfield->get_field()), get_string('fieldrequired', 'core_customfield'), 'required', null, 'client');
                 }
             }
         }
