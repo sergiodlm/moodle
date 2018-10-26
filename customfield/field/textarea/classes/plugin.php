@@ -28,6 +28,7 @@ use core_customfield\api;
 use core_customfield\data;
 use core_customfield\handler;
 use core_customfield\plugin_base;
+use tool_dataprivacy\context_instance;
 
 /**
  * Class data
@@ -74,21 +75,17 @@ class plugin extends plugin_base {
     public static function edit_field_add(\core_customfield\field $field, \MoodleQuickForm $mform) {
         $desceditoroptions = self::value_editor_options($field);
         $mform->addElement('editor', api::field_inputname($field).'_editor', format_string($field->get('name')), null, $desceditoroptions);
-        $mform->setType( api::field_inputname($field), PARAM_RAW);
     }
 
     public static function value_editor_options(\core_customfield\field $field, data $data = null) {
         global $CFG;
         require_once($CFG->libdir.'/formslib.php');
-        $handler = handler::get_handler_for_field($field);
         if ($data) {
-            $context = $handler->get_data_context($data->get('instanceid'));
+            $context = $data->get_context();
         } else {
-            $context = $handler->get_configuration_context();
+            $context = handler::get_handler_for_field($field)->get_configuration_context();
         }
-        $context = \context_system::instance();
-        // TODO wrong context.
-        return ['maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes' => $CFG->maxbytes, 'context' => $context]; // TODO.
+        return ['maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes' => $CFG->maxbytes, 'context' => $context];
     }
 
     /**

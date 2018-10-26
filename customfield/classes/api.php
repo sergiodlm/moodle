@@ -219,7 +219,7 @@ class api {
         }
 
         if (($field->get('type') == 'textarea') && isset($formdata->configdata['defaultvalue_editor']['text'])) {
-            // TODO move to the plugin.
+            // TODO move to the customfield_textarea plugin, use a callback here.
 
             $textoptions = plugin::value_editor_options($field);
 

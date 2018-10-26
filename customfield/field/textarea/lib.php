@@ -39,27 +39,24 @@ defined('MOODLE_INTERNAL') || die;
  * @throws moodle_exception
  * @throws require_login_exception
  */
-function core_customfield_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function customfield_textarea_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
     global $DB;
-    if ($filearea !== 'value' && $filearea !== 'defaultvalue') {
-        return false;
-    }
 
     $itemid = array_shift($args);
     if ($filearea === 'value') {
         // Value of the data, itemid = id in data table.
         $datarecord = $DB->get_record(\core_customfield\data::TABLE, ['id' => $itemid], '*', MUST_EXIST); // TODO use api.
-        $field = \core_customfield\api::get_field($datarecord->get('fieldid')); // TODO better.
+        $field = \core_customfield\api::get_field($datarecord->fieldid); // TODO better.
         $data = core_customfield\api::load_data($itemid, $datarecord, $field);
         $handler = \core_customfield\handler::get_handler_for_field($field);
-        if (!$handler->can_view($field) || $field->get('type') !== 'textarea' /*|| $data->get_context()->id != $context->id*/) {
+        if (!$handler->can_view($field) || $field->get('type') !== 'textarea' || $data->get_context()->id != $context->id) {
             return false;
         }
     } else if ($filearea === 'defaultvalue') {
         // Default value of the field, itemid = id in the field table.
         $field = \core_customfield\api::get_field($itemid); // TODO better.
         $handler = \core_customfield\handler::get_handler_for_field($field);
-        if ($field->get('type') !== 'textarea' /*|| $handler->get_configuration_context()->id != $context->id*/) {
+        if ($field->get('type') !== 'textarea' || $handler->get_configuration_context()->id != $context->id) {
             return false;
         }
     } else {

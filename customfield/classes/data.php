@@ -312,6 +312,6 @@ abstract class data extends persistent {
      * @throws \dml_exception
      */
     public function get_context() : \context {
-        return handler::get_handler_for_field($this->get_field())->get_data_context($this->get('instanceid'));
+        return \context::instance_by_id($this->get('contextid'));
     }
 }
