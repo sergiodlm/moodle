@@ -25,6 +25,7 @@ namespace customfield_textarea;
 defined('MOODLE_INTERNAL') || die;
 
 use core_customfield\api;
+use core_customfield\data;
 use core_customfield\plugin_base;
 
 /**
@@ -76,7 +77,7 @@ class plugin extends plugin_base {
      * @param \moodleform $mform
      * @throws \coding_exception
      */
-    public function edit_field_add(\core_customfield\field $field, \MoodleQuickForm $mform) {
+    public static function edit_field_add(\core_customfield\field $field, \MoodleQuickForm $mform) {
         global $PAGE;
         $desceditoroptions = array(
                 'trusttext'             => true,
@@ -86,7 +87,7 @@ class plugin extends plugin_base {
                 'context'               => $PAGE->context,
                 'noclean'               => 0,
                 'enable_filemanagement' => true);
-        $mform->addElement('editor', api::field_inputname($field), format_string($field->field->get('name')), null, $desceditoroptions);
+        $mform->addElement('editor', api::field_inputname($field), format_string($field->get('name')), null, $desceditoroptions);
         $mform->setType( api::field_inputname($field), PARAM_RAW);
     }
 

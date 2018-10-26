@@ -22,6 +22,7 @@
 
 namespace customfield_textarea\output;
 
+use core_customfield\api;
 use renderable;
 use templatable;
 use renderer_base;
@@ -58,7 +59,7 @@ class display implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
 
-        $content = api::datafield($this->data);
+        $content = api::datafield($this->data->get_field());
         $context = $this->data->get_context();
         $fieldid = $this->data->get_field()->get('id');
 

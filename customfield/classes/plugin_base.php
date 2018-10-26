@@ -53,4 +53,18 @@ abstract class plugin_base {
     public static function datafield() : string {
 
     }
+
+    /**
+     * Display the field data
+     * 
+     * @param data $data
+     * @return string
+     */
+    public static function display(data $data) {
+        global $OUTPUT;
+        $type = $data->get_field()->get('type');
+        $classpath = "\\customfield_{$type}\\output\\display";
+        $obj = new $classpath($data);
+        return $OUTPUT->render_from_template("customfield_{$type}/display", $obj);
+    }
 }

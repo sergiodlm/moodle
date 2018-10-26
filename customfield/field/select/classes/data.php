@@ -23,6 +23,7 @@
 namespace customfield_select;
 
 use core\persistent;
+use core_customfield\api;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -51,7 +52,7 @@ class data extends \core_customfield\data {
      * @return array
      */
     public function validate_data(\stdClass $data, array $files): array {
-        $options = $this->get_options_array();
+        $options = plugin::get_options_array($this->get_field());
         $errors = parent::validate_data($data, $files);
         if (isset($data->{api::field_inputname($this->get_field())})) {
             if (!isset($options[$data->{api::field_inputname($this->get_field())}])) {
@@ -61,19 +62,5 @@ class data extends \core_customfield\data {
             $errors[api::field_inputname($this->get_field())] = get_string('invalidoption', 'customfield_select');
         }
         return $errors;
-    }
-
-    /**
-     * Returns the options available as an array.
-     *
-     * @return array
-     */
-    public function get_options_array(): array {
-        if (isset($this->get_field_configdata()['options'])) {
-            $options = explode("\r\n", $this->get_field_configdata()['options']);
-        } else {
-            $options = array();
-        }
-        return $options;
     }
 }

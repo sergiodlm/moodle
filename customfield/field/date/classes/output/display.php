@@ -22,6 +22,7 @@
 
 namespace customfield_date\output;
 
+use core_customfield\api;
 use renderable;
 use templatable;
 use renderer_base;
@@ -60,7 +61,7 @@ class display implements renderable, templatable {
 
         $data = new \stdClass();
 
-        $config = $this->data->get_field_configdata();
+        $config = $this->data->get_field()->get('configdata');
 
         // Check if time was specified.
         if (!empty($config['includetime'])) {
@@ -70,12 +71,12 @@ class display implements renderable, templatable {
         }
 
         // Check if a date has been specified.
-        if (empty(api::datafield($this->data))) {
+        if (empty(api::datafield($this->data->get_field()))) {
             $data->fieldname = '';
         } else {
             $data->fieldname = format_string($this->data->get_field()->get('name'));
         }
-        $data->formvalue = userdate(api::datafield($this->data), $format);
+        $data->formvalue = userdate(api::datafield($this->data->get_field()), $format);
 
         return $data;
     }
