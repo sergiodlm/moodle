@@ -62,12 +62,11 @@ class display implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
 
         $fieldid = $this->data->get_field()->get('id');
-        $instanceid = $this->data->get('instanceid');
         $handler = handler::get_handler_for_field($this->data->get_field());
         $configcontext = $handler->get_configuration_context()->id;
 
         if ($dataid = $this->data->get('id')) {
-            $context = $handler->get_data_context($instanceid)->id;
+            $context = $this->data->get_context()->id;
             $processed = file_rewrite_pluginfile_urls($this->data->get('value'), 'pluginfile.php',
                 $context, 'customfield_textarea', 'value', $dataid);
             $value = format_text($processed, $this->data->get('valueformat'), ['context' => $context]);
