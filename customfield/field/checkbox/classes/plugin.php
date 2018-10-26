@@ -47,8 +47,7 @@ class plugin extends plugin_base {
         $mform->addElement('header', 'header_specificsettings', get_string('specificsettings', 'customfield_checkbox'));
         $mform->setExpanded('header_specificsettings', true);
 
-        // TODO: this string shold be moved to this plugin
-        $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkbydefault', 'core_customfield'));
+        $mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkedbydefault', 'customfield_checkbox'));
         $mform->setType('configdata[checkbydefault]', PARAM_BOOL);
     }
 
@@ -74,5 +73,4 @@ class plugin extends plugin_base {
         }
         $mform->setType(api::field_inputname($field), PARAM_BOOL);
     }
-
 }

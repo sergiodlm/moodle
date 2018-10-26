@@ -24,6 +24,8 @@ namespace customfield_text;
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_customfield\api;
+
 /**
  * Class data
  *
@@ -52,7 +54,7 @@ class data extends \core_customfield\data {
 
         $errors = parent::validate_data($data, $files);
         $maxlength = $this->get_field()->get_configdata_property('maxlength');
-        if (($maxlength > 0) && ($maxlength < \core_text::strlen($data->{api::field_inputname(api::field_inputname($this->get_field()))}))) {
+        if (($maxlength > 0) && ($maxlength < \core_text::strlen($data->{api::field_inputname($this->get_field())}))) {
             $errors[api::field_inputname($this->get_field())] = get_string('errormaxlength', 'customfield_text', $maxlength);
         }
         return $errors;

@@ -53,10 +53,10 @@ class plugin extends plugin_base {
                            ['size' => self::SIZE]);
         $mform->setType('configdata[defaultvalue]', PARAM_TEXT);
 
-        $mform->addElement('text', 'configdata[displaysize]', get_string('displaysize', 'core_customfield'), ['size' => 6]);
+        $mform->addElement('text', 'configdata[displaysize]', get_string('displaysize', 'customfield_text'), ['size' => 6]);
         $mform->setType('configdata[displaysize]', PARAM_INT);
 
-        $mform->addElement('text', 'configdata[maxlength]', get_string('maxlength', 'core_customfield'), ['size' => 6]);
+        $mform->addElement('text', 'configdata[maxlength]', get_string('maxlength', 'customfield_text'), ['size' => 6]);
         $mform->setType('configdata[maxlength]', PARAM_INT);
 
         $mform->addElement('selectyesno', 'configdata[ispassword]', get_string('profilefieldispassword', 'admin'));
@@ -67,12 +67,12 @@ class plugin extends plugin_base {
         $mform->addHelpButton('configdata[link]', 'profilefieldlink', 'admin');
 
         $linkstargetoptions = array(
-                ''       => get_string('none', 'core_customfield'),
-                '_blank' => get_string('newwindow', 'core_customfield'),
-                '_self'  => get_string('sameframe', 'core_customfield'),
-                '_top'   => get_string('samewindow', 'core_customfield')
+                ''       => get_string('none', 'customfield_text'),
+                '_blank' => get_string('newwindow', 'customfield_text'),
+                '_self'  => get_string('sameframe', 'customfield_text'),
+                '_top'   => get_string('samewindow', 'customfield_text')
         );
-        $mform->addElement('select', 'configdata[linktarget]', get_string('linktarget', 'core_customfield'),
+        $mform->addElement('select', 'configdata[linktarget]', get_string('linktarget', 'customfield_text'),
                            $linkstargetoptions);
     }
 
