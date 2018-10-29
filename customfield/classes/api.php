@@ -30,20 +30,6 @@ defined('MOODLE_INTERNAL') || die;
 class api {
 
     /**
-     * Fetch a data from database or create a new one if $data is given
-     *
-     * @param int $id id of the field (0 for new field)
-     * @param \stdClass $data a pre-fetched data
-     * @param field $field a pre-fetched field
-     * @return data
-     * @throws \coding_exception
-     * @throws \moodle_exception
-     */
-    public static function load_data(int $id, \stdClass $data, field $field): data {
-        return data::load_data($id, $data, $field);
-    }
-
-    /**
      * Retrieves list of all fields and the data associated with them
      *
      * @param array $fields
@@ -85,8 +71,6 @@ class api {
             unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata, $data->categoryname,
                   $data->component, $data->area, $data->itemid);
             if (empty($data->id)) {
-                // TODO use new data() properly here.
-                $data->id        = 0;
                 $data->fieldid   = $field->get('id');
                 $data->contextid = $datacontext->id;
                 $data->instanceid  = $instanceid;
@@ -94,7 +78,9 @@ class api {
                 $data->value = '';
                 $data->valueformat = FORMAT_MOODLE;
             }
-            $formfields[] = self::load_data(0, $data, $field);
+            $dataobj = new data(0, $data);
+            $dataojb->set_field($field);
+            $formfields[] = $dataobj;
         }
         return $formfields;
     }
@@ -140,7 +126,8 @@ class api {
                 $data->contextid = $datacontext->id;
                 $data->instanceid  = $instanceid;
             }
-            $f             = self::load_data($data->id, $data, $field);
+            $f = new data(0, $data);
+            $f->set_field($field);
             $finalfields[] = ['id'   => $f->get('id'), 'shortname' => $f->get_field()->get('shortname'),
                               'type' => $f->get_field()->get('type'), 'value' => api::datafield($f)];
         }
@@ -272,7 +259,9 @@ class api {
                 $data->fieldid   = $field->get('id');
                 $data->contextid = $contextid;
             }
-            $formfields[] = self::load_data($data->id, $data, $field);
+            $dataobj = new data(0, $data);
+            $dataobj->set_field($field);
+            $formfields[] = $dataobj;
         }
         return $formfields;
     }

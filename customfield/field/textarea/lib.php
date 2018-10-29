@@ -45,9 +45,8 @@ function customfield_textarea_pluginfile($course, $cm, $context, $filearea, $arg
     $itemid = array_shift($args);
     if ($filearea === 'value') {
         // Value of the data, itemid = id in data table.
-        $datarecord = $DB->get_record(\core_customfield\data::TABLE, ['id' => $itemid], '*', MUST_EXIST); // TODO use api.
-        $field = new \core_customfield\field($datarecord->fieldid);
-        $data = \core_customfield\api::load_data($itemid, $datarecord, $field);
+        $data = new \core_customfield\data($itemid);
+        $field = new \core_customfield\field($data->get('fieldid'));
         $handler = \core_customfield\handler::get_handler_for_field($field);
         if (!$handler->can_view($field) || $field->get('type') !== 'textarea' || $data->get_context()->id != $context->id) {
             return false;

@@ -32,7 +32,8 @@ defined('MOODLE_INTERNAL') || die;
  *
  * @package core_customfield
  */
-abstract class data extends persistent {
+class data extends persistent {
+
     /**
      * Database data.
      */
@@ -99,6 +100,25 @@ abstract class data extends persistent {
                         'null'     => NULL_NOT_ALLOWED
                 ]
         );
+    }
+
+    /**
+     * Creates an instance of class
+     *
+     * @param int $id
+     * @param \stdClass $data
+     * @param field $field
+     * @return data
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public function __construct($id = 0, \stdClass $record = null) {
+
+        $customdatatype = "\\customfield_{$record->fieldtype}\\data";
+        if (!class_exists($customdatatype) || !is_subclass_of($customdatatype, data::class)) {
+            throw new \moodle_exception(get_string('errordatatypenotfound', 'core_customfield', s($fieldtype)));
+        }
+        return parent::__construct($id, $record);
     }
 
     /**
@@ -225,12 +245,12 @@ abstract class data extends persistent {
     }
 
     /**
-     * Loads an object with data for this field.
+     * Adds data in a given object on api::field_inputname() attribute.
      *
      * @param \stdClass $data
      * @throws \moodle_exception
      */
-    public function edit_load_data(\stdClass $data) {
+    public function add_customfield_data_to_object(\stdClass $data) {
         $data->{api::field_inputname($this->get_field())} = $this->get(api::datafield($this->get_field()));
     }
 
@@ -280,29 +300,6 @@ abstract class data extends persistent {
         $type = $this->get_field()->get('type');
         $classpath = "\\customfield_{$type}\\output\\display";
         return new $classpath($this);
-    }
-
-    /**
-     * Creates an instance of class
-     *
-     * @param int $id
-     * @param \stdClass $data
-     * @param field $field
-     * @return data
-     * @throws \coding_exception
-     * @throws \moodle_exception
-     */
-    public static function load_data(int $id, \stdClass $data, field $field): data {
-        $fieldtype      = $field->get('type');
-        $customdatatype = "\\customfield_{$fieldtype}\\data";
-        if (!class_exists($customdatatype) || !is_subclass_of($customdatatype, data::class)) {
-            throw new \moodle_exception(get_string('errordatatypenotfound', 'core_customfield', s($fieldtype)));
-        }
-
-        $dataobject = new $customdatatype($id, $data);
-        $dataobject->set_field($field);
-
-        return $dataobject;
     }
 
     /**

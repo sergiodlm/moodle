@@ -247,7 +247,7 @@ abstract class format_base {
             // Retrieve custom fields.
             if ($this->courseid != SITEID) {
                 $handler = \core_course\customfield\course_handler::instance();
-                $handler->load_data($this->course);
+                $handler->add_customfield_data_to_object($this->course);
             }
             // Retrieve course format options.
             $options = $this->get_format_options();

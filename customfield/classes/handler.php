@@ -29,8 +29,6 @@ use stdClass;
 // TODO revise function names, they are difficult to understand now.
 // This handler provides callbacks for field configuration form and also allows to add the fields to the entity editing form
 // It should be clear from the functions names what they do.
-// load_data() loads the multiple fields values from an entity, the function name and arguments are very confusing because we use the
-// word 'data' for the data related to individual field and even have class with this name
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -354,15 +352,15 @@ abstract class handler {
     }
 
     /**
-     * Add the field to the $record received
+     * Add data from all customfields to the $record received
      *
-     * $data->customfield_{fieldshortname} = {fieldvalue};
+     * $record->customfield_{fieldshortname} = {fieldvalue};
      *
      * @param stdClass $record
      * @param bool $foredit only return editable fields
      * @throws \moodle_exception
      */
-    public function load_data(stdClass $record, bool $foredit = false) {
+    public function add_customfield_data_to_object(stdClass $record, bool $foredit = false) {
         if (!isset($record->id)) {
             $record->id = 0;
         }
@@ -370,7 +368,7 @@ abstract class handler {
         $fields = $this->get_fields_with_data($fields, $record->id);
 
         foreach ($fields as $formfield) {
-            $formfield->edit_load_data($record);
+            $formfield->add_customfield_data_to_object($record);
         }
     }
 
@@ -516,10 +514,11 @@ abstract class handler {
 
             $datarecord = $DB->get_record('customfield_data', array('instanceid' => $instanceid, 'fieldid' => $field->get('id')));
             if ($datarecord) {
-                $dataobject = data::load_data($datarecord->id, $datarecord, $field);
+                $dataobject = new data(0, $datarecord);
             } else {
-                $dataobject = data::load_data(0, new stdClass(), $field);
+                $dataobject = new data();
             }
+            $dataobject->set_field($field);
             $dataobject->set('instanceid', $instanceid);
             $dataobject->set('fieldid', $field->get('id'));
             $dataobject->set('contextid', $this->get_data_context($instanceid)->id);
@@ -580,7 +579,6 @@ abstract class handler {
      * @param \MoodleQuickForm $mform
      */
     public function add_configdata_settings_to_form(\MoodleQuickForm $mform) {
-
     }
 
     /**

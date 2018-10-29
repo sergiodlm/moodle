@@ -80,7 +80,7 @@ class data extends \core_customfield\data {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function edit_load_data(\stdClass $data) {
+    public function add_customfield_data_to_object(\stdClass $data) {
         if ($this->get('id')) {
             $text = $this->get('value');
             $format = $this->get('valueformat');
