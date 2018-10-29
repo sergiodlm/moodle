@@ -79,7 +79,7 @@ class api {
                 $data->valueformat = FORMAT_MOODLE;
             }
             $dataobj = new data(0, $data, $field->get('type'));
-            $dataojb->set_field($field);
+            $dataobj->set_field($field);
             $formfields[] = $dataobj;
         }
         return $formfields;
