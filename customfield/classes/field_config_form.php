@@ -131,7 +131,7 @@ class field_config_form extends \moodleform {
             if ($DB->record_exists_select('customfield_field', 'shortname = ? AND id <> ?', array($data['shortname'], $data['id']))) {
                 $errors['shortname'] = get_string('formfieldcheckshortname', 'core_customfield');
             }
-            $field = \core_customfield\api::get_field($data['id']);
+            $field = new \core_customfield\field($data['id']);
         }
         $errors = array_merge($errors, $field->validate_config_form($data, $files));
 

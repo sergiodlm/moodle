@@ -31,7 +31,8 @@ defined('MOODLE_INTERNAL') || die;
  *
  * @package core_customfield
  */
-abstract class field extends persistent {
+class field extends persistent {
+
     /**
      * Database table.
      */
@@ -41,6 +42,25 @@ abstract class field extends persistent {
      * @var category
      */
     protected $category;
+
+    /**
+     * Returns a correct class field.
+     *
+     * @param int $id
+     * @param \stdClass|null $field
+     * @return field
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function __construct($id = 0, \stdClass $record = null) {
+        if ($record) {
+            $customfieldtype = "\\customfield_{$record->type}\\field";
+            if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
+                throw new \coding_exception(get_string('errorfieldtypenotfound', 'core_customfield', s($record->type)));
+            }
+        }
+        return parent::__construct($id, $record);
+    }
 
     /**
      * Validate the data from the config form.
@@ -194,47 +214,6 @@ abstract class field extends persistent {
     }
 
     /**
-     * Returns a correct class field.
-     *
-     * @param int $id
-     * @param \stdClass|null $field
-     * @return field
-     * @throws \coding_exception
-     * @throws \dml_exception
-     */
-    public static function load_field(int $id, \stdClass $field = null): field {
-        global $DB;
-
-        if (!$field || empty($field->type)) {
-            $field = $DB->get_record('customfield_field', ['id' => $id]);
-        }
-
-        $customfieldtype = "\\customfield_{$field->type}\\field";
-        if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
-            throw new \coding_exception(get_string('errorfieldtypenotfound', 'core_customfield', s($field->type)));
-        }
-
-        return new $customfieldtype($field->id, $field);
-    }
-
-    /**
-     * @param string $type
-     * @return field
-     * @throws \coding_exception
-     */
-    public static function create_from_type(string $type): field {
-
-        $customfieldtype = "\\customfield_{$type}\\field";
-        if (!class_exists($customfieldtype) || !is_subclass_of($customfieldtype, field::class)) {
-            throw new \coding_exception(get_string('errorfieldtypenotfound', 'core_customfield', s($type)));
-        }
-
-        $field = new $customfieldtype();
-        $field->set('type', $type);
-        return $field;
-    }
-
-    /**
      * @param int $categoryid
      * @return array
      * @throws \coding_exception
@@ -259,7 +238,7 @@ abstract class field extends persistent {
               ORDER BY sortorder";
         $records = $DB->get_records_sql($sql, $params + ['categoryid' => $categoryid]);
         foreach ($records as $fielddata) {
-            $fields[] = self::load_field($fielddata->id);
+            $fields[] = new field($fielddata->id, $fielddata);
         }
         return $fields;
     }

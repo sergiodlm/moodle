@@ -30,19 +30,6 @@ defined('MOODLE_INTERNAL') || die;
 class api {
 
     /**
-     * Fetch a field from database or create a new one if $field is given
-     *
-     * @param int $id id of the field (0 for new field)
-     * @param \stdClass|null $field
-     * @return field
-     * @throws \coding_exception
-     * @throws \dml_exception
-     */
-    public static function get_field(int $id, \stdClass $field = null): field {
-        return field::load_field($id, $field);
-    }
-
-    /**
      * Fetch a data from database or create a new one if $data is given
      *
      * @param int $id id of the field (0 for new field)
@@ -91,12 +78,12 @@ class api {
         foreach ($fieldsdata as $data) {
             $fieldobj    = (object) ['id'         => $data->field_id, 'shortname' => $data->shortname, 'type' => $data->type,
                                      'configdata' => $data->configdata, 'categoryid' => $data->categoryid];
-            $field       = self::get_field(0, $fieldobj);
-            $categoryobj = (object) ['id' => $data->categoryid, 'name' => $data->categoryname, 'component' => $data->component,
-                'area' => $data->area, 'itemid' => $data->itemid];
-            $field->set_category(new category(0, $categoryobj));
+            $field       = new field(0, $fieldobj);
+            $categoryobj = (object) ['id' => $data->categoryid, 'name' => $data->categoryname,
+                                     'component' => $data->component, 'area' => $data->area, 'itemid' => $data->itemid];
+            $field->set_category(new category($categoryobj->id, $categoryobj));
             unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata, $data->categoryname,
-                $data->component, $data->area, $data->itemid);
+                  $data->component, $data->area, $data->itemid);
             if (empty($data->id)) {
                 // TODO use new data() properly here.
                 $data->id        = 0;
@@ -146,7 +133,7 @@ class api {
         foreach ($fieldsdata as $data) {
             $fieldobj = (object) ['id'   => $data->field_id, 'shortname' => $data->shortname,
                                   'type' => $data->type, 'categoryid' => $data->categoryid, 'configdata' => $data->configdata];
-            $field    = self::get_field(0, $fieldobj);
+            $field    = new field(0, $fieldobj);
             unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata);
             if (empty($data->id)) {
                 $data->fieldid   = $field->get('id');
@@ -274,11 +261,11 @@ class api {
 
         $formfields = [];
         foreach ($fieldsdata as $data) {
-            $fieldobj    = (object) ['id'         => $data->field_id, 'shortname' => $data->shortname, 'type' => $data->type,
-                                     'configdata' => $data->configdata, 'categoryid' => $data->categoryid];
-            $field       = self::get_field(0, $fieldobj);
+            $fieldobj = (object) ['id'         => $data->field_id, 'shortname' => $data->shortname, 'type' => $data->type,
+                                  'configdata' => $data->configdata, 'categoryid' => $data->categoryid];
+            $field    = new field(0, $fieldobj);
             $categoryobj = (object) ['id' => $data->categoryid, 'name' => $data->categoryname];
-            $field->set_category(new category(0, $categoryobj));
+            $field->set_category(new category($categoryob->id, $categoryobj));
             unset($data->field_id, $data->shortname, $data->type, $data->categoryid, $data->configdata, $data->categoryname);
             if (empty($data->id)) {
                 $data->id        = 0;
@@ -329,7 +316,7 @@ class api {
         foreach (array_values($fieldsids) as $idx => $fieldid) {
             // Use persistent class to update the sortorder for each field that needs updating.
             if ($records[$fieldid]->sortorder != $idx) {
-                $f = ($fieldid == $id) ? $field : field::load_field(0, $records[$fieldid]); // TODO should be "new field()".
+                $f = ($fieldid == $id) ? $field : new field($records[$fieldid]);
                 $f->set('sortorder', $idx);
                 $f->save();
             }

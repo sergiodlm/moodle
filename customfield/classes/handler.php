@@ -217,9 +217,10 @@ abstract class handler {
      * @throws \coding_exception
      */
     public function new_field(category $category, string $type) : field {
-        $field = field::create_from_type($type);
-        $field->set('categoryid', $category->get('id'));
-        return $field;
+        $record = new \stdClass();
+        $record->type = $type;
+        $record->categoryid = $category->get('id');
+        return new field(0, $record);
     }
 
     /**
@@ -511,8 +512,7 @@ abstract class handler {
     public function restore_field_data_from_backup(int $instanceid, array $data) {
         global $DB;
         if ($fieldrecord = $DB->get_record('customfield_field', ['shortname' => $data['shortname']], 'id,type')) {
-            $field = field::create_from_type($fieldrecord->type);
-            $field->set('id', $fieldrecord->id);
+            $field = new field(0, $fieldrecord);
 
             $datarecord = $DB->get_record('customfield_data', array('instanceid' => $instanceid, 'fieldid' => $field->get('id')));
             if ($datarecord) {

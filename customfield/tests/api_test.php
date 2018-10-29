@@ -120,14 +120,14 @@ class core_customfield_api_testcase extends advanced_testcase {
         $field5->set_category($category0);
         $field5->save();
 
-        $this->assertInstanceOf('customfield_text\field', api::get_field($field0->get('id')));
-        $this->assertInstanceOf('customfield_text\field', api::get_field($field1->get('id')));
-        $this->assertInstanceOf('customfield_text\field', api::get_field($field2->get('id')));
-        $this->assertInstanceOf('customfield_text\field', api::get_field($field3->get('id')));
-        $this->assertInstanceOf('customfield_text\field', api::get_field($field4->get('id')));
-        $this->assertInstanceOf('customfield_date\field', api::get_field($field5->get('id')));
-        $this->assertNotInstanceOf('customfield_text\field', api::get_field($field5->get('id')));
-        $this->assertNotInstanceOf('customfield_checkbox\field', api::get_field($field0->get('id')));
+        $this->assertInstanceOf('customfield_text\field', new field($field0->get('id')));
+        $this->assertInstanceOf('customfield_text\field', new field($field1->get('id')));
+        $this->assertInstanceOf('customfield_text\field', new field($field2->get('id')));
+        $this->assertInstanceOf('customfield_text\field', new field($field3->get('id')));
+        $this->assertInstanceOf('customfield_text\field', new field($field4->get('id')));
+        $this->assertInstanceOf('customfield_date\field', new field($field5->get('id')));
+        $this->assertNotInstanceOf('customfield_text\field', new field($field5->get('id')));
+        $this->assertNotInstanceOf('customfield_checkbox\field', new field($field0->get('id')));
     }
 
     public function test_load_data() {
