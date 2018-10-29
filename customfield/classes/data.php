@@ -112,11 +112,13 @@ class data extends persistent {
      * @throws \coding_exception
      * @throws \moodle_exception
      */
-    public function __construct($id = 0, \stdClass $record = null) {
+    public function __construct($id = 0, \stdClass $record = null, $fieldtype = null) {
 
-        $customdatatype = "\\customfield_{$record->fieldtype}\\data";
-        if (!class_exists($customdatatype) || !is_subclass_of($customdatatype, data::class)) {
-            throw new \moodle_exception(get_string('errordatatypenotfound', 'core_customfield', s($fieldtype)));
+        if ($fieldtype) {
+            $customdatatype = "\\customfield_{$fieldtype}\\data";
+            if (!class_exists($customdatatype) || !is_subclass_of($customdatatype, data::class)) {
+                throw new \moodle_exception(get_string('errordatatypenotfound', 'core_customfield', s($fieldtype)));
+            }
         }
         return parent::__construct($id, $record);
     }

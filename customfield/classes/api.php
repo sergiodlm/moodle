@@ -78,7 +78,7 @@ class api {
                 $data->value = '';
                 $data->valueformat = FORMAT_MOODLE;
             }
-            $dataobj = new data(0, $data);
+            $dataobj = new data(0, $data, $field->get('type'));
             $dataojb->set_field($field);
             $formfields[] = $dataobj;
         }
@@ -126,7 +126,7 @@ class api {
                 $data->contextid = $datacontext->id;
                 $data->instanceid  = $instanceid;
             }
-            $f = new data(0, $data);
+            $f = new data(0, $data, $field->get('type'));
             $f->set_field($field);
             $finalfields[] = ['id'   => $f->get('id'), 'shortname' => $f->get_field()->get('shortname'),
                               'type' => $f->get_field()->get('type'), 'value' => api::datafield($f)];
@@ -259,7 +259,7 @@ class api {
                 $data->fieldid   = $field->get('id');
                 $data->contextid = $contextid;
             }
-            $dataobj = new data(0, $data);
+            $dataobj = new data(0, $data, $field->get('type'));
             $dataobj->set_field($field);
             $formfields[] = $dataobj;
         }

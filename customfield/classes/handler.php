@@ -514,9 +514,9 @@ abstract class handler {
 
             $datarecord = $DB->get_record('customfield_data', array('instanceid' => $instanceid, 'fieldid' => $field->get('id')));
             if ($datarecord) {
-                $dataobject = new data(0, $datarecord);
+                $dataobject = new data(0, $datarecord, $field->get('type'));
             } else {
-                $dataobject = new data();
+                $dataobject = new data(0, null, $field->get('type'));
             }
             $dataobject->set_field($field);
             $dataobject->set('instanceid', $instanceid);
