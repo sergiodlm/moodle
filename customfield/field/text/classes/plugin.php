@@ -97,10 +97,8 @@ class plugin extends plugin_base {
         $type = ($config['ispassword'] == 1) ? 'password' : 'text';
         $mform->addElement($type, api::field_inputname($field), format_string($field->get('name')));
         $mform->setType(api::field_inputname($field), PARAM_TEXT);
-        // TODO what are these dies for?
-        if (empty(api::datafield($field)) && !empty($config['defaultvalue'])) {die;
-            $mform->setDefault(api::field_inputname($field), $config['defaultvalue']);die;
+        if (empty(api::datafield($field)) && !empty($config['defaultvalue'])) {
+            $mform->setDefault(api::field_inputname($field), $config['defaultvalue']);
         }
     }
-
 }
