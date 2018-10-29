@@ -86,4 +86,3 @@ abstract class plugin_base {
         return $fieldrecord;
     }
 }
-

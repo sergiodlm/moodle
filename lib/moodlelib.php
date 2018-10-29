@@ -4927,6 +4927,9 @@ function delete_course($courseorid, $showfeedback = true) {
         }
     }
 
+    $handler = core_course\customfield\course_handler::instance();
+    $handler->delete_data_on_instance($courseid);
+
     // Make the course completely empty.
     remove_course_contents($courseid, $showfeedback);
 
