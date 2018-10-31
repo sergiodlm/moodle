@@ -90,7 +90,7 @@ Feature: Managers can manage course custom fields
      And I set the following fields to these values:
        | Name | Test field |
        | Short name | testfield |
-       | Include time | 1 |
+       | Include time | |
      And I press "Save changes"
      And I log out
     Then I log in as "teacher1"
